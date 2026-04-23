@@ -2,19 +2,11 @@
 // import_data_easypanel.php - Importar dados no Easypanel
 // USAR ESTE ARQUIVO NO EASYPANEL
 
-session_start();
-
-// Verificar autenticação
-if (!isset($_SESSION['user_id'])) {
-    http_response_code(401);
-    die(json_encode(['error' => 'Não autenticado']));
-}
-
+// Não requer autenticação para permitir importação inicial
 require_once 'srv/config.php';
 
-header('Content-Type: application/json; charset=UTF-8');
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json; charset=UTF-8');
     // Importar dados
     try {
         $json = file_get_contents('php://input');
