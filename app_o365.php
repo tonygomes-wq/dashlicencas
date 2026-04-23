@@ -5,6 +5,8 @@ session_start();
 require_once 'srv/config.php';
 require_once 'srv/permissions.php';
 
+header('Content-Type: application/json; charset=UTF-8');
+
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(['error' => 'Unauthorized']);

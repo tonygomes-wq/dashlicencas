@@ -5,6 +5,8 @@ session_start();
 require_once 'srv/config.php';
 require_once 'srv/permissions.php';
 
+header('Content-Type: application/json; charset=UTF-8');
+
 // Middleware to check authentication
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
