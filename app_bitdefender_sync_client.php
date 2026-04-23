@@ -1,20 +1,17 @@
 <?php
-// app_bitdefender_sync_client.php - Sincronização individual por cliente
+// app_bitdefender_sync_client.php - Versão V3 com informações extras
 session_start();
 require_once 'srv/config.php';
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=UTF-8');
 
-// Check authentication
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(['error' => 'Não autenticado']);
     exit;
 }
 
-$method = $_SERVER['REQUEST_METHOD'];
-
-if ($method !== 'POST') {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Método não permitido']);
     exit;
@@ -28,7 +25,6 @@ try {
         throw new Exception('ID do cliente não fornecido');
     }
     
-    // Buscar dados do cliente
     $stmt = $pdo->prepare("SELECT * FROM bitdefender_licenses WHERE id = ?");
     $stmt->execute([$clientId]);
     $client = $stmt->fetch();
@@ -37,28 +33,28 @@ try {
         throw new Exception('Cliente não encontrado');
     }
     
-    // Verificar se o cliente tem API Key própria
     if (empty($client['client_api_key'])) {
         throw new Exception('Este cliente não possui API Key configurada');
     }
     
     $accessUrl = $client['client_access_url'] ?: 'https://cloud.gravityzone.bitdefender.com/api';
     
-    // Sincronizar dados do cliente
     $result = syncSingleClient($pdo, $client, $accessUrl);
     
     echo json_encode($result);
     
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode([
+        'error' => $e->getMessage(),
+        'trace' => $e->getTraceAsString()
+    ]);
 }
 
 function syncSingleClient($pdo, $client, $accessUrl) {
     $startTime = microtime(true);
     
     try {
-        // Obter informações de licença da API
         $response = makeBitdefenderRequest(
             $client['client_api_key'],
             $accessUrl,
@@ -68,42 +64,98 @@ function syncSingleClient($pdo, $client, $accessUrl) {
         );
         
         if (!isset($response['result'])) {
-            throw new Exception('Resposta inválida da API');
+            throw new Exception('Resposta inválida da API: ' . json_encode($response));
         }
         
         $licenseInfo = $response['result'];
         
         // Mapear campos corretos da API Bitdefender
         $licenseKey = $licenseInfo['licenseKey'] ?? $client['license_key'];
-        $totalLicenses = $licenseInfo['totalSlots'] ?? $client['total_licenses']; // API usa "totalSlots" não "seats"
-        $expirationDate = $licenseInfo['expiryDate'] ?? $client['expiration_date']; // API usa "expiryDate" não "expirationDate"
+        $totalLicenses = $licenseInfo['totalSlots'] ?? $client['total_licenses'];
+        $usedLicenses = $licenseInfo['usedSlots'] ?? 0;
+        $expirationDate = $licenseInfo['expiryDate'] ?? $client['expiration_date'];
+        
+        // Calcular informações extras
+        $freeLicenses = $totalLicenses - $usedLicenses;
+        $usagePercentage = $totalLicenses > 0 ? round(($usedLicenses / $totalLicenses) * 100, 2) : 0;
+        $overLimit = $usedLicenses > $totalLicenses;
         
         // Converter data ISO para MySQL
         if ($expirationDate && strpos($expirationDate, 'T') !== false) {
             $expirationDate = date('Y-m-d', strtotime($expirationDate));
         }
         
-        // Atualizar registro no banco
-        $updateStmt = $pdo->prepare("
-            UPDATE bitdefender_licenses 
-            SET license_key = ?,
-                total_licenses = ?,
-                expiration_date = ?,
-                last_sync = NOW()
-            WHERE id = ?
-        ");
+        // Verificar se colunas extras existem
+        $hasExtraColumns = checkExtraColumns($pdo);
         
-        $updateStmt->execute([
-            $licenseKey,
-            $totalLicenses,
-            $expirationDate,
-            $client['id']
-        ]);
+        if ($hasExtraColumns) {
+            // Atualizar com campos extras
+            $updateStmt = $pdo->prepare("
+                UPDATE bitdefender_licenses 
+                SET license_key = ?,
+                    total_licenses = ?,
+                    used_licenses = ?,
+                    free_licenses = ?,
+                    usage_percentage = ?,
+                    over_limit = ?,
+                    expiration_date = ?,
+                    last_sync = NOW()
+                WHERE id = ?
+            ");
+            
+            $updateStmt->execute([
+                $licenseKey,
+                $totalLicenses,
+                $usedLicenses,
+                $freeLicenses,
+                $usagePercentage,
+                $overLimit ? 1 : 0,
+                $expirationDate,
+                $client['id']
+            ]);
+        } else {
+            // Atualizar apenas campos básicos
+            $updateStmt = $pdo->prepare("
+                UPDATE bitdefender_licenses 
+                SET license_key = ?,
+                    total_licenses = ?,
+                    expiration_date = ?,
+                    last_sync = NOW()
+                WHERE id = ?
+            ");
+            
+            $updateStmt->execute([
+                $licenseKey,
+                $totalLicenses,
+                $expirationDate,
+                $client['id']
+            ]);
+        }
         
         $duration = round(microtime(true) - $startTime, 2);
         
-        // Registrar log
-        logClientSync($pdo, $client['id'], 'success', "Cliente sincronizado em {$duration}s");
+        logClientSync($pdo, $client['id'], 'success', "Cliente sincronizado em {$duration}s", [
+            'license_key' => $licenseKey,
+            'total_licenses' => $totalLicenses,
+            'used_licenses' => $usedLicenses,
+            'free_licenses' => $freeLicenses,
+            'usage_percentage' => $usagePercentage,
+            'over_limit' => $overLimit
+        ]);
+        
+        // Determinar status visual
+        $status = 'ok';
+        $statusMessage = 'OK';
+        if ($overLimit) {
+            $status = 'critical';
+            $statusMessage = 'LIMITE EXCEDIDO!';
+        } elseif ($usagePercentage >= 90) {
+            $status = 'warning';
+            $statusMessage = 'Uso alto';
+        } elseif ($usagePercentage >= 70) {
+            $status = 'attention';
+            $statusMessage = 'Atenção';
+        }
         
         return [
             'success' => true,
@@ -112,13 +164,31 @@ function syncSingleClient($pdo, $client, $accessUrl) {
             'data' => [
                 'licenseKey' => $licenseKey,
                 'totalLicenses' => $totalLicenses,
-                'expirationDate' => $expirationDate
-            ]
+                'usedLicenses' => $usedLicenses,
+                'freeLicenses' => $freeLicenses,
+                'usagePercentage' => $usagePercentage,
+                'overLimit' => $overLimit,
+                'expirationDate' => $expirationDate,
+                'status' => $status,
+                'statusMessage' => $statusMessage
+            ],
+            'extra_columns_available' => $hasExtraColumns
         ];
         
     } catch (Exception $e) {
-        logClientSync($pdo, $client['id'], 'error', $e->getMessage());
+        logClientSync($pdo, $client['id'], 'error', $e->getMessage(), [
+            'trace' => $e->getTraceAsString()
+        ]);
         throw $e;
+    }
+}
+
+function checkExtraColumns($pdo) {
+    try {
+        $stmt = $pdo->query("SHOW COLUMNS FROM bitdefender_licenses LIKE 'used_licenses'");
+        return $stmt->rowCount() > 0;
+    } catch (Exception $e) {
+        return false;
     }
 }
 
@@ -156,31 +226,39 @@ function makeBitdefenderRequest($apiKey, $accessUrl, $api, $method, $params = []
     }
     
     if ($httpCode === 429) {
-        throw new Exception("Limite de requisições excedido");
+        throw new Exception("Limite de requisições excedido (HTTP 429)");
     }
     
     if ($httpCode !== 200) {
-        throw new Exception("Erro HTTP $httpCode");
+        throw new Exception("Erro HTTP $httpCode: $response");
     }
     
     $decoded = json_decode($response, true);
     
     if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception("Erro ao decodificar JSON");
+        throw new Exception("Erro ao decodificar JSON: " . json_last_error_msg());
+    }
+    
+    if (isset($decoded['error'])) {
+        throw new Exception("Erro da API: " . json_encode($decoded['error']));
     }
     
     return $decoded;
 }
 
-function logClientSync($pdo, $clientId, $status, $message) {
-    $stmt = $pdo->prepare("
-        INSERT INTO bitdefender_sync_log (status, message, details)
-        VALUES (?, ?, ?)
-    ");
-    
-    $stmt->execute([
-        $status,
-        "Cliente ID $clientId: $message",
-        json_encode(['client_id' => $clientId])
-    ]);
+function logClientSync($pdo, $clientId, $status, $message, $details = []) {
+    try {
+        $stmt = $pdo->prepare("
+            INSERT INTO bitdefender_sync_log (status, message, details)
+            VALUES (?, ?, ?)
+        ");
+        
+        $stmt->execute([
+            $status,
+            "Cliente ID $clientId: $message",
+            json_encode(array_merge(['client_id' => $clientId], $details))
+        ]);
+    } catch (Exception $e) {
+        error_log("Erro ao registrar log: " . $e->getMessage());
+    }
 }
