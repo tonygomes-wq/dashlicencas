@@ -1,0 +1,192 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║              PASSO A PASSO VISUAL - CORREÇÃO NO SERVIDOR                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🎯 OBJETIVO: Corrigir os caminhos no index.html do servidor
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 1: Acessar o File Manager
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Acesse o cPanel da Hostgator
+2. Procure por "File Manager" ou "Gerenciador de Arquivos"
+3. Clique para abrir
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 2: Navegar até a pasta correta
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. No painel esquerdo, clique em: public_html
+2. Depois clique em: dashlicencas
+3. Você deve ver:
+   • index.html
+   • app_bitdefender_sync_client.php
+   • Pasta: assets/
+   • Pasta: srv/
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 3: Editar o index.html
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Clique com botão DIREITO em: index.html
+2. Selecione: "Edit" ou "Code Editor"
+3. Uma janela vai abrir com o código
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 4: Fazer as correções
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Procure pela linha 26 (use Ctrl+F para buscar):
+
+   <script type="module" crossorigin src="/assets/index-f981d49f.js"></script>
+
+Mude para (adicione um PONTO antes da barra):
+
+   <script type="module" crossorigin src="./assets/index-f981d49f.js"></script>
+                                          ↑
+                                    ADICIONE ESTE PONTO
+
+
+Depois procure pela linha 28:
+
+   <link rel="stylesheet" href="/assets/index-bda104fb.css">
+
+Mude para:
+
+   <link rel="stylesheet" crossorigin href="./assets/index-bda104fb.css">
+                          ↑                 ↑
+                    ADICIONE ISTO      ADICIONE ESTE PONTO
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 5: Salvar o arquivo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Clique em "Save Changes" ou "Salvar Alterações"
+2. Feche o editor
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 6: Verificar se os arquivos existem
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Ainda no File Manager, entre na pasta: assets/
+2. Procure por estes arquivos:
+   
+   ✓ index-f981d49f.js  (deve ter ~987 KB ou 1.010.000 bytes)
+   ✓ index-bda104fb.css (deve ter ~56 KB ou 57.000 bytes)
+
+3. Se NÃO existirem:
+   • Faça upload deles da sua pasta local
+   • Pasta local: dashlicencas/assets/
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 7: Limpar cache do navegador
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+IMPORTANTE: Este é o passo MAIS IMPORTANTE!
+
+1. Feche TODOS os navegadores abertos
+2. Abra um navegador NOVO
+3. Pressione: Ctrl+Shift+Delete
+4. Marque:
+   ☑ Cookies e outros dados do site
+   ☑ Imagens e arquivos em cache
+   ☑ Histórico de navegação
+5. Período: "Todo o período"
+6. Clique em "Limpar dados"
+7. Feche o navegador novamente
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 8: Testar em modo anônimo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Abra o navegador
+2. Pressione: Ctrl+Shift+N (Chrome) ou Ctrl+Shift+P (Firefox)
+3. Acesse: https://macip.com.br/dashlicencas/
+4. Faça login
+5. O sistema deve carregar normalmente!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 9: Verificar se funcionou
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Pressione F12 (abrir DevTools)
+2. Vá na aba "Console"
+3. NÃO deve ter erros vermelhos de MIME type
+4. Vá na aba "Network"
+5. Recarregue (F5)
+6. Procure por: index-f981d49f.js
+7. Deve mostrar:
+   • Status: 200 ✅
+   • Type: javascript ✅
+   • Size: ~987 KB ✅
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 10: Testar a funcionalidade da API
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Clique na aba "Bitdefender"
+2. Clique em qualquer cliente da lista
+3. Uma janela lateral deve abrir à direita
+4. Role para baixo
+5. Deve aparecer a seção:
+
+   ┌─────────────────────────────────────────────┐
+   │ 🔐 API Bitdefender (Opcional)               │
+   │                                             │
+   │ Configure uma API Key específica para       │
+   │ este cliente para sincronização individual  │
+   │                                             │
+   │ API Key do Cliente:                         │
+   │ [                                      ]    │
+   │                                             │
+   │ Access URL do Cliente:                      │
+   │ [https://cloud.gravityzone...]             │
+   │                                             │
+   │ [🔄 Sincronizar Este Cliente]              │
+   └─────────────────────────────────────────────┘
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ PRONTO!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se seguiu todos os passos, o sistema deve estar funcionando perfeitamente!
+
+A seção de API individual por cliente deve aparecer ao clicar em qualquer
+cliente Bitdefender.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🆘 SE AINDA NÃO FUNCIONAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Me envie um print mostrando:
+
+1. O console do navegador (F12 → Console)
+2. A aba Network (F12 → Network) com o arquivo index-f981d49f.js
+3. O File Manager mostrando a pasta assets/ com os arquivos
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -1,0 +1,317 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    PASSO A PASSO - MIGRAÇÃO EASYPANEL                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🎯 VOCÊ ESTÁ AQUI: Pronto para migrar!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 PASSO 1: EXPORTAR BANCO DE DADOS (5 minutos)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Acesse phpMyAdmin da Hostgator
+2. Selecione banco: faceso56_dashlicencas
+3. Clique em "Exportar"
+4. Método: "Rápido"
+5. Formato: "SQL"
+6. Clique em "Executar"
+7. Salve o arquivo
+
+8. No seu projeto, crie a pasta:
+   mkdir db_init
+
+9. Mova o arquivo baixado para:
+   db_init/init.sql
+
+✅ VERIFICAÇÃO:
+   Deve existir o arquivo: db_init/init.sql
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 PASSO 2: ATUALIZAR CONFIG.PHP (2 minutos)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Edite o arquivo: srv/config.php
+
+Substitua TODO o conteúdo por:
+
+<?php
+// Detectar se está rodando no Docker
+if (getenv('DB_HOST')) {
+    // Ambiente Docker/Easypanel
+    require_once __DIR__ . '/config.docker.php';
+} else {
+    // Ambiente tradicional (Hostgator)
+    $db_host = 'localhost';
+    $db_name = 'faceso56_dashlicencas';
+    $db_user = 'faceso56_dashlicencas';
+    $db_password = 'dash@123@macip';
+    
+    try {
+        $pdo = new PDO(
+            "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4",
+            $db_user,
+            $db_password,
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ]
+        );
+    } catch (PDOException $e) {
+        http_response_code(500);
+        die(json_encode([
+            'error' => 'Erro de conexão com o banco de dados',
+            'message' => $e->getMessage()
+        ]));
+    }
+}
+
+✅ VERIFICAÇÃO:
+   Arquivo srv/config.php atualizado
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 PASSO 3: CRIAR REPOSITÓRIO GIT (5 minutos)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+No terminal (Git Bash no Windows):
+
+1. Inicializar Git:
+   git init
+
+2. Adicionar arquivos:
+   git add .
+
+3. Commit:
+   git commit -m "Initial commit - Dashboard Licenças"
+
+4. Criar repositório no GitHub:
+   - Acesse: https://github.com/new
+   - Nome: dashlicencas
+   - Visibilidade: Private (recomendado)
+   - Clique em "Create repository"
+
+5. Conectar ao repositório:
+   git remote add origin https://github.com/SEU-USUARIO/dashlicencas.git
+   
+   (Substitua SEU-USUARIO pelo seu usuário do GitHub)
+
+6. Push:
+   git branch -M main
+   git push -u origin main
+
+✅ VERIFICAÇÃO:
+   Código no GitHub: https://github.com/SEU-USUARIO/dashlicencas
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 PASSO 4: CONFIGURAR EASYPANEL (10 minutos)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OPÇÃO A: Se você JÁ TEM Easypanel instalado
+────────────────────────────────────────────
+
+1. Acesse seu painel Easypanel
+2. Vá para o PASSO 5 abaixo
+
+
+OPÇÃO B: Se você NÃO TEM Easypanel ainda
+─────────────────────────────────────────
+
+Você precisa de um VPS primeiro. Recomendações:
+
+1. HETZNER (Mais barato - €4/mês):
+   https://www.hetzner.com/cloud
+   
+2. DIGITALOCEAN ($12/mês):
+   https://www.digitalocean.com/
+   
+3. VULTR ($10/mês):
+   https://www.vultr.com/
+
+Após criar o VPS:
+
+1. Conecte via SSH:
+   ssh root@SEU-IP
+
+2. Instale Easypanel:
+   curl -sSL https://get.easypanel.io | sh
+
+3. Acesse: https://SEU-IP:3000
+
+4. Configure senha de admin
+
+✅ VERIFICAÇÃO:
+   Easypanel acessível em: https://SEU-IP:3000
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 PASSO 5: CRIAR SERVIÇO NO EASYPANEL (5 minutos)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Login no Easypanel
+
+2. Clique em "Create Project"
+   Nome: dashlicencas
+
+3. Dentro do projeto, clique em "Create Service"
+
+4. Selecione "App"
+
+5. Selecione "From Git Repository"
+
+6. Preencha:
+   Repository URL: https://github.com/SEU-USUARIO/dashlicencas.git
+   Branch: main
+   
+7. Clique em "Create"
+
+✅ VERIFICAÇÃO:
+   Serviço criado no Easypanel
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 PASSO 6: CONFIGURAR VARIÁVEIS DE AMBIENTE (3 minutos)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+No serviço criado, vá em "Environment Variables" e adicione:
+
+DB_HOST=db
+DB_NAME=dashlicencas
+DB_USER=dashlicencas_user
+DB_PASSWORD=SuaSenhaSegura123!
+
+(Escolha uma senha forte para DB_PASSWORD)
+
+✅ VERIFICAÇÃO:
+   4 variáveis de ambiente configuradas
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 PASSO 7: CONFIGURAR DOMÍNIO (5 minutos)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. No serviço, vá em "Domains"
+
+2. Clique em "Add Domain"
+
+3. Digite seu domínio:
+   dashlicencas.macip.com.br
+   
+   (Ou outro subdomínio que preferir)
+
+4. Habilite "SSL" (automático com Let's Encrypt)
+
+5. No seu provedor de DNS (Registro.br, Cloudflare, etc):
+   
+   Adicione registro A:
+   Nome: dashlicencas
+   Tipo: A
+   Valor: IP-DO-SEU-VPS
+   TTL: 3600
+
+6. Aguarde propagação DNS (5-30 minutos)
+
+✅ VERIFICAÇÃO:
+   Domínio configurado e SSL habilitado
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 PASSO 8: DEPLOY! (2 minutos)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. No serviço, clique em "Deploy"
+
+2. Aguarde o build (3-5 minutos)
+
+3. Acompanhe os logs em "Logs"
+
+4. Quando aparecer "Build successful", está pronto!
+
+✅ VERIFICAÇÃO:
+   Status: Running (verde)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 PASSO 9: TESTAR (5 minutos)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Acesse: https://dashlicencas.macip.com.br
+
+2. Faça login
+
+3. Teste todas as abas:
+   [ ] Bitdefender
+   [ ] Fortigate
+   [ ] Office 365
+   [ ] Gmail
+   [ ] Inventário de Hardware
+
+4. Teste sincronização Bitdefender:
+   [ ] Clique em cliente MAGLON
+   [ ] Preencha API Key
+   [ ] Clique em "Sincronizar Este Cliente"
+   [ ] DEVE FUNCIONAR SEM TIMEOUT! ✅
+
+✅ VERIFICAÇÃO:
+   Tudo funcionando perfeitamente!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 PASSO 10: DESATIVAR HOSTGATOR (Opcional)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Após confirmar que tudo está funcionando no Easypanel:
+
+1. Faça backup final da Hostgator
+
+2. Desative o site na Hostgator (ou mantenha como backup)
+
+3. Atualize DNS para apontar para o novo servidor
+
+✅ VERIFICAÇÃO:
+   Migração completa!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎉 PARABÉNS! MIGRAÇÃO CONCLUÍDA!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Agora você tem:
+
+✅ Sistema rodando no Easypanel
+✅ API Bitdefender funcionando sem timeout
+✅ Deploy automático via Git
+✅ Melhor performance
+✅ Controle total
+✅ SSL/HTTPS automático
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📞 PRECISA DE AJUDA?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se tiver problemas em algum passo:
+
+1. Verifique os logs no Easypanel
+2. Consulte MIGRACAO_EASYPANEL.md
+3. Me avise qual passo está com problema
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⏱️ TEMPO TOTAL ESTIMADO: 40-60 minutos
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

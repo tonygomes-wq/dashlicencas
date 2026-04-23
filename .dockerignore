@@ -1,0 +1,28 @@
+# Node modules
+node_modules/
+npm-debug.log
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Documentação
+*.md
+*.txt
+!README.md
+
+# Arquivos temporários
+*.log
+*.tmp
+.DS_Store
+
+# Arquivos de desenvolvimento
+src/
+vite.config.ts
+tsconfig.json
+package.json
+package-lock.json

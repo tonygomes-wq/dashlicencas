@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # Aplicação PHP/Apache
+  app:
+    build: .
+    container_name: dashlicencas-app
+    ports:
+      - "80:80"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=dashlicencas
+      - DB_USER=dashlicencas_user
+      - DB_PASSWORD=senha_segura_aqui
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - dashlicencas-network
+    restart: unless-stopped
+
+  # Banco de dados MySQL
+  db:
+    image: mysql:8.0
+    container_name: dashlicencas-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_senha_segura
+      - MYSQL_DATABASE=dashlicencas
+      - MYSQL_USER=dashlicencas_user
+      - MYSQL_PASSWORD=senha_segura_aqui
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db_init:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - dashlicencas-network
+    restart: unless-stopped
+
+networks:
+  dashlicencas-network:
+    driver: bridge
+
+volumes:
+  db-data:

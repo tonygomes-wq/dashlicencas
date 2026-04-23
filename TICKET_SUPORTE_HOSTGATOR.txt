@@ -1,0 +1,158 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║              TICKET PARA SUPORTE HOSTGATOR - LIBERAÇÃO FIREWALL              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📋 COPIE E COLE ESTE TEXTO NO TICKET DO SUPORTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Assunto: Liberação de Firewall para Conexão HTTPS com API Bitdefender
+
+Mensagem:
+
+Olá,
+
+Preciso que seja liberado no firewall do servidor a conexão HTTPS de saída 
+para a API do Bitdefender GravityZone.
+
+DETALHES DA SOLICITAÇÃO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Domínio: macip.com.br
+Conta: faceso56
+
+Destino a ser liberado:
+  • Domínio: cloud.gravityzone.bitdefender.com
+  • IP: 35.212.58.191
+  • Porta: 443 (HTTPS)
+  • Protocolo: TCP
+
+Motivo:
+Meu sistema precisa se conectar à API do Bitdefender GravityZone para 
+sincronizar informações de licenças automaticamente via cURL/PHP.
+
+Erro atual:
+"Connection timed out after 10001 milliseconds" ao tentar conectar em 
+https://cloud.gravityzone.bitdefender.com/api/v1.0/jsonrpc/licensing
+
+INFORMAÇÕES TÉCNICAS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Teste realizado:
+  • cURL versão: 7.76.1
+  • OpenSSL: 3.5.1
+  • Tentativa de conexão: 35.212.58.191:443
+  • Resultado: Connection timeout
+
+O servidor consegue resolver o DNS mas não consegue estabelecer conexão TCP 
+na porta 443, indicando bloqueio de firewall.
+
+Solicito a liberação urgente para que o sistema possa funcionar corretamente.
+
+Agradeço a atenção!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📞 COMO ABRIR O TICKET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Acesse o portal do cliente Hostgator
+2. Vá em "Suporte" ou "Tickets"
+3. Clique em "Abrir Novo Ticket"
+4. Categoria: "Técnico" ou "Servidor"
+5. Prioridade: "Alta" (se disponível)
+6. Cole o texto acima
+7. Envie o ticket
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⏱️ TEMPO DE RESPOSTA ESPERADO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• Hospedagem compartilhada: 24-48 horas
+• VPS/Dedicado: 4-12 horas
+• Com prioridade alta: Mais rápido
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 INFORMAÇÕES ADICIONAIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se o suporte perguntar mais detalhes, você pode informar:
+
+1. É uma conexão HTTPS legítima para API oficial do Bitdefender
+2. O Bitdefender GravityZone é uma solução de segurança empresarial
+3. A conexão é necessária para sincronização de dados de licenças
+4. Não é spam, não é scraping, é uso legítimo de API
+5. O IP 35.212.58.191 pertence ao Google Cloud (onde o Bitdefender hospeda)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔄 ALTERNATIVAS ENQUANTO AGUARDA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Enquanto aguarda a liberação do firewall, você pode:
+
+OPÇÃO 1: Atualização Manual
+────────────────────────────
+  • Continuar atualizando os dados manualmente
+  • Os campos de API ficam salvos para uso futuro
+  • Quando o firewall for liberado, a sincronização funcionará
+
+OPÇÃO 2: Usar Proxy/VPN (Avançado)
+───────────────────────────────────
+  • Configurar um proxy externo
+  • Não recomendado para produção
+  • Apenas se for urgente
+
+OPÇÃO 3: Migrar para VPS (Longo Prazo)
+───────────────────────────────────────
+  • VPS geralmente tem menos restrições de firewall
+  • Mais controle sobre configurações
+  • Custo maior
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ APÓS A LIBERAÇÃO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Quando o suporte liberar o firewall:
+
+1. Acesse o site
+2. Clique no cliente MAGLON
+3. Clique em "Sincronizar Este Cliente"
+4. Os dados devem ser atualizados automaticamente! 🚀
+
+Se ainda não funcionar, me avise e vamos investigar mais!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ ] Copiar o texto do ticket acima
+[ ] Acessar portal do cliente Hostgator
+[ ] Abrir novo ticket de suporte
+[ ] Colar o texto
+[ ] Enviar ticket
+[ ] Aguardar resposta (24-48h)
+[ ] Testar sincronização após liberação
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 RESUMO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEMA: Firewall da Hostgator bloqueando conexões HTTPS para Bitdefender
+SOLUÇÃO: Abrir ticket solicitando liberação
+TEMPO: 24-48 horas
+RESULTADO: Sincronização automática funcionando! 🚀
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

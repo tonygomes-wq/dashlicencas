@@ -1,0 +1,198 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    CORREÇÃO URGENTE - CAMINHOS INCORRETOS                   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🔴 PROBLEMA IDENTIFICADO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+O index.html no servidor está com caminhos ABSOLUTOS quando deveria ter RELATIVOS:
+
+❌ ERRADO (atual no servidor):
+   src="/assets/index-f981d49f.js"
+   href="/assets/index-bda104fb.css"
+
+✅ CORRETO (deve ser):
+   src="./assets/index-f981d49f.js"
+   href="./assets/index-bda104fb.css"
+
+Por que isso importa?
+  • /assets/ → Procura na RAIZ do domínio (macip.com.br/assets/)
+  • ./assets/ → Procura RELATIVO à pasta atual (macip.com.br/dashlicencas/assets/)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ SOLUÇÃO IMEDIATA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OPÇÃO 1: Substituir o index.html (RECOMENDADO)
+───────────────────────────────────────────────
+
+1. Acesse cPanel → File Manager
+2. Vá para: public_html/dashlicencas/
+3. DELETE o arquivo: index.html
+4. Faça upload do arquivo: index_FINAL_UPLOAD.html
+5. Renomeie para: index.html
+
+
+OPÇÃO 2: Editar Manualmente (Mais Rápido)
+──────────────────────────────────────────
+
+1. Acesse cPanel → File Manager
+2. Vá para: public_html/dashlicencas/
+3. Clique com botão direito em: index.html
+4. Selecione "Edit" ou "Code Editor"
+5. Encontre a linha 26:
+   
+   <script type="module" crossorigin src="/assets/index-f981d49f.js"></script>
+
+6. Mude para:
+   
+   <script type="module" crossorigin src="./assets/index-f981d49f.js"></script>
+   
+   (Adicione o PONTO antes da barra)
+
+7. Encontre a linha 28:
+   
+   <link rel="stylesheet" href="/assets/index-bda104fb.css">
+
+8. Mude para:
+   
+   <link rel="stylesheet" crossorigin href="./assets/index-bda104fb.css">
+   
+   (Adicione o PONTO antes da barra E adicione crossorigin)
+
+9. Salve o arquivo (Save Changes)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 CONTEÚDO CORRETO COMPLETO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Copie e cole este conteúdo COMPLETO no index.html:
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Bitdefender - Fortigate</title>
+    <script>
+      // Script para definir o tema inicial e evitar FOUC (Flash of Unstyled Content)
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+    </script>
+    <style>
+      @keyframes marquee {
+        0% { transform: translateX(0%); }
+        100% { transform: translateX(-100%); }
+      }
+      .animate-marquee {
+        animation: marquee 80s linear infinite;
+        display: inline-block;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-f981d49f.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-bda104fb.css">
+  </head>
+  <body class="bg-gray-100 dark:bg-gray-900">
+    <div id="root"></div>
+  </body>
+</html>
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧪 TESTE APÓS CORREÇÃO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Limpe o cache COMPLETAMENTE:
+   • Pressione Ctrl+Shift+Delete
+   • Marque TUDO
+   • Período: "Todo o período"
+   • Limpar dados
+
+2. Feche TODOS os navegadores
+
+3. Abra em modo anônimo:
+   • Pressione Ctrl+Shift+N (Chrome)
+   • Acesse: https://macip.com.br/dashlicencas/
+
+4. Pressione F12 (DevTools)
+
+5. Vá na aba "Network"
+
+6. Recarregue (F5)
+
+7. Procure por: index-f981d49f.js
+
+8. Verifique:
+   ✅ Status: 200 (não 404!)
+   ✅ Type: javascript (não html!)
+   ✅ Size: ~987 KB
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 VERIFICAÇÃO ADICIONAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Teste se os arquivos existem acessando diretamente:
+
+URL 1: https://macip.com.br/dashlicencas/assets/index-f981d49f.js
+  → Deve mostrar código JavaScript
+
+URL 2: https://macip.com.br/dashlicencas/assets/index-bda104fb.css
+  → Deve mostrar código CSS
+
+Se aparecer erro 404 ou página HTML:
+  → Os arquivos NÃO foram enviados para o servidor
+  → Faça upload dos arquivos da pasta assets/ local
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📦 CHECKLIST FINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Estrutura no servidor deve ser:
+
+public_html/
+└── dashlicencas/
+    ├── index.html (com caminhos ./assets/)
+    ├── app_bitdefender_sync_client.php
+    ├── assets/
+    │   ├── index-f981d49f.js (987 KB)
+    │   └── index-bda104fb.css (56 KB)
+    └── srv/
+        └── config.php
+
+Verificações:
+  [ ] index.html tem: src="./assets/index-f981d49f.js"
+  [ ] index.html tem: href="./assets/index-bda104fb.css"
+  [ ] Arquivo index-f981d49f.js existe em assets/
+  [ ] Arquivo index-bda104fb.css existe em assets/
+  [ ] Permissões 644 em todos os arquivos
+  [ ] Cache limpo completamente
+  [ ] Testado em modo anônimo
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ RESUMO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+O problema é APENAS o caminho dos arquivos no index.html!
+
+Mude de:  /assets/  (absoluto)
+Para:     ./assets/ (relativo)
+
+Isso vai resolver o erro de MIME type e o site vai carregar! 🚀
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

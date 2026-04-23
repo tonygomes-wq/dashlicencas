@@ -1,0 +1,162 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    CORREÇÃO - TELA BRANCA (URGENTE!)                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🔴 PROBLEMA: Tela branca com erros de MIME type no console
+
+🔧 CAUSA: Caminhos dos arquivos JavaScript/CSS estão incorretos no index.html
+
+✅ SOLUÇÃO: Atualizar o index.html com caminhos relativos
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📝 PASSO A PASSO PARA CORRIGIR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OPÇÃO 1: Substituir o arquivo index.html completo
+──────────────────────────────────────────────────
+
+1. Acesse cPanel → File Manager
+2. Vá para a raiz do site (public_html)
+3. DELETE o arquivo index.html atual
+4. UPLOAD do novo index.html (deste projeto)
+5. Pressione Ctrl+F5 no navegador
+
+
+OPÇÃO 2: Editar diretamente no cPanel
+──────────────────────────────────────
+
+1. Acesse cPanel → File Manager
+2. Vá para a raiz do site (public_html)
+3. Clique com botão direito em index.html
+4. Selecione "Edit" ou "Code Editor"
+5. Procure estas linhas (próximo ao final do <head>):
+
+   ANTES (ERRADO):
+   ───────────────
+   <script type="module" crossorigin src="/assets/index-6a7b1f8d.js"></script>
+   <link rel="stylesheet" href="/assets/index-9488a2cc.css">
+
+   DEPOIS (CORRETO):
+   ─────────────────
+   <script type="module" crossorigin src="./assets/index-6a7b1f8d.js"></script>
+   <link rel="stylesheet" crossorigin href="./assets/index-9488a2cc.css">
+
+6. Salve o arquivo (Save Changes)
+7. Pressione Ctrl+F5 no navegador
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 O QUE MUDOU?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Mudança 1: JavaScript
+  /assets/index-6a7b1f8d.js  →  ./assets/index-6a7b1f8d.js
+  (removeu / inicial, adicionou ./)
+
+Mudança 2: CSS
+  /assets/index-9488a2cc.css  →  ./assets/index-9488a2cc.css
+  (removeu / inicial, adicionou ./)
+
+Mudança 3: Atributo crossorigin no CSS
+  Adicionado: crossorigin
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ VERIFICAR SE FUNCIONOU
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Pressione Ctrl+F5 (limpar cache)
+2. A tela de login deve aparecer
+3. Pressione F12 (abrir console)
+4. Não deve haver erros vermelhos
+5. Faça login e teste o sistema
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🆘 SE AINDA NÃO FUNCIONAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Verifique:
+
+1. Arquivos estão no lugar certo?
+   ✓ public_html/index.html
+   ✓ public_html/assets/index-6a7b1f8d.js
+   ✓ public_html/assets/index-9488a2cc.css
+
+2. Permissões corretas?
+   ✓ index.html → 644
+   ✓ index-6a7b1f8d.js → 644
+   ✓ index-9488a2cc.css → 644
+
+3. Arquivos foram enviados completamente?
+   ✓ Verifique o tamanho dos arquivos
+   ✓ index-6a7b1f8d.js deve ter ~1 MB
+   ✓ index-9488a2cc.css deve ter ~54 KB
+
+4. Cache do navegador foi limpo?
+   ✓ Pressione Ctrl+F5
+   ✓ Ou Ctrl+Shift+Delete → Limpar cache
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 ARQUIVO index.html CORRETO COMPLETO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se preferir, copie e cole este conteúdo completo no index.html:
+
+────────────────────────────────────────────────────────────────────────────────
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Bitdefender - Fortigate</title>
+    <script>
+      // Script para definir o tema inicial e evitar FOUC (Flash of Unstyled Content)
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+    </script>
+    <style>
+      @keyframes marquee {
+        0% { transform: translateX(0%); }
+        100% { transform: translateX(-100%); }
+      }
+      .animate-marquee {
+        animation: marquee 80s linear infinite;
+        display: inline-block;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-6a7b1f8d.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-9488a2cc.css">
+  </head>
+  <body class="bg-gray-100 dark:bg-gray-900">
+    <div id="root"></div>
+  </body>
+</html>
+────────────────────────────────────────────────────────────────────────────────
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ CORREÇÃO RÁPIDA (1 MINUTO)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Abra o File Manager no cPanel
+2. Edite o index.html
+3. Mude "/" para "./" nos caminhos dos assets
+4. Salve
+5. Ctrl+F5 no navegador
+
+PRONTO! ✅
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

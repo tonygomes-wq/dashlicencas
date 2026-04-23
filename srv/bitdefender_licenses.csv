@@ -1,0 +1,46 @@
+id,user_id,company,contact_person,email,expiration_date,total_licenses,license_key,created_at,renewal_status
+5061,850f87df-ee07-44ab-b687-6eda8b52a2b9,ACIL,MARCELO,lbarros@acil.com.br,,0,Q3VY4T4 - C2E7ZJI,2025-11-04 22:13:34.082042+00,Renovado
+5062,850f87df-ee07-44ab-b687-6eda8b52a2b9,AFIPLAN,MARCELO,marcelo@afiplan.com.br,2026-06-14,22," P6UQAYBR76MB- Usuários: 10 - 12 MESES",2025-11-04 22:13:34.082042+00,Renovado
+5063,850f87df-ee07-44ab-b687-6eda8b52a2b9,AGROPLAY,VALDIR,antivirusboiadeira@gmail.com,2027-05-25,60,YQY2AB8SQ89W - NQ2ZD37485KQ,2025-11-04 22:13:34.082042+00,Renovado
+5064,850f87df-ee07-44ab-b687-6eda8b52a2b9,AMARAL VASCONCELLOS,GISELE,webmaster@pedrialivasconcellos.com.br,2026-09-28,150,Licença: YX55KZF- Usuários: 150 - Meses: 24 (ATIVA) Licença: L0CB4HK- Usuários: 150 - Meses: 24,2025-11-04 22:13:34.082042+00,Renovado
+5065,850f87df-ee07-44ab-b687-6eda8b52a2b9,CARAGA PESADA,ISABELA,antiviruscargapesada@gmail.com,2027-11-15,20,F2XZCPV43W6P,2025-11-04 22:13:34.082042+00,Renovado
+5066,850f87df-ee07-44ab-b687-6eda8b52a2b9,COCRIAGRO,TATIANA,antiviruscocriagro@gmail.com,2025-07-18,5,Licença:  WQLJTZRHLD29 - 12 MESES (EXPIRADA) - Usuário: 5,2025-11-04 22:13:34.082042+00,Pendente
+5067,850f87df-ee07-44ab-b687-6eda8b52a2b9,COMPERFORT ART. MOVELEIROS,KAMILA,compenfort@sercomtel.com.br,2026-08-18,31,GHMHMXZ - 31 CHAVES - MESES 36(ATIVO ) - ZSVLYJ  Usuário:  31 12 meses(usada),2025-11-04 22:13:34.082042+00,Renovado
+5068,850f87df-ee07-44ab-b687-6eda8b52a2b9,CONSULTOMAQ,RODRIGO,antivirusconsultomaq@gmail.com,2025-10-13,180,FPC6DXVRBWGJ,2025-11-04 22:13:34.082042+00,Pendente
+5069,850f87df-ee07-44ab-b687-6eda8b52a2b9,CRIART,Não informado,antiviruscriart@gmail.com,2020-11-28,7,U5TBF0D,2025-11-04 22:13:34.082042+00,Pendente
+5070,850f87df-ee07-44ab-b687-6eda8b52a2b9,DAMIÃO CONTABILIDADE,DANIEL,damiaocontabilidade@gmail.com,2021-12-16,14,WDUM2EU- Usuários: 14 - Meses: 12 (ATIVO) - CCS03N7- Usuários: 14 - Meses: 36,2025-11-04 22:13:34.082042+00,Pendente
+5071,850f87df-ee07-44ab-b687-6eda8b52a2b9,DESENVOL SISTEMAS,LEANDRO,leandro@desenvol.com.br,2022-12-12,25,GEAELT2 (chave de 36 meses) - (ATIVO),2025-11-04 22:13:34.082042+00,Pendente
+5072,850f87df-ee07-44ab-b687-6eda8b52a2b9,DIALLI DISTRIBUIDORA,ADRIANO,infra.ti@dialli.com.br,2027-04-27,105,42FHLVQZKJPD CAHVE 12 MESES  - 3SZSMUGELM6Q CHAVE 36 MESES ATIVA,2025-11-04 22:13:34.082042+00,Renovado
+5073,850f87df-ee07-44ab-b687-6eda8b52a2b9,DISMAFE FERRAMENTAS,THAIS,antivirusdismafe@gmail.com,2025-11-24,0," ativo   - BJF6RHM ( Chave 36 meses )",2025-11-04 22:13:34.082042+00,Pendente
+5074,850f87df-ee07-44ab-b687-6eda8b52a2b9,EAGLEFLEX,BRUNO,amarildo@interseals.com.br,2028-11-06,35,THRKNNKM5X3F,2025-11-04 22:13:34.082042+00,Renovado
+5076,850f87df-ee07-44ab-b687-6eda8b52a2b9,FOCUS INTELIGENCIA,MARCOS,marco@focusinteligencia.com.br,2028-01-20,8,FWR8T9QRJS6D,2025-11-04 22:13:34.082042+00,Renovado
+5077,850f87df-ee07-44ab-b687-6eda8b52a2b9,GNB BATERIAS,DINO,licenciamento@gnbbaterias.com.br,2025-08-17,55,0ZHQ7WU - Usuários: 55 - Meses: 36 (ATIVO),2025-11-04 22:13:34.082042+00,Pendente
+5078,850f87df-ee07-44ab-b687-6eda8b52a2b9,GRUPO HP,JUNIOR,antivirusgrupohp@gmail.com,2027-04-20,24,ZRZM6KTVVC3R,2025-11-04 22:13:34.082042+00,Renovado
+5079,850f87df-ee07-44ab-b687-6eda8b52a2b9,HIDROMAR,MARGARETH,margareth@hidromar.com.br,2026-10-07,51,"CDJ9U6EN5DZK ( chave 12 meses ) ATIVO  - HV7E9T3PG382 (chave de 36 meses) ",2025-11-04 22:13:34.082042+00,Renovado
+5080,850f87df-ee07-44ab-b687-6eda8b52a2b9,SUPERMERCADO SANTAREM,ELEN,antivirussantarem@gmail.com,2027-04-24,102,"4N6VEHGXZHC6 CHAVE 12 MESES ATIVA - MKBNQ3CUNB9L CHAVE 36 MESES
+",2025-11-04 22:13:34.082042+00,Renovado
+5081,850f87df-ee07-44ab-b687-6eda8b52a2b9,HYDRONLUBZ,JORGE,jorge@hydronlubz.com.br,2027-05-10,55,L4GRRNGDA83C- Usuários: 55 - Meses: 12 - F5ELJF54SNF8 - Usuarios: 55 - Meses: 36 ( ativo),2025-11-04 22:13:34.082042+00,Renovado
+5082,850f87df-ee07-44ab-b687-6eda8b52a2b9,IMOBILIARIA NATAL,VILSON,"                  imonatal@sercomtel.com.br",2024-10-31,0,RGA34KZ - USUARIOS 15 - ATIVO ( UTILIZADA A SEGUNDA CHAVE ),2025-11-04 22:13:34.082042+00,Pendente
+5083,850f87df-ee07-44ab-b687-6eda8b52a2b9,LABORSOLO,LEANDRO,ti@laborsolo.com.br,2027-04-21,75,"Y4HDDXE4BRH5 12 meses (ativo) - Usuarios: 65 - Meses:36 - 9F8KZHA7NN7P  ",2025-11-04 22:13:34.082042+00,Renovado
+5085,850f87df-ee07-44ab-b687-6eda8b52a2b9,MAC-IP TECNOLOGIA,"RONALDO COUZA ",bitdefender@macip.com.br,2026-11-15,25,7NTNLLRWJBR9 - 12 Meses,2025-11-04 22:13:34.082042+00,Renovado
+5086,850f87df-ee07-44ab-b687-6eda8b52a2b9,MACRIPAR,CRISTIANE,financeiro@macripar.com.br,2026-01-11,20,MQYE6W3MRTNW,2025-11-04 22:13:34.082042+00,Renovado
+5087,850f87df-ee07-44ab-b687-6eda8b52a2b9,MAGLON MOTOSSERRAS,PAULA,maglonmotoserras@sercomtel.com.br,2025-05-05,8,BNDCC4S - Usuários: 8 - Meses: 36 - (ATIVO),2025-11-04 22:13:34.082042+00,Pendente
+5088,850f87df-ee07-44ab-b687-6eda8b52a2b9,MAPA CONSULTORIA,FILIPE,antivirusmapa@gmail.com,2028-10-12,12,K76YBWD8WBNY 36 MESES,2025-11-04 22:13:34.082042+00,Renovado
+5089,850f87df-ee07-44ab-b687-6eda8b52a2b9,MEGA JEANS,RAFAEL,antivirusmegajeans@gmail.com,2023-10-20,50,"LNLEXM2 -  Usuários: 10 - Meses: 36 EXPIRADO) - Expirou
+STG66LAF3TYB - Usuário: 50",2025-11-04 22:13:34.082042+00,Pendente
+5090,850f87df-ee07-44ab-b687-6eda8b52a2b9,MOTTA E FARIAS ADVOCACIA,Não informado,antivirusalifrancy@gmail.com,2025-06-20,50,M8XDB8S8BB9U,2025-11-04 22:13:34.082042+00,Pendente
+5091,850f87df-ee07-44ab-b687-6eda8b52a2b9,NUTRIBRAS,VANIA,nutribras@nutribras.com.br,2027-08-06,25,44WDJXCGZYBJ- Usuários: 25 - Meses: 24 ( EXPIRADO ) - 6PEWSKPQULLH- Usuários: 25 - Meses: 24(ATIVO),2025-11-04 22:13:34.082042+00,Renovado
+5092,850f87df-ee07-44ab-b687-6eda8b52a2b9,NUTRIDANI,RAFAEL,rafael@nutridani.com.br,2026-10-04,25,RIPEB3L- Usuários: 25 - Meses: 12 - CHAVE 36 MESES 2SKDIWQ ( Ativo ),2025-11-04 22:13:34.082042+00,Renovado
+5093,850f87df-ee07-44ab-b687-6eda8b52a2b9,PEGORARO,GUILHERME,antiviruspegoraro@gmail.com,2028-11-16,51,JZ7DLSJP3UQ4 - 36 MESES,2025-11-04 22:13:34.082042+00,Renovado
+5094,850f87df-ee07-44ab-b687-6eda8b52a2b9,POZZER TRANSPORTES,MARCIO,marcio@pozzertransportes.com.br,2026-04-16,20,"L4CMSC5 (chave de 12)  -  IVMLBP4 (Chave de 36 meses ativada) ",2025-11-04 22:13:34.082042+00,Renovado
+5096,850f87df-ee07-44ab-b687-6eda8b52a2b9,REBOUÇAS,ALISSON,antivirusreboucas@gmail.com,2026-10-24,30,B4HW5HB,2025-11-04 22:13:34.082042+00,Renovado
+5097,850f87df-ee07-44ab-b687-6eda8b52a2b9,ROMANELLI,FELIPE,antivirusromanelli@gmail.com,,0,Não informado,2025-11-04 22:13:34.082042+00,Renovado
+5098,850f87df-ee07-44ab-b687-6eda8b52a2b9,ROMANINI,JENIFER,contato@romanini.com.br,2026-08-20,20,6TLXYWN (chave de 12 meses) - DZFA365 ( Chave de 36 meses ) (EXPIRADO)  IVMLBP4(xx MESES) - Usuários: 20,2025-11-04 22:13:34.082042+00,Renovado
+5099,850f87df-ee07-44ab-b687-6eda8b52a2b9,ROYAL PLAZA SHOPPING,MARTA,adm@royalplazashopping.com.br,2026-02-25,14,5CEQ4GY ( Chave de 36 meses ) (ATIVO),2025-11-04 22:13:34.082042+00,Renovado
+5100,850f87df-ee07-44ab-b687-6eda8b52a2b9,SCHIAVON,ISABELA,isabela@gruposm.ind.br,2026-08-13,45,MNBCS50- Usuários: 45 - Meses: 12  - DUWZBXD - Usuarios: 45 -  Meses:36 ( Ativo ),2025-11-04 22:13:34.082042+00,Renovado
+5101,850f87df-ee07-44ab-b687-6eda8b52a2b9,SERRA CONTABILIDADE,MARCOS,marcos@serracontabil.com.br,2025-01-22,7,QFD7DLXLTK9C (chave de 12 meses ) - (EXPIRADO),2025-11-04 22:13:34.082042+00,Pendente
+5102,850f87df-ee07-44ab-b687-6eda8b52a2b9,SINDICATO DAS INDUSTRIAS METALURGICAS,ANDREIA,atendimento@sindimetalnortepr.com.br,2028-08-23,0,Chave: 2HXYCTS37MEV(12 meses)   Chave: BQUE4VMKZJPX ( 36 meses) (ATIVO),2025-11-04 22:13:34.082042+00,Renovado
+5103,850f87df-ee07-44ab-b687-6eda8b52a2b9,SISTEMICA\CONTINUA LOGISTICA,JULIETE,juliete.evaristo@continualogistica.com.br,2023-04-19,25,75G6A6C- Usuários: 25 - Meses: 36 - (ATIVO),2025-11-04 22:13:34.082042+00,Pendente
+5104,850f87df-ee07-44ab-b687-6eda8b52a2b9,SOCIEDADE RUAL DO PARANA,SUZA,superintendencia@srp.com.br,2028-10-08,20,9YPW8VR7Q7T2,2025-11-04 22:13:34.082042+00,Renovado
+5106,850f87df-ee07-44ab-b687-6eda8b52a2b9,TR DISTRIBUIDORA EPIS,DAILTON,antivirustrequipamentos@gmail.com,2026-08-23,35,98NDN37NFYQR,2025-11-04 22:13:34.082042+00,Renovado
+5108,850f87df-ee07-44ab-b687-6eda8b52a2b9,VIA GRAFIT,DOUGLAS,alexandre@viagrafit.com.br,2025-06-26,44,Licença:- Usuários: 44 - (EXPIROU) - 36MESES ( 8GEXGQ3MHQB5 ),2025-11-04 22:13:34.082042+00,Pendente

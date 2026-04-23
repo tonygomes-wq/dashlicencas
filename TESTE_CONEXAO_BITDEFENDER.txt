@@ -1,0 +1,140 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                  TESTE DE CONEXÃO COM API BITDEFENDER                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🎯 OBJETIVO: Descobrir por que o servidor não consegue se conectar ao Bitdefender
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 1: Upload do Arquivo de Teste
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Acesse cPanel → File Manager
+2. Vá para: public_html/dashlicencas/
+3. Faça upload do arquivo: test_bitdefender_connection.php
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 2: Executar o Teste
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Acesse o site e faça login
+2. Pressione F12 (abrir console)
+3. Cole este código (SUBSTITUA A API KEY REAL):
+
+fetch('https://macip.com.br/dashlicencas/test_bitdefender_connection.php', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ 
+    apiKey: 'COLE_AQUI_A_API_KEY_REAL_DA_MAGLON',
+    accessUrl: 'https://cloud.gravityzone.bitdefender.com/api'
+  })
+})
+.then(r => r.json())
+.then(data => {
+  console.log('=== RESULTADO DO TESTE ===');
+  console.log(JSON.stringify(data, null, 2));
+})
+.catch(err => console.error('Erro:', err));
+
+4. Pressione Enter
+5. Aguarde a resposta (pode demorar até 15 segundos)
+6. Copie TODA a resposta e me envie
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 O QUE O TESTE VAI VERIFICAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Se o cURL está disponível no servidor
+2. Versão do cURL
+3. Se o servidor consegue fazer conexão básica com o Bitdefender
+4. Se a API Key está funcionando
+5. Tempo de conexão
+6. Logs detalhados de debug
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ POSSÍVEIS PROBLEMAS E SOLUÇÕES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEMA 1: Firewall da Hostgator
+──────────────────────────────────
+Se o teste mostrar timeout novamente, o firewall pode estar bloqueando.
+
+SOLUÇÃO:
+  • Abrir ticket no suporte da Hostgator
+  • Solicitar liberação de conexões HTTPS para:
+    - cloud.gravityzone.bitdefender.com
+    - Porta 443 (HTTPS)
+
+
+PROBLEMA 2: API Key Inválida
+─────────────────────────────
+Se o teste mostrar erro 401 ou 403.
+
+SOLUÇÃO:
+  • Verificar se a API Key está correta
+  • Verificar se a API Key não expirou
+  • Gerar nova API Key no painel Bitdefender
+
+
+PROBLEMA 3: URL Incorreta
+──────────────────────────
+Se o teste mostrar erro 404.
+
+SOLUÇÃO:
+  • Verificar a URL correta no painel Bitdefender
+  • Pode ser diferente para cada conta:
+    - https://cloud.gravityzone.bitdefender.com/api
+    - https://cloudgz.gravityzone.bitdefender.com/api
+    - Ou outra variação
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 INFORMAÇÕES NECESSÁRIAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Para executar o teste, você precisa:
+
+1. API Key da MAGLON (a que você preencheu no campo)
+2. Access URL (provavelmente: https://cloud.gravityzone.bitdefender.com/api)
+
+Você pode copiar esses dados diretamente do formulário que você preencheu!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PRÓXIMOS PASSOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Após receber o resultado do teste:
+
+1. Vou analisar os logs
+2. Vou identificar o problema exato
+3. Vou fornecer a solução específica
+4. Se for firewall, vou te dar o texto para enviar ao suporte
+5. Se for API Key, vou te orientar como gerar nova
+6. Se for URL, vou te ajudar a encontrar a correta
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 DICA IMPORTANTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+O erro "Connection timed out" geralmente indica:
+
+1. Firewall bloqueando (mais comum em hospedagem compartilhada)
+2. Servidor Bitdefender não acessível
+3. URL incorreta
+
+O teste vai nos dizer exatamente qual é o problema! 🔍
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

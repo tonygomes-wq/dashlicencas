@@ -1,0 +1,220 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                  SOLUÇÃO TELA BRANCA - DIAGNÓSTICO URGENTE                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🔴 ERRO: Failed to load module script (MIME type text/html)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 CAUSA PROVÁVEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+O servidor não está encontrando os arquivos JavaScript/CSS e está retornando
+uma página HTML de erro (404) em vez do arquivo JavaScript.
+
+Isso significa que:
+  ❌ Os arquivos NÃO foram enviados para a pasta assets/
+  ❌ OU os arquivos estão com nomes errados
+  ❌ OU estão em pasta errada
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ SOLUÇÃO PASSO A PASSO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PASSO 1: Verificar se os arquivos existem na Hostgator
+───────────────────────────────────────────────────────
+
+1. Acesse cPanel → File Manager
+2. Vá para public_html/assets/
+3. Procure por estes arquivos:
+   
+   ✓ index-f981d49f.js  (deve ter ~987 KB)
+   ✓ index-bda104fb.css (deve ter ~56 KB)
+
+4. Se NÃO existirem → Vá para PASSO 2
+5. Se existirem → Vá para PASSO 3
+
+
+PASSO 2: Upload dos arquivos corretos
+──────────────────────────────────────
+
+No cPanel File Manager:
+
+1. Vá para public_html/assets/
+
+2. Faça upload destes arquivos DESTA PASTA LOCAL:
+   
+   📁 Pasta local do projeto:
+   └── assets/
+       ├── index-f981d49f.js   ← Este arquivo!
+       └── index-bda104fb.css  ← Este arquivo!
+
+3. Após upload, verifique o tamanho:
+   - index-f981d49f.js deve ter ~987 KB (1.010.000 bytes)
+   - index-bda104fb.css deve ter ~56 KB (57.000 bytes)
+
+4. Se os tamanhos estiverem muito diferentes, o upload falhou
+   - Tente novamente
+   - Ou use FTP em vez do File Manager
+
+
+PASSO 3: Verificar permissões dos arquivos
+───────────────────────────────────────────
+
+No cPanel File Manager:
+
+1. Clique com botão direito em: index-f981d49f.js
+2. Selecione "Permissions" ou "Change Permissions"
+3. Configure para: 644
+   - Owner: Read + Write
+   - Group: Read
+   - Public: Read
+
+4. Repita para: index-bda104fb.css
+
+
+PASSO 4: Verificar o index.html
+────────────────────────────────
+
+No cPanel File Manager:
+
+1. Abra o arquivo: public_html/index.html
+2. Verifique se tem estas linhas EXATAS:
+
+   <script type="module" crossorigin src="./assets/index-f981d49f.js"></script>
+   <link rel="stylesheet" crossorigin href="./assets/index-bda104fb.css">
+
+3. Se estiver diferente, edite e corrija
+4. Salve o arquivo
+
+
+PASSO 5: Limpar cache e testar
+───────────────────────────────
+
+IMPORTANTE: Cache é o maior problema!
+
+1. Feche TODOS os navegadores
+2. Abra um navegador NOVO
+3. Pressione Ctrl+Shift+N (modo anônimo)
+4. Acesse o site
+5. Pressione F12
+6. Vá na aba "Network"
+7. Recarregue (F5)
+8. Procure por: index-f981d49f.js
+9. Verifique:
+   - Status: deve ser 200 (não 404!)
+   - Type: deve ser "javascript" (não "html"!)
+   - Size: deve ser ~987 KB
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🆘 SE AINDA NÃO FUNCIONAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OPÇÃO A: Usar arquivos antigos que funcionavam
+───────────────────────────────────────────────
+
+Se você tem backup dos arquivos que funcionavam antes:
+
+1. Restaure o index.html antigo
+2. Restaure os arquivos assets/ antigos
+3. O sistema volta a funcionar (mas sem a API individual)
+
+
+OPÇÃO B: Verificar estrutura de pastas
+───────────────────────────────────────
+
+A estrutura deve ser EXATAMENTE assim:
+
+public_html/
+├── index.html
+├── app_bitdefender_sync_client.php
+├── assets/
+│   ├── index-f981d49f.js
+│   ├── index-bda104fb.css
+│   └── logo-e02fd245.png
+└── srv/
+    └── config.php
+
+Se a pasta assets/ não existir:
+1. Crie a pasta "assets" dentro de public_html
+2. Faça upload dos arquivos JS e CSS para dentro dela
+
+
+OPÇÃO C: Testar URL direta
+───────────────────────────
+
+No navegador, tente acessar diretamente:
+
+https://macip.com.br/dashlicencas/assets/index-f981d49f.js
+
+Se aparecer:
+  • Código JavaScript → Arquivo existe! ✅
+  • Erro 404 → Arquivo NÃO existe! ❌
+  • Página HTML → Arquivo NÃO existe! ❌
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 CHECKLIST DE VERIFICAÇÃO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Arquivos na Hostgator:
+  [ ] public_html/index.html existe
+  [ ] public_html/assets/ pasta existe
+  [ ] public_html/assets/index-f981d49f.js existe (~987 KB)
+  [ ] public_html/assets/index-bda104fb.css existe (~56 KB)
+
+Conteúdo do index.html:
+  [ ] Tem: src="./assets/index-f981d49f.js"
+  [ ] Tem: href="./assets/index-bda104fb.css"
+  [ ] NÃO tem: src="/assets/..." (barra inicial)
+
+Permissões:
+  [ ] index.html → 644
+  [ ] index-f981d49f.js → 644
+  [ ] index-bda104fb.css → 644
+
+Teste:
+  [ ] Cache limpo completamente
+  [ ] Testado em modo anônimo
+  [ ] URL direta do JS funciona
+  [ ] Network mostra status 200
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 DICA IMPORTANTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+O erro "MIME type text/html" significa que o servidor está retornando uma
+página HTML (provavelmente erro 404) em vez do arquivo JavaScript.
+
+Isso SÓ acontece quando:
+  1. O arquivo não existe no servidor
+  2. O caminho está errado
+  3. As permissões estão bloqueando o acesso
+
+A solução é SEMPRE garantir que os arquivos estejam no lugar certo!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📞 PRÓXIMOS PASSOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Siga o PASSO 1 acima
+2. Verifique se os arquivos existem
+3. Se não existirem, faça upload (PASSO 2)
+4. Limpe o cache completamente
+5. Teste em modo anônimo
+6. Me envie um print mostrando:
+   - A pasta assets/ no File Manager
+   - O tamanho dos arquivos
+   - O console do navegador (F12)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

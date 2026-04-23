@@ -1,0 +1,15 @@
+id,user_id,client_name,contact_email,created_at
+10ffa0a8-adbb-4bb9-b322-ca9ef61514cc,65c0a7ac-a973-4891-838f-acee54c99e03,Serra Contábil,macip@serracontabil.com.br,2025-12-12 13:14:46.297918+00
+16ca09fe-d9aa-41c9-b98e-f9e0d47252a7,65c0a7ac-a973-4891-838f-acee54c99e03,Debt,macip@debt.com.br,2025-12-12 13:25:52.843805+00
+182b570e-3aac-49b0-af92-0182500caf7f,65c0a7ac-a973-4891-838f-acee54c99e03,Laboratório Romanini,macip@romanini.com.br,2025-12-12 13:09:18.943002+00
+2a14476f-244e-4f40-ad7b-423fa3db990e,65c0a7ac-a973-4891-838f-acee54c99e03,Santarem,macip@supersantarem.onmicrosoft.com,2025-12-12 12:56:16.543189+00
+2c1bc7d6-9528-4c23-b069-757a697dbbfd,65c0a7ac-a973-4891-838f-acee54c99e03,Eagleflex,macip@eagleflex.com.br,2025-12-12 12:26:56.840466+00
+3a6570b8-6f7a-432d-99d1-21a3ec73bd68,65c0a7ac-a973-4891-838f-acee54c99e03,Agroplay,macip@agroplay.onmicrosoft.com,2025-12-12 13:37:01.187959+00
+43e39bf2-6bc7-4311-809d-9bad904a0e17,65c0a7ac-a973-4891-838f-acee54c99e03,Schiavon & Morais,admin@gruposm.ind.br,2025-12-12 12:48:57.282328+00
+597085c1-924e-43d0-afcc-1c9f87ec07ea,65c0a7ac-a973-4891-838f-acee54c99e03,Hydronlubz,macip@hydronlubz.com.br,2025-12-11 20:51:39.597273+00
+5a08f3b0-01f3-43e5-9e79-e3ba3b5f873a,65c0a7ac-a973-4891-838f-acee54c99e03,Carga Pesada,macip@cpesada.onmicrosoft.com,2025-12-12 13:33:30.204344+00
+9b72ac1b-a300-420b-b047-5df266a8c9e0,65c0a7ac-a973-4891-838f-acee54c99e03,"Grupo HP Eletromecânica ",macip@grupohpeletromecanica.com.br,2025-12-12 12:35:31.87239+00
+c702eaa8-2b3e-4f74-b871-ba35e905e31d,65c0a7ac-a973-4891-838f-acee54c99e03,Focus Inteligência Financeira,macip@focusinteligencia.com.br,2025-12-12 12:32:03.174415+00
+cc790247-497e-4eb5-9333-b2ac09a23261,65c0a7ac-a973-4891-838f-acee54c99e03,Amaral Vasconcellos,macip@amaralvasconcellos.com.br,2025-12-11 20:49:11.502107+00
+d1e03a93-180e-498d-91ea-41f570ed00e3,65c0a7ac-a973-4891-838f-acee54c99e03,Compenfort,macip@compenfort.onmicrosoft.com,2025-12-12 13:41:42.359548+00
+e8007ff1-766b-4566-9dd1-e94ba86e3fe8,65c0a7ac-a973-4891-838f-acee54c99e03,Royal Plazashopping,macip@royalplazashopping.com.br,2025-12-12 13:05:32.531204+00

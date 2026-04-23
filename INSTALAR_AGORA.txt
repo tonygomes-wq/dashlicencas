@@ -1,0 +1,128 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║     INSTALAÇÃO DO BACKEND - INVENTÁRIO DE HARDWARE              ║
+║     Siga estes passos simples!                                  ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────┐
+│ PASSO 1: Abrir phpMyAdmin                                       │
+└──────────────────────────────────────────────────────────────────┘
+
+   Abra seu navegador e acesse:
+   
+   → http://localhost/phpmyadmin
+   
+   ou
+   
+   → http://seu-dominio/phpmyadmin
+
+
+┌──────────────────────────────────────────────────────────────────┐
+│ PASSO 2: Fazer Login                                            │
+└──────────────────────────────────────────────────────────────────┘
+
+   Usuário: faceso56_dashlicencas
+   Senha:   dash@123@macip
+
+
+┌──────────────────────────────────────────────────────────────────┐
+│ PASSO 3: Selecionar o Banco                                     │
+└──────────────────────────────────────────────────────────────────┘
+
+   No menu lateral esquerdo, clique em:
+   
+   → faceso56_dashlicencas
+
+
+┌──────────────────────────────────────────────────────────────────┐
+│ PASSO 4: Executar o SQL                                         │
+└──────────────────────────────────────────────────────────────────┘
+
+   1. Clique na aba "SQL" no topo
+   
+   2. Abra o arquivo: db_hardware_schema.sql
+      (Use Bloco de Notas ou qualquer editor)
+   
+   3. Copie TODO o conteúdo (Ctrl+A, Ctrl+C)
+   
+   4. Cole na área de texto do phpMyAdmin (Ctrl+V)
+   
+   5. Clique no botão "Executar" (ou "Go")
+
+
+┌──────────────────────────────────────────────────────────────────┐
+│ PASSO 5: Verificar Sucesso                                      │
+└──────────────────────────────────────────────────────────────────┘
+
+   Você deve ver mensagens verdes de sucesso:
+   
+   ✓ Tabela hardware_devices criada
+   ✓ Tabela storage_devices criada
+   ✓ 3 dispositivos inseridos
+   ✓ 4 armazenamentos inseridos
+
+
+┌──────────────────────────────────────────────────────────────────┐
+│ PASSO 6: Testar a API                                           │
+└──────────────────────────────────────────────────────────────────┘
+
+   Abra o navegador e acesse:
+   
+   → http://localhost/app_hardware.php
+   
+   Você deve ver:
+   {"error":"Não autenticado"}
+   
+   ✓ Isso é NORMAL! Significa que a API está funcionando!
+
+
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║  ✓ PRONTO! Backend instalado com sucesso!                       ║
+║                                                                  ║
+║  Arquivos criados:                                              ║
+║  • app_hardware.php (API REST)                                  ║
+║  • Tabelas no banco de dados                                    ║
+║  • 3 dispositivos de exemplo                                    ║
+║                                                                  ║
+║  Próximo passo:                                                 ║
+║  • Compilar o frontend para ver a interface                     ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+
+═══════════════════════════════════════════════════════════════════
+  PRECISA DE AJUDA?
+═══════════════════════════════════════════════════════════════════
+
+  Leia os arquivos de documentação:
+  
+  → INSTALAR_BACKEND_MANUAL.md  (Guia detalhado)
+  → INSTALACAO_COMPLETA.md      (Instalação completa)
+  → RESUMO_IMPLEMENTACAO.md     (Visão geral)
+
+
+═══════════════════════════════════════════════════════════════════
+  ARQUIVOS IMPORTANTES
+═══════════════════════════════════════════════════════════════════
+
+  Backend (Pronto):
+  ✓ app_hardware.php
+  ✓ db_hardware_schema.sql
+  
+  Frontend (Aguardando build):
+  ⏳ src/components/HardwareInventoryTable.tsx
+  ⏳ src/components/AddHardwareModal.tsx
+  ⏳ src/components/HardwareDetailModal.tsx
+  ⏳ src/types.ts
+  ⏳ src/lib/apiClient.ts
+  ⏳ src/pages/Dashboard.tsx
+
+
+═══════════════════════════════════════════════════════════════════
+
+  Desenvolvido para Dashboard de Licenças - Macip Tecnologia
+  Data: 16/03/2026
+
+═══════════════════════════════════════════════════════════════════

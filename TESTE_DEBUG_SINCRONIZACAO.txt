@@ -1,0 +1,192 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    TESTE DE DEBUG - SINCRONIZAÇÃO                            ║
+║                  Descobrir o que a API está retornando                       ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🎯 OBJETIVO: Descobrir por que os dados não estão sendo sincronizados
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 1: Fazer Upload do Arquivo de Debug
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Acesse cPanel → File Manager
+2. Vá para: public_html/dashlicencas/
+3. Faça upload do arquivo: app_bitdefender_sync_client_DEBUG.php
+4. Mantenha o arquivo original (não delete)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 2: Modificar Temporariamente o Frontend
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Vamos fazer o frontend chamar a versão de debug temporariamente.
+
+OPÇÃO A: Testar via Console do Navegador (MAIS FÁCIL)
+──────────────────────────────────────────────────────
+
+1. Acesse o site: https://macip.com.br/dashlicencas/
+2. Faça login
+3. Clique no cliente MAGLON
+4. Pressione F12 (abrir DevTools)
+5. Vá na aba "Console"
+6. Cole este código e pressione Enter:
+
+fetch('/app_bitdefender_sync_client_DEBUG.php', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ clientId: 52 })
+})
+.then(r => r.json())
+.then(data => {
+  console.log('=== RESPOSTA COMPLETA ===');
+  console.log(JSON.stringify(data, null, 2));
+  
+  if (data.debug) {
+    console.log('\n=== DEBUG INFO ===');
+    console.log('Raw Response:', data.debug.raw_response);
+    console.log('License Info:', data.debug.license_info);
+    console.log('Extracted Data:', data.debug.extracted_data);
+    console.log('Final Data:', data.debug.final_data);
+  }
+})
+.catch(err => console.error('Erro:', err));
+
+7. Aguarde a resposta aparecer no console
+8. Copie TODA a resposta e me envie
+
+
+OPÇÃO B: Testar via Postman/Insomnia
+─────────────────────────────────────
+
+Se você tem Postman ou Insomnia instalado:
+
+1. Crie uma nova requisição POST
+2. URL: https://macip.com.br/dashlicencas/app_bitdefender_sync_client_DEBUG.php
+3. Headers:
+   Content-Type: application/json
+   Cookie: PHPSESSID=<seu_session_id>
+4. Body (JSON):
+   {
+     "clientId": 52
+   }
+5. Envie a requisição
+6. Copie a resposta completa e me envie
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 3: Analisar a Resposta
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+A resposta vai mostrar:
+
+1. raw_response: O que a API do Bitdefender retornou
+2. license_info: Os dados extraídos da resposta
+3. extracted_data: Os campos que o código conseguiu identificar
+4. final_data: Os dados que foram salvos no banco
+
+Com essas informações, vou poder identificar:
+  • Se a API está retornando os dados corretos
+  • Se o código está extraindo os campos certos
+  • Qual é a estrutura real da resposta da API
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 PASSO 4: Verificar Logs no Banco
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se quiser ver os logs salvos no banco:
+
+1. Acesse phpMyAdmin
+2. Selecione o banco: faceso56_dashlicencas
+3. Execute esta query:
+
+SELECT * FROM bitdefender_sync_log 
+WHERE message LIKE '%Cliente ID 52%'
+ORDER BY created_at DESC 
+LIMIT 5;
+
+4. Veja a coluna "details" - ela contém o JSON com todas as informações
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 O QUE ESTAMOS PROCURANDO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Precisamos descobrir:
+
+1. A API está retornando os dados?
+   → Se sim, qual é a estrutura exata?
+   → Se não, qual erro está retornando?
+
+2. Os campos estão com os nomes corretos?
+   → Pode ser "seats" ou "totalSeats" ou "licensesCount"
+   → Pode ser "licenseKey" ou "license_key" ou "key"
+   → Pode ser "expirationDate" ou "expiration_date" ou "expiry"
+
+3. O formato da data está correto?
+   → Pode ser "2029-03-25" (string)
+   → Pode ser 1869321600 (timestamp)
+   → Pode ser "25/03/2029" (formato brasileiro)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ IMPORTANTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• NÃO delete o arquivo original (app_bitdefender_sync_client.php)
+• O arquivo de debug é TEMPORÁRIO para diagnóstico
+• Após descobrir o problema, vamos corrigir o arquivo original
+• Me envie a resposta COMPLETA do console
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ ] Upload do app_bitdefender_sync_client_DEBUG.php
+[ ] Acessar o site e fazer login
+[ ] Abrir console (F12)
+[ ] Colar o código de teste
+[ ] Copiar a resposta completa
+[ ] Me enviar a resposta
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PRÓXIMOS PASSOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Após receber a resposta do debug:
+
+1. Vou analisar a estrutura da API
+2. Vou corrigir o código para extrair os campos corretos
+3. Vou atualizar o arquivo original
+4. Você faz upload da versão corrigida
+5. Testa novamente e os dados vão sincronizar! 🚀
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 DICA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se o console mostrar erro de autenticação, você pode:
+
+1. Abrir o site normalmente
+2. Fazer login
+3. Clicar no cliente MAGLON (para abrir a janela)
+4. Então abrir o console (F12)
+5. Colar o código de teste
+
+Isso garante que você está autenticado antes de fazer o teste.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

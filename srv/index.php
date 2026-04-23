@@ -1,0 +1,95 @@
+<?php
+// srv/auth.php - Authentication API
+require_once 'config.php';
+
+session_start();
+
+$action = $_GET['do'] ?? '';
+
+if ($action === 'login') {
+    // Handle both JSON and form-encoded data
+    $email = '';
+    $password = '';
+
+    $input = file_get_contents('php://input');
+    $jsonData = json_decode($input, true);
+
+    if ($jsonData) {
+        $email = $jsonData['email'] ?? '';
+        $password = $jsonData['password'] ?? '';
+    } else {
+        // Fallback to $_POST or manual parse if $_POST is empty but input is present
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+
+        if (empty($email) && !empty($input)) {
+            parse_str($input, $parsedInput);
+            $email = $parsedInput['email'] ?? '';
+            $password = $parsedInput['password'] ?? '';
+        }
+    }
+
+    if (empty($email) || empty($password)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Email and password are required']);
+        exit;
+    }
+
+    $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
+    $stmt->execute([$email]);
+    $user = $stmt->fetch();
+
+    if ($user && password_verify($password, $user['password_hash'])) {
+        // Check if user is active
+        if (isset($user['is_active']) && !$user['is_active']) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Account is inactive']);
+            exit;
+        }
+
+        if ($user['two_factor_enabled']) {
+            $_SESSION['pending_2fa_user_id'] = $user['id'];
+            $_SESSION['pending_2fa_user_email'] = $user['email'];
+            echo json_encode(['mfa_required' => true, 'message' => '2FA code required']);
+            exit;
+        }
+
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_email'] = $user['email'];
+
+        // Update last_login
+        $stmt = $pdo->prepare('UPDATE users SET last_login = NOW() WHERE id = ?');
+        $stmt->execute([$user['id']]);
+
+        // Remove sensitive data
+        unset($user['password_hash']);
+        unset($user['two_factor_secret']);
+
+        echo json_encode([
+            'message' => 'Login successful',
+            'user' => $user,
+            'session_id' => session_id()
+        ]);
+    } else {
+        http_response_code(401);
+        echo json_encode(['error' => 'Invalid credentials']);
+    }
+} elseif ($action === 'logout') {
+    session_destroy();
+    echo json_encode(['message' => 'Logged out successfully']);
+} elseif ($action === 'check') {
+    if (isset($_SESSION['user_id'])) {
+        echo json_encode([
+            'authenticated' => true,
+            'user' => [
+                'id' => $_SESSION['user_id'],
+                'email' => $_SESSION['user_email']
+            ]
+        ]);
+    } else {
+        echo json_encode(['authenticated' => false]);
+    }
+} else {
+    http_response_code(405);
+    echo json_encode(['error' => 'Method not allowed']);
+}

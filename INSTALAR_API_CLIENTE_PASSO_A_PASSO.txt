@@ -1,0 +1,123 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                  INSTALAÇÃO API INDIVIDUAL POR CLIENTE                       ║
+║                         PASSO A PASSO SIMPLES                                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📋 INSTRUÇÕES PARA EXECUTAR NO PHPMYADMIN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+IMPORTANTE: Execute cada comando SEPARADAMENTE, um de cada vez!
+Se aparecer erro "Duplicate column name", IGNORE e continue com o próximo.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PASSO 1: Acesse o phpMyAdmin
+────────────────────────────
+1. Abra seu navegador
+2. Acesse o phpMyAdmin
+3. Faça login com suas credenciais
+4. Selecione o banco: faceso56_dashlicencas
+
+
+PASSO 2: Vá para a aba SQL
+──────────────────────────
+1. Clique na aba "SQL" no topo da página
+2. Você verá uma caixa de texto grande
+
+
+PASSO 3: Execute o COMANDO 1
+────────────────────────────
+Cole este comando e clique em "Executar":
+
+ALTER TABLE bitdefender_licenses 
+ADD COLUMN client_api_key VARCHAR(255) NULL COMMENT 'API Key específica do cliente' AFTER license_key;
+
+✅ Se aparecer "Query OK" → Sucesso! Continue
+❌ Se aparecer "Duplicate column name" → Coluna já existe, continue
+❌ Outro erro → Anote e me informe
+
+
+PASSO 4: Execute o COMANDO 2
+────────────────────────────
+Limpe a caixa SQL, cole este comando e clique em "Executar":
+
+ALTER TABLE bitdefender_licenses 
+ADD COLUMN client_access_url VARCHAR(255) NULL COMMENT 'Access URL específica do cliente' AFTER client_api_key;
+
+✅ Se aparecer "Query OK" → Sucesso! Continue
+❌ Se aparecer "Duplicate column name" → Coluna já existe, continue
+❌ Outro erro → Anote e me informe
+
+
+PASSO 5: Execute o COMANDO 3
+────────────────────────────
+Limpe a caixa SQL, cole este comando e clique em "Executar":
+
+ALTER TABLE bitdefender_licenses 
+ADD COLUMN last_sync TIMESTAMP NULL COMMENT 'Última sincronização deste cliente' AFTER client_access_url;
+
+✅ Se aparecer "Query OK" → Sucesso! Continue
+❌ Se aparecer "Duplicate column name" → Coluna já existe, continue
+❌ Outro erro → Anote e me informe
+
+
+PASSO 6: Execute o COMANDO 4 (Opcional)
+────────────────────────────────────────
+Limpe a caixa SQL, cole este comando e clique em "Executar":
+
+ALTER TABLE bitdefender_licenses 
+ADD INDEX idx_client_api (client_api_key);
+
+✅ Se aparecer "Query OK" → Sucesso! Continue
+❌ Se aparecer "Duplicate key name" → Índice já existe, continue
+❌ Outro erro → Anote e me informe
+
+
+PASSO 7: Verificar Instalação
+──────────────────────────────
+Cole este comando para verificar se as colunas foram criadas:
+
+SHOW COLUMNS FROM bitdefender_licenses;
+
+Você deve ver estas novas colunas na lista:
+- client_api_key
+- client_access_url
+- last_sync
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ PRONTO! INSTALAÇÃO CONCLUÍDA!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Agora você pode:
+
+1. Compilar o frontend (no projeto de desenvolvimento)
+2. Copiar arquivos compilados para produção
+3. Testar a funcionalidade:
+   - Abrir detalhes de um cliente Bitdefender
+   - Configurar API Key do cliente
+   - Clicar em "Sincronizar Este Cliente"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTAÇÃO COMPLETA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Para mais detalhes sobre como usar o recurso, consulte:
+→ GUIA_API_POR_CLIENTE.md
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🆘 PROBLEMAS?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se encontrar algum erro diferente dos mencionados acima:
+1. Anote a mensagem de erro completa
+2. Anote qual comando estava executando
+3. Me informe para que eu possa ajudar
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

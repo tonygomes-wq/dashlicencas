@@ -1,0 +1,160 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DIAGNÓSTICO URGENTE - CAMPO NÃO APARECE                   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🔍 PASSO A PASSO PARA DESCOBRIR O PROBLEMA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PASSO 1: Verificar qual arquivo JavaScript está sendo carregado
+────────────────────────────────────────────────────────────────
+
+1. Com o site aberto, pressione F12
+2. Vá na aba "Network" (Rede)
+3. Recarregue a página (F5)
+4. Procure por arquivos que começam com "index-"
+5. Anote qual arquivo .js está sendo carregado
+
+   Exemplo: index-zmKFda2j.js (ERRADO - arquivo antigo)
+   Correto: index-6a7b1f8d.js (CERTO - arquivo novo)
+
+📝 Qual arquivo você vê? _______________________________
+
+
+PASSO 2: Verificar o conteúdo do arquivo JavaScript
+────────────────────────────────────────────────────
+
+1. Na aba "Network", clique no arquivo .js que foi carregado
+2. Vá na aba "Response" (Resposta)
+3. Pressione Ctrl+F para buscar
+4. Procure por: clientApiKey
+5. Encontrou?
+   [ ] SIM - O arquivo está correto, problema é outro
+   [ ] NÃO - O arquivo está errado (antigo)
+
+
+PASSO 3: Verificar o index.html no servidor
+────────────────────────────────────────────
+
+1. Pressione F12
+2. Vá na aba "Elements" (Elementos)
+3. Procure pela tag <script> no <head>
+4. Qual é o src do script?
+
+   <script type="module" crossorigin src="_______________"></script>
+
+📝 Anote aqui: _______________________________
+
+
+PASSO 4: Verificar se os arquivos existem no servidor
+──────────────────────────────────────────────────────
+
+No cPanel File Manager, verifique:
+
+1. Pasta assets/ contém:
+   [ ] index-6a7b1f8d.js (tamanho: ~1 MB)
+   [ ] index-9488a2cc.css (tamanho: ~54 KB)
+
+2. Se NÃO existirem, você precisa fazer upload deles!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 SOLUÇÕES BASEADAS NO DIAGNÓSTICO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CENÁRIO A: Arquivo JavaScript errado está sendo carregado
+──────────────────────────────────────────────────────────
+
+Exemplo: Network mostra "index-zmKFda2j.js" em vez de "index-6a7b1f8d.js"
+
+SOLUÇÃO:
+1. O index.html no servidor ainda está errado
+2. Verifique se você substituiu o arquivo correto
+3. Tente editar diretamente no cPanel:
+   - File Manager → index.html → Edit
+   - Mude a linha do <script> para:
+     <script type="module" crossorigin src="./assets/index-6a7b1f8d.js"></script>
+   - Salve
+
+
+CENÁRIO B: Arquivo correto carregado mas sem "clientApiKey"
+────────────────────────────────────────────────────────────
+
+Exemplo: Network mostra "index-6a7b1f8d.js" mas busca por "clientApiKey" não encontra
+
+SOLUÇÃO:
+1. O arquivo na Hostgator está com nome certo mas conteúdo errado
+2. Delete o arquivo assets/index-6a7b1f8d.js no servidor
+3. Faça upload novamente do arquivo correto desta pasta local
+
+
+CENÁRIO C: Arquivos não existem no servidor
+────────────────────────────────────────────
+
+Exemplo: Network mostra erro 404 para index-6a7b1f8d.js
+
+SOLUÇÃO:
+1. Os arquivos não foram enviados para o servidor
+2. Faça upload de:
+   - assets/index-6a7b1f8d.js (desta pasta local)
+   - assets/index-9488a2cc.css (desta pasta local)
+
+
+CENÁRIO D: Cache do navegador/servidor
+───────────────────────────────────────
+
+Exemplo: Tudo parece correto mas ainda não funciona
+
+SOLUÇÃO:
+1. Limpe COMPLETAMENTE o cache:
+   - Ctrl+Shift+Delete
+   - Marque TUDO
+   - Limpe
+2. Ou teste em modo anônimo:
+   - Ctrl+Shift+N (Chrome)
+   - Ctrl+Shift+P (Firefox)
+3. Ou teste em outro navegador
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 SOLUÇÃO DEFINITIVA: Recompilar com novo nome
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se nada funcionar, vamos forçar um novo build:
+
+1. Na pasta local, delete a pasta assets/
+2. Execute: npm run build
+3. Novos arquivos serão gerados com novos nomes
+4. Upload de:
+   - index.html (novo)
+   - assets/index-XXXXXXXX.js (novo)
+   - assets/index-YYYYYYYY.css (novo)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📸 ME ENVIE PRINTS DE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. F12 → Aba Network → Mostrando qual arquivo .js foi carregado
+2. F12 → Aba Elements → Mostrando a tag <script> no <head>
+3. cPanel File Manager → Pasta assets/ → Mostrando os arquivos
+4. F12 → Aba Console → Mostrando se há erros
+
+Com esses prints, posso identificar exatamente o problema!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ TESTE RÁPIDO: Verificar se o arquivo local está correto
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Abra o arquivo: assets/index-6a7b1f8d.js (desta pasta local)
+2. Pressione Ctrl+F e procure por: clientApiKey
+3. Encontrou?
+   [ ] SIM - O arquivo local está correto
+   [ ] NÃO - Precisa recompilar
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -1,0 +1,90 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          CHECKLIST RÁPIDO                                    ║
+║                    Correção em 5 Minutos                                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🎯 PROBLEMA: Tela branca com erro de MIME type
+🔧 SOLUÇÃO: Corrigir caminhos no index.html
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ CHECKLIST DE CORREÇÃO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ ] 1. Acessar cPanel → File Manager
+
+[ ] 2. Ir para: public_html/dashlicencas/
+
+[ ] 3. Editar index.html (botão direito → Edit)
+
+[ ] 4. Mudar linha 26:
+        DE:   src="/assets/index-f981d49f.js"
+        PARA: src="./assets/index-f981d49f.js"
+              (adicionar PONTO antes da barra)
+
+[ ] 5. Mudar linha 28:
+        DE:   href="/assets/index-bda104fb.css"
+        PARA: crossorigin href="./assets/index-bda104fb.css"
+              (adicionar "crossorigin" E PONTO antes da barra)
+
+[ ] 6. Salvar arquivo (Save Changes)
+
+[ ] 7. Verificar se existem em assets/:
+        • index-f981d49f.js (987 KB)
+        • index-bda104fb.css (56 KB)
+
+[ ] 8. Fechar TODOS os navegadores
+
+[ ] 9. Limpar cache (Ctrl+Shift+Delete → Tudo → Limpar)
+
+[ ] 10. Testar em modo anônimo (Ctrl+Shift+N)
+
+[ ] 11. Acessar: https://macip.com.br/dashlicencas/
+
+[ ] 12. Fazer login
+
+[ ] 13. Verificar console (F12) - sem erros vermelhos
+
+[ ] 14. Clicar em cliente Bitdefender
+
+[ ] 15. Verificar se aparece seção "API Bitdefender (Opcional)"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 ALTERNATIVA RÁPIDA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se preferir, simplesmente:
+
+[ ] 1. Delete o index.html atual no servidor
+[ ] 2. Faça upload do arquivo: index_UPLOAD_AGORA.html
+[ ] 3. Renomeie para: index.html
+[ ] 4. Limpe o cache
+[ ] 5. Teste em modo anônimo
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ LEMBRE-SE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• SEMPRE limpe o cache antes de testar
+• SEMPRE teste em modo anônimo primeiro
+• O cache é o maior causador de problemas!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ SUCESSO!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Quando funcionar, você verá:
+
+✓ Site carrega normalmente
+✓ Sem erros no console
+✓ Seção de API aparece ao clicar em cliente
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

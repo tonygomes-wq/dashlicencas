@@ -1,0 +1,227 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    TESTE 3 VERSÕES DO INDEX.HTML                            ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🎯 OBJETIVO: Descobrir qual caminho funciona na sua Hostgator
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 TESTE AS 3 VERSÕES (UMA DE CADA VEZ)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VERSÃO 1: Caminho Relativo (./assets/)
+───────────────────────────────────────
+Arquivo: index_FINAL_UPLOAD.html
+
+Caminhos:
+  <script src="./assets/index-f981d49f.js"></script>
+  <link href="./assets/index-bda104fb.css">
+
+Quando usar:
+  • Quando o site está em subpasta
+  • Mais compatível com diferentes estruturas
+
+
+VERSÃO 2: Caminho Absoluto com Subpasta (/dashlicencas/assets/)
+────────────────────────────────────────────────────────────────
+Arquivo: index_ABSOLUTO.html
+
+Caminhos:
+  <script src="/dashlicencas/assets/index-f981d49f.js"></script>
+  <link href="/dashlicencas/assets/index-bda104fb.css">
+
+Quando usar:
+  • Quando o site está em: public_html/dashlicencas/
+  • URL é: macip.com.br/dashlicencas/
+
+
+VERSÃO 3: Caminho Absoluto Raiz (/assets/)
+───────────────────────────────────────────
+Arquivo: index_RAIZ.html
+
+Caminhos:
+  <script src="/assets/index-f981d49f.js"></script>
+  <link href="/assets/index-bda104fb.css">
+
+Quando usar:
+  • Quando o site está na raiz: public_html/
+  • URL é: macip.com.br/ (sem subpasta)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧪 COMO TESTAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TESTE 1: Versão Relativa (RECOMENDADO TENTAR PRIMEIRO)
+────────────────────────────────────────────────────────
+
+1. Renomeie "index_FINAL_UPLOAD.html" para "index.html"
+2. Faça upload para a Hostgator (substitua o atual)
+3. Limpe o cache (Ctrl+Shift+Delete)
+4. Teste em modo anônimo (Ctrl+Shift+N)
+5. Funcionou?
+   ✅ SIM → Pronto! Use esta versão
+   ❌ NÃO → Vá para TESTE 2
+
+
+TESTE 2: Versão Absoluta com Subpasta
+──────────────────────────────────────
+
+1. Renomeie "index_ABSOLUTO.html" para "index.html"
+2. Faça upload para a Hostgator (substitua o atual)
+3. Limpe o cache (Ctrl+Shift+Delete)
+4. Teste em modo anônimo (Ctrl+Shift+N)
+5. Funcionou?
+   ✅ SIM → Pronto! Use esta versão
+   ❌ NÃO → Vá para TESTE 3
+
+
+TESTE 3: Versão Absoluta Raiz
+──────────────────────────────
+
+1. Renomeie "index_RAIZ.html" para "index.html"
+2. Faça upload para a Hostgator (substitua o atual)
+3. Limpe o cache (Ctrl+Shift+Delete)
+4. Teste em modo anônimo (Ctrl+Shift+N)
+5. Funcionou?
+   ✅ SIM → Pronto! Use esta versão
+   ❌ NÃO → Vá para DIAGNÓSTICO AVANÇADO
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 DIAGNÓSTICO AVANÇADO (Se nenhuma versão funcionar)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se NENHUMA das 3 versões funcionar, o problema é outro:
+
+1. Verifique a estrutura de pastas no cPanel:
+   
+   Deve ser EXATAMENTE assim:
+   
+   public_html/
+   └── dashlicencas/          ← Ou pode estar direto em public_html/
+       ├── index.html
+       ├── assets/
+       │   ├── index-f981d49f.js
+       │   └── index-bda104fb.css
+       └── app_bitdefender_sync_client.php
+
+2. Teste a URL direta no navegador:
+   
+   Tente acessar:
+   https://macip.com.br/dashlicencas/assets/index-f981d49f.js
+   
+   Ou:
+   https://macip.com.br/assets/index-f981d49f.js
+   
+   Se aparecer código JavaScript = Arquivo existe!
+   Se aparecer erro 404 = Arquivo NÃO existe ou está em lugar errado!
+
+3. Verifique o tamanho dos arquivos:
+   
+   No File Manager, clique nos arquivos e veja o tamanho:
+   - index-f981d49f.js deve ter ~1.010.000 bytes (987 KB)
+   - index-bda104fb.css deve ter ~57.000 bytes (56 KB)
+   
+   Se estiverem muito menores, o upload falhou!
+
+4. Verifique as permissões:
+   
+   Clique com botão direito → Permissions
+   Deve ser: 644 (rw-r--r--)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 DICA: Como descobrir qual caminho usar
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Veja a URL do seu site:
+
+• Se é: macip.com.br/dashlicencas/
+  → Use VERSÃO 2 (index_ABSOLUTO.html)
+  → Caminho: /dashlicencas/assets/
+
+• Se é: macip.com.br/
+  → Use VERSÃO 3 (index_RAIZ.html)
+  → Caminho: /assets/
+
+• Se não tem certeza:
+  → Use VERSÃO 1 (index_FINAL_UPLOAD.html)
+  → Caminho: ./assets/ (funciona em ambos)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ IMPORTANTE: Limpar Cache Entre Testes
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SEMPRE limpe o cache entre cada teste:
+
+1. Feche TODOS os navegadores
+2. Abra um novo navegador
+3. Pressione Ctrl+Shift+N (modo anônimo)
+4. Acesse o site
+5. Teste
+
+Ou:
+
+1. Pressione Ctrl+Shift+Delete
+2. Marque TUDO
+3. Limpe
+4. Feche o navegador
+5. Abra novamente
+6. Teste
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 RESUMO DAS 3 VERSÕES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Arquivo                    | Caminho                           | Quando Usar
+---------------------------|-----------------------------------|------------------
+index_FINAL_UPLOAD.html    | ./assets/                         | Mais compatível
+index_ABSOLUTO.html        | /dashlicencas/assets/             | Site em subpasta
+index_RAIZ.html            | /assets/                          | Site na raiz
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Antes de testar:
+  [ ] Arquivos JS e CSS estão na pasta assets/
+  [ ] Tamanho dos arquivos está correto
+  [ ] Permissões estão em 644
+  [ ] URL direta do JS funciona no navegador
+
+Durante o teste:
+  [ ] Cache foi limpo
+  [ ] Testando em modo anônimo
+  [ ] Tentei as 3 versões
+  [ ] Verifiquei o console (F12)
+
+Se não funcionar:
+  [ ] Verifiquei estrutura de pastas
+  [ ] Testei URL direta
+  [ ] Verifiquei tamanho dos arquivos
+  [ ] Verifiquei permissões
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 RESULTADO ESPERADO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Quando funcionar:
+  ✅ Tela de login aparece
+  ✅ Console sem erros
+  ✅ Network mostra status 200 para os arquivos JS/CSS
+  ✅ Pode fazer login e usar o sistema
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
