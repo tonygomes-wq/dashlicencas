@@ -1,6 +1,6 @@
 <?php
 // api/gmail.php - CRUD for Gmail Clients and Licenses
-require_once 'app_config.php';
+require_once 'srv/config.php';
 
 session_start();
 

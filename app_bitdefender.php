@@ -1,6 +1,6 @@
 <?php
 // api/bitdefender.php - CRUD for Bitdefender Licenses
-require_once 'app_config.php';
+require_once 'srv/config.php';
 
 session_start();
 

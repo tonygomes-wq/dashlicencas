@@ -1,6 +1,6 @@
 <?php
 // api/fortigate.php - CRUD for Fortigate Devices
-require_once 'app_config.php';
+require_once 'srv/config.php';
 
 session_start();
 

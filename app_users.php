@@ -6,7 +6,7 @@ header('Content-Type: application/json; charset=UTF-8');
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-require_once 'app_config.php';
+require_once 'srv/config.php';
 
 session_start();
 

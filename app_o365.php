@@ -1,6 +1,6 @@
 <?php
 // api/o365.php - CRUD for O365 Clients and Licenses
-require_once 'app_config.php';
+require_once 'srv/config.php';
 
 session_start();
 
