@@ -52,3 +52,6 @@ try {
         'dsn' => $dsn
     ]));
 }
+
+// Incluir funções de permissão
+require_once __DIR__ . '/permissions.php';
