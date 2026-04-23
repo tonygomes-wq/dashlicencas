@@ -73,6 +73,16 @@ function syncSingleClient($pdo, $client, $accessUrl) {
         
         $licenseInfo = $response['result'];
         
+        // Mapear campos corretos da API Bitdefender
+        $licenseKey = $licenseInfo['licenseKey'] ?? $client['license_key'];
+        $totalLicenses = $licenseInfo['totalSlots'] ?? $client['total_licenses']; // API usa "totalSlots" não "seats"
+        $expirationDate = $licenseInfo['expiryDate'] ?? $client['expiration_date']; // API usa "expiryDate" não "expirationDate"
+        
+        // Converter data ISO para MySQL
+        if ($expirationDate && strpos($expirationDate, 'T') !== false) {
+            $expirationDate = date('Y-m-d', strtotime($expirationDate));
+        }
+        
         // Atualizar registro no banco
         $updateStmt = $pdo->prepare("
             UPDATE bitdefender_licenses 
@@ -84,9 +94,9 @@ function syncSingleClient($pdo, $client, $accessUrl) {
         ");
         
         $updateStmt->execute([
-            $licenseInfo['licenseKey'] ?? $client['license_key'],
-            $licenseInfo['seats'] ?? $client['total_licenses'],
-            $licenseInfo['expirationDate'] ?? $client['expiration_date'],
+            $licenseKey,
+            $totalLicenses,
+            $expirationDate,
             $client['id']
         ]);
         
@@ -100,9 +110,9 @@ function syncSingleClient($pdo, $client, $accessUrl) {
             'message' => 'Cliente sincronizado com sucesso!',
             'duration' => $duration,
             'data' => [
-                'licenseKey' => $licenseInfo['licenseKey'] ?? null,
-                'totalLicenses' => $licenseInfo['seats'] ?? null,
-                'expirationDate' => $licenseInfo['expirationDate'] ?? null
+                'licenseKey' => $licenseKey,
+                'totalLicenses' => $totalLicenses,
+                'expirationDate' => $expirationDate
             ]
         ];
         
