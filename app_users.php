@@ -6,9 +6,10 @@ header('Content-Type: application/json; charset=UTF-8');
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-require_once 'srv/config.php';
-
 session_start();
+
+require_once 'srv/config.php';
+require_once 'srv/permissions.php';
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);

@@ -1,8 +1,9 @@
 <?php
 // api/fortigate.php - CRUD for Fortigate Devices
-require_once 'srv/config.php';
-
 session_start();
+
+require_once 'srv/config.php';
+require_once 'srv/permissions.php';
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);

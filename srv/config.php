@@ -53,5 +53,5 @@ try {
     ]));
 }
 
-// Incluir funções de permissão
-require_once __DIR__ . '/permissions.php';
+// NÃO incluir permissions.php aqui - será incluído depois do session_start()
+// require_once __DIR__ . '/permissions.php';

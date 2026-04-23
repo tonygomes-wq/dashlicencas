@@ -1,9 +1,23 @@
 <?php
 // srv/permissions.php - Funções de permissão
 
-// Carregar usuário atual
-$currentUser = null;
-if (isset($_SESSION['user_id'])) {
+// Função para carregar usuário atual (lazy loading)
+function getCurrentUser()
+{
+    static $currentUser = null;
+    static $loaded = false;
+    
+    if ($loaded) {
+        return $currentUser;
+    }
+    
+    $loaded = true;
+    
+    if (!isset($_SESSION['user_id'])) {
+        return null;
+    }
+    
+    global $pdo;
     $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
     $stmt->execute([$_SESSION['user_id']]);
     $currentUser = $stmt->fetch();
@@ -11,12 +25,14 @@ if (isset($_SESSION['user_id'])) {
     if ($currentUser && isset($currentUser['permissions']) && $currentUser['permissions']) {
         $currentUser['permissions'] = json_decode($currentUser['permissions'], true);
     }
+    
+    return $currentUser;
 }
 
 // Helper to check permissions
 function hasPermission($dashboard, $action = null)
 {
-    global $currentUser;
+    $currentUser = getCurrentUser();
     
     if (!$currentUser) {
         return false;
@@ -46,7 +62,7 @@ function hasPermission($dashboard, $action = null)
 // Helper to get client filter
 function getClientFilter($dashboard)
 {
-    global $currentUser;
+    $currentUser = getCurrentUser();
     
     if (!$currentUser) {
         return null;
@@ -75,7 +91,7 @@ function getClientFilter($dashboard)
 // Helper to check if user can access specific client
 function isAllowed($clientName, $dashboard)
 {
-    global $currentUser;
+    $currentUser = getCurrentUser();
     
     if (!$currentUser) {
         return false;

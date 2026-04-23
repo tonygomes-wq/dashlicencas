@@ -1,8 +1,9 @@
 <?php
 // api/bitdefender.php - CRUD for Bitdefender Licenses
-require_once 'srv/config.php';
-
 session_start();
+
+require_once 'srv/config.php';
+require_once 'srv/permissions.php';
 
 // Middleware to check authentication
 if (!isset($_SESSION['user_id'])) {
