@@ -19,9 +19,6 @@ export interface BitdefenderLicense extends BaseItem {
   expirationDate: string | null; // YYYY-MM-DD
   totalLicenses: number;
   licenseKey: string;
-  clientApiKey?: string; // API Key específica do cliente
-  clientAccessUrl?: string; // Access URL específica do cliente
-  lastSync?: string; // Última sincronização individual
 }
 
 export interface BitdefenderLicenseWithStatus extends BitdefenderLicense {

@@ -18,7 +18,6 @@ const renewalStatusOptions: RenewalStatus[] = ['Pendente', 'Em Negociação', 'R
 const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, onUpdate, isAdmin }) => {
   const [formData, setFormData] = useState<Partial<BitdefenderLicense | FortigateDevice>>({});
   const [isSaving, setIsSaving] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     if (item) {
@@ -68,50 +67,6 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
     }
   };
 
-  const handleSyncClient = async () => {
-    if (!isBitdefender || !(formData as any).clientApiKey) {
-      toast.error('Configure a API Key do cliente primeiro');
-      return;
-    }
-
-    setIsSyncing(true);
-    const toastId = toast.loading('Sincronizando cliente...');
-
-    try {
-      const response = await fetch('/app_bitdefender_sync_client.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId: item.id })
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        toast.success(`Sincronizado em ${result.duration}s!`, { id: toastId });
-        
-        // Atualizar dados no formulário
-        if (result.data) {
-          setFormData(prev => ({
-            ...prev,
-            licenseKey: result.data.licenseKey || prev.licenseKey,
-            totalLicenses: result.data.totalLicenses || (prev as any).totalLicenses,
-            expirationDate: result.data.expirationDate || (prev as any).expirationDate,
-            lastSync: new Date().toISOString()
-          }));
-        }
-
-        // Recarregar página para atualizar tabela
-        setTimeout(() => window.location.reload(), 1500);
-      } else {
-        toast.error(result.error || 'Erro na sincronização', { id: toastId });
-      }
-    } catch (error: any) {
-      toast.error(error.message || 'Erro na sincronização', { id: toastId });
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
   const fields = isBitdefender ? [
     { label: 'Empresa', name: 'company', type: 'text', value: (formData as BitdefenderLicense).company, required: true },
     { label: 'Responsável', name: 'contactPerson', type: 'text', value: (formData as BitdefenderLicense).contactPerson },
@@ -119,8 +74,6 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
     { label: 'Serial Chave', name: 'licenseKey', type: 'text', value: (formData as BitdefenderLicense).licenseKey, required: true },
     { label: 'Total de Licenças', name: 'totalLicenses', type: 'number', value: (formData as BitdefenderLicense).totalLicenses, required: true },
     { label: 'Vencimento', name: 'expirationDate', type: 'date', value: (formData as BitdefenderLicense).expirationDate },
-    { label: 'API Key do Cliente', name: 'clientApiKey', type: 'password', value: (formData as any).clientApiKey, section: 'api', placeholder: 'API Key específica deste cliente (opcional)' },
-    { label: 'Access URL do Cliente', name: 'clientAccessUrl', type: 'text', value: (formData as any).clientAccessUrl, section: 'api', placeholder: 'https://cloud.gravityzone.bitdefender.com/api' },
   ] : [
     { label: 'Cliente', name: 'client', type: 'text', value: (formData as FortigateDevice).client, required: true },
     { label: 'Email', name: 'email', type: 'email', value: (formData as FortigateDevice).email },
@@ -164,7 +117,7 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
             </div>
 
             {/* Campos Dinâmicos */}
-            {fields.filter(f => !f.section).map(field => (
+            {fields.map(field => (
               <div key={field.name}>
                 <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {field.label}
@@ -177,78 +130,10 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
                   onChange={handleChange}
                   required={field.required}
                   disabled={!isAdmin}
-                  placeholder={(field as any).placeholder}
                   className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-700/50"
                 />
               </div>
             ))}
-
-            {/* Seção de API (apenas Bitdefender) */}
-            {isBitdefender && (
-              <>
-                <div className="pt-4 border-t dark:border-gray-700">
-                  <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
-                    <svg className="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                    API Bitdefender (Opcional)
-                  </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                    Configure uma API Key específica para este cliente para sincronização individual
-                  </p>
-                </div>
-
-                {fields.filter(f => f.section === 'api').map(field => (
-                  <div key={field.name}>
-                    <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      {field.label}
-                    </label>
-                    <input
-                      type={field.type}
-                      id={field.name}
-                      name={field.name}
-                      value={field.value || ''}
-                      onChange={handleChange}
-                      disabled={!isAdmin}
-                      placeholder={(field as any).placeholder}
-                      className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-700/50"
-                    />
-                  </div>
-                ))}
-
-                {(formData as any).lastSync && (
-                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md">
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      <strong>Última sincronização:</strong>{' '}
-                      {new Date((formData as any).lastSync).toLocaleString('pt-BR')}
-                    </p>
-                  </div>
-                )}
-
-                {(formData as any).clientApiKey && (
-                  <button
-                    type="button"
-                    onClick={handleSyncClient}
-                    disabled={isSyncing || !isAdmin}
-                    className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                  >
-                    {isSyncing ? (
-                      <>
-                        <LoaderCircle className="w-4 h-4 mr-2 animate-spin" />
-                        Sincronizando...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        Sincronizar Este Cliente
-                      </>
-                    )}
-                  </button>
-                )}
-              </>
-            )}
           </form>
 
           <div className="p-4 border-t dark:border-gray-700 flex justify-end">
