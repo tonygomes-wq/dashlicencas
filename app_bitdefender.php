@@ -67,43 +67,62 @@ try {
         }
         $data = json_decode(file_get_contents('php://input'), true);
         
+        if (!$data) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid JSON data']);
+            exit;
+        }
+        
         // Verificar se a coluna notes existe
         $checkColumn = $pdo->query("SHOW COLUMNS FROM bitdefender_licenses LIKE 'notes'");
         $hasNotesColumn = $checkColumn->rowCount() > 0;
         
-        if ($hasNotesColumn) {
-            $sql = "INSERT INTO bitdefender_licenses (user_id, company, contact_person, email, expiration_date, total_licenses, license_key, renewal_status, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                $user_id,
-                $data['company'] ?? null,
-                $data['contact_person'] ?? null,
-                $data['email'] ?? null,
-                $data['expiration_date'] ?? null,
-                $data['total_licenses'] ?? 0,
-                $data['license_key'] ?? null,
-                $data['renewal_status'] ?? 'Pendente',
-                $data['notes'] ?? null
-            ]);
-        } else {
-            $sql = "INSERT INTO bitdefender_licenses (user_id, company, contact_person, email, expiration_date, total_licenses, license_key, renewal_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                $user_id,
-                $data['company'] ?? null,
-                $data['contact_person'] ?? null,
-                $data['email'] ?? null,
-                $data['expiration_date'] ?? null,
-                $data['total_licenses'] ?? 0,
-                $data['license_key'] ?? null,
-                $data['renewal_status'] ?? 'Pendente'
-            ]);
-        }
-        $new_id = $pdo->lastInsertId();
+        try {
+            if ($hasNotesColumn) {
+                $sql = "INSERT INTO bitdefender_licenses (user_id, company, contact_person, email, expiration_date, total_licenses, license_key, renewal_status, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([
+                    $user_id,
+                    $data['company'] ?? null,
+                    $data['contact_person'] ?? null,
+                    $data['email'] ?? null,
+                    $data['expiration_date'] ?? null,
+                    $data['total_licenses'] ?? 0,
+                    $data['license_key'] ?? null,
+                    $data['renewal_status'] ?? 'Pendente',
+                    $data['notes'] ?? null
+                ]);
+            } else {
+                $sql = "INSERT INTO bitdefender_licenses (user_id, company, contact_person, email, expiration_date, total_licenses, license_key, renewal_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([
+                    $user_id,
+                    $data['company'] ?? null,
+                    $data['contact_person'] ?? null,
+                    $data['email'] ?? null,
+                    $data['expiration_date'] ?? null,
+                    $data['total_licenses'] ?? 0,
+                    $data['license_key'] ?? null,
+                    $data['renewal_status'] ?? 'Pendente'
+                ]);
+            }
+            $new_id = $pdo->lastInsertId();
 
-        $stmt = $pdo->prepare('SELECT * FROM bitdefender_licenses WHERE id = ?');
-        $stmt->execute([$new_id]);
-        echo json_encode($stmt->fetch());
+            $stmt = $pdo->prepare('SELECT * FROM bitdefender_licenses WHERE id = ?');
+            $stmt->execute([$new_id]);
+            echo json_encode($stmt->fetch());
+        } catch (PDOException $e) {
+            // Tratar erro de chave duplicada
+            if ($e->getCode() == '23000') {
+                http_response_code(409);
+                echo json_encode([
+                    'error' => 'Duplicate Entry',
+                    'message' => 'Esta chave de licença já existe no sistema. Por favor, use uma chave diferente.'
+                ]);
+            } else {
+                throw $e;
+            }
+        }
         break;
 
     case 'PUT':
