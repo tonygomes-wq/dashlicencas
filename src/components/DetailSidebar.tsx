@@ -43,6 +43,11 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('🔵 handleSubmit chamado');
+    console.log('🔵 isAdmin:', isAdmin);
+    console.log('🔵 formData:', formData);
+    console.log('🔵 item:', item);
+    
     if (!isAdmin) {
         toast.error("Você não tem permissão para editar este registro.");
         return;
@@ -59,11 +64,20 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
             }
         });
 
+        console.log('🔵 updatedFields:', updatedFields);
+        console.log('🔵 Campos alterados:', Object.keys(updatedFields).length);
+
         if (Object.keys(updatedFields).length > 0) {
+            console.log('🔵 Chamando onUpdate...');
             await onUpdate(item.id, updatedFields, item.type);
+            console.log('✅ onUpdate concluído');
+        } else {
+            console.log('⚠️ Nenhum campo foi alterado');
+            toast.info('Nenhuma alteração detectada');
         }
         
     } catch (error) {
+        console.error('❌ Erro no handleSubmit:', error);
         // O toast de erro já é tratado no Dashboard.tsx
     } finally {
         setIsSaving(false);
