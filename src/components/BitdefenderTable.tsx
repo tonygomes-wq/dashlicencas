@@ -97,22 +97,22 @@ const BitdefenderTable: React.FC<BitdefenderTableProps> = ({ licenses, onRowClic
                     <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm" onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" checked={isSelected} onChange={() => onSelectionChange(itemId)} />
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white">
                       {license.company}
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white">
                       {license.contactPerson}
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white">
                       {license.email}
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white">
                       {license.licenseKey}
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-center">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-center text-gray-900 dark:text-white">
                       {license.totalLicenses}
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white">
                       {formatDate(license.expirationDate)}
                     </td>
                     <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">

@@ -97,22 +97,22 @@ const FortigateTable: React.FC<FortigateTableProps> = ({ devices, onRowClick, se
                     <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm" onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" checked={isSelected} onChange={() => onSelectionChange(itemId)} />
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white">
                       {device.client}
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white">
                       {device.email}
                     </td>
                     <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
                       <p className="text-gray-900 dark:text-white whitespace-no-wrap font-mono text-xs">{device.serial}</p>
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white">
                       {device.model}
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white">
                       {formatDate(device.registrationDate)}
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white">
                       {formatDate(device.vencimento)}
                     </td>
                     <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">

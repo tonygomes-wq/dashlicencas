@@ -216,6 +216,16 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
         apiClient.hardware.list()
       ]);
 
+      console.log('📊 Dados carregados:', {
+        bitdefender: bitdefenderData?.length || 0,
+        fortigate: fortigateData?.length || 0,
+        o365Clients: o365ClientsData?.length || 0,
+        o365Licenses: o365LicensesData?.length || 0,
+        gmailClients: gmailClientsData?.length || 0,
+        gmailLicenses: gmailLicensesData?.length || 0,
+        hardware: hardwareData?.length || 0
+      });
+
       setRawBitdefender(bitdefenderData);
       setRawFortigate(fortigateData);
       setRawO365Clients(o365ClientsData);
