@@ -20,9 +20,5 @@ npm-debug.log
 *.tmp
 .DS_Store
 
-# Arquivos de desenvolvimento
-src/
-vite.config.ts
-tsconfig.json
-package.json
-package-lock.json
+# NOTA: NÃO excluir src/, package.json, etc.
+# Esses arquivos são necessários para o build do frontend no Dockerfile

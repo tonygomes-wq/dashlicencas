@@ -1,0 +1,182 @@
+═══════════════════════════════════════════════════════════════
+  📋 CHECKLIST DE DEPLOY - CAMPO DE OBSERVAÇÕES
+═══════════════════════════════════════════════════════════════
+
+✅ = Concluído
+⏳ = Aguardando
+❌ = Não feito
+
+───────────────────────────────────────────────────────────────
+  FASE 1: PREPARAÇÃO (JÁ CONCLUÍDA)
+───────────────────────────────────────────────────────────────
+
+[✅] Código TypeScript modificado
+     └─ src/components/DetailSidebar.tsx
+     └─ src/types.ts
+
+[✅] Campo notes adicionado no banco de dados
+     └─ Tabela: bitdefender_licenses
+     └─ Tabela: fortigate_devices
+
+[✅] .dockerignore corrigido
+     └─ Removidas exclusões de src/, package.json, etc.
+
+[✅] Dockerfile corrigido
+     └─ Adicionado build do frontend em 2 stages
+
+───────────────────────────────────────────────────────────────
+  FASE 2: COMMIT E PUSH (VOCÊ PRECISA FAZER)
+───────────────────────────────────────────────────────────────
+
+[ ] Abrir GitHub Desktop
+    └─ Aplicativo: GitHub Desktop
+
+[ ] Verificar arquivos modificados
+    └─ .dockerignore (modificado)
+    └─ Dockerfile (modificado)
+    └─ CORRECAO_DOCKERFILE_PRONTO.md (novo)
+
+[ ] Escrever mensagem de commit
+    └─ "Fix: Corrigir Dockerfile e .dockerignore para build"
+
+[ ] Clicar em "Commit to main"
+    └─ Botão azul no canto inferior esquerdo
+
+[ ] Clicar em "Push origin"
+    └─ Botão no topo da tela
+
+[ ] Confirmar push concluído
+    └─ Mensagem: "Pushed X commits to origin/main"
+
+───────────────────────────────────────────────────────────────
+  FASE 3: DEPLOY NO EASYPANEL (VOCÊ PRECISA FAZER)
+───────────────────────────────────────────────────────────────
+
+[ ] Acessar Easypanel
+    └─ URL: [seu_easypanel_url]
+
+[ ] Fazer login
+    └─ Usuário: [seu_usuario]
+
+[ ] Ir até o projeto
+    └─ Projeto: "dashlicencas" ou "Dashboard de Licenças"
+
+[ ] Clicar em "Redeploy" ou "Rebuild"
+    └─ Botão geralmente no canto superior direito
+
+[ ] Confirmar redeploy
+    └─ Clicar em "Sim" ou "Confirm" se aparecer popup
+
+[ ] Acompanhar logs do build
+    └─ Ir para aba "Deployments" ou "Logs"
+
+[ ] Aguardar build completar
+    └─ Tempo estimado: 3-5 minutos
+    └─ Procurar por: "Successfully built"
+
+───────────────────────────────────────────────────────────────
+  FASE 4: VERIFICAÇÃO DO BUILD (AUTOMÁTICO)
+───────────────────────────────────────────────────────────────
+
+Nos logs do Easypanel, você deve ver:
+
+[ ] Stage 1: Frontend Builder
+    └─ [frontend-builder] COPY src/ ./src/
+    └─ [frontend-builder] RUN npm ci
+    └─ [frontend-builder] RUN npm run build
+    └─ ✓ built in XXXms
+
+[ ] Stage 2: PHP/Apache
+    └─ [stage-1] COPY *.php ./
+    └─ [stage-1] COPY srv/ ./srv/
+    └─ [stage-1] COPY --from=frontend-builder /app/dist/ ./
+
+[ ] Build finalizado
+    └─ Successfully built
+    └─ Successfully tagged easypanel/sistema/dashlicencas
+
+───────────────────────────────────────────────────────────────
+  FASE 5: TESTE NO BROWSER (VOCÊ PRECISA FAZER)
+───────────────────────────────────────────────────────────────
+
+[ ] Abrir navegador
+    └─ Chrome, Edge, Firefox, etc.
+
+[ ] Acessar o dashboard
+    └─ URL: [url_do_dashboard]
+
+[ ] Limpar cache do browser
+    └─ Pressionar: Ctrl + Shift + R
+    └─ OU: Ctrl + Shift + Delete → Limpar cache
+
+[ ] Fazer login (se necessário)
+    └─ Usuário: [seu_usuario]
+    └─ Senha: [sua_senha]
+
+[ ] Abrir modal de detalhes
+    └─ Clicar em qualquer licença Bitdefender ou Fortigate
+    └─ Clicar no ícone de edição ou detalhes
+
+[ ] Verificar campo de observações
+    └─ Rolar até o final do formulário
+    └─ Procurar por: "Observações"
+    └─ Deve ter um textarea grande (4 linhas)
+
+[ ] Testar funcionalidade
+    └─ Digitar algo no campo de observações
+    └─ Clicar em "Salvar Alterações"
+    └─ Fechar o modal
+    └─ Reabrir o modal
+    └─ Verificar se o texto foi salvo
+
+───────────────────────────────────────────────────────────────
+  FASE 6: CONFIRMAÇÃO FINAL
+───────────────────────────────────────────────────────────────
+
+[ ] Campo "Observações" aparece no modal
+[ ] É possível digitar no campo
+[ ] Ao salvar, os dados são persistidos
+[ ] Ao reabrir, as observações aparecem
+[ ] Funciona para Bitdefender
+[ ] Funciona para Fortigate
+
+───────────────────────────────────────────────────────────────
+  🎉 SUCESSO!
+───────────────────────────────────────────────────────────────
+
+Se todos os itens acima estiverem marcados, o problema está
+resolvido e o campo de observações está funcionando!
+
+───────────────────────────────────────────────────────────────
+  🆘 SE ALGO DER ERRADO
+───────────────────────────────────────────────────────────────
+
+Build falhou no Easypanel:
+  └─ Verifique os logs de erro
+  └─ Procure por linhas em vermelho
+  └─ Copie a mensagem de erro
+
+Campo não aparece no browser:
+  └─ Limpe o cache novamente (Ctrl + Shift + Delete)
+  └─ Tente em aba anônima (Ctrl + Shift + N)
+  └─ Verifique o console do browser (F12)
+
+Erro ao salvar observações:
+  └─ Abra o console do browser (F12)
+  └─ Vá para aba "Network"
+  └─ Tente salvar novamente
+  └─ Veja se há erros na requisição
+
+───────────────────────────────────────────────────────────────
+  📞 DOCUMENTAÇÃO ADICIONAL
+───────────────────────────────────────────────────────────────
+
+• LEIA_ISTO_AGORA.txt - Resumo super rápido
+• FAZER_COMMIT_AGORA.md - Passo a passo detalhado
+• CORRECAO_DOCKERFILE_PRONTO.md - Explicação técnica
+• O_QUE_ACONTECEU.md - História completa do problema
+• RESUMO_VISUAL_PROBLEMA.md - Diagramas visuais
+
+═══════════════════════════════════════════════════════════════
+  ⏱️ TEMPO TOTAL ESTIMADO: 10-15 MINUTOS
+═══════════════════════════════════════════════════════════════

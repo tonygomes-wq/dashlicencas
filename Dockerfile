@@ -10,9 +10,8 @@ COPY package*.json ./
 # Instalar dependências
 RUN npm ci
 
-# Copiar código fonte
+# Copiar código fonte e arquivos de configuração
 COPY src/ ./src/
-COPY public/ ./public/ 2>/dev/null || true
 COPY index.html ./
 COPY vite.config.ts ./
 COPY tsconfig.json ./
@@ -52,7 +51,7 @@ WORKDIR /var/www/html
 # Copiar arquivos PHP do backend
 COPY --chown=www-data:www-data *.php ./
 COPY --chown=www-data:www-data srv/ ./srv/
-COPY --chown=www-data:www-data db_init/ ./db_init/ 2>/dev/null || true
+COPY --chown=www-data:www-data db_init/ ./db_init/
 
 # Copiar arquivos buildados do frontend do stage anterior
 COPY --from=frontend-builder --chown=www-data:www-data /app/dist/ ./
