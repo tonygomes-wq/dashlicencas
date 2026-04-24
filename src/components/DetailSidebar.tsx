@@ -74,6 +74,8 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
     { label: 'Serial Chave', name: 'licenseKey', type: 'text', value: (formData as BitdefenderLicense).licenseKey, required: true },
     { label: 'Total de Licenças', name: 'totalLicenses', type: 'number', value: (formData as BitdefenderLicense).totalLicenses, required: true },
     { label: 'Vencimento', name: 'expirationDate', type: 'date', value: (formData as BitdefenderLicense).expirationDate },
+    { label: 'API Key do Cliente (Opcional)', name: 'clientApiKey', type: 'password', value: (formData as any).clientApiKey, required: false },
+    { label: 'Access URL do Cliente (Opcional)', name: 'clientAccessUrl', type: 'text', value: (formData as any).clientAccessUrl, required: false },
   ] : [
     { label: 'Cliente', name: 'client', type: 'text', value: (formData as FortigateDevice).client, required: true },
     { label: 'Email', name: 'email', type: 'email', value: (formData as FortigateDevice).email },
