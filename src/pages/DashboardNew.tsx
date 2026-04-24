@@ -518,7 +518,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       {o365DetailClient && (
         <O365DetailModal
           client={o365DetailClient}
-          licenses={rawO365Licenses.filter(l => l.clientId === o365DetailClient.id)}
+          licenses={processedO365Licenses.filter(l => l.clientId === o365DetailClient.id)}
           onClose={() => setO365DetailClient(null)}
           onUpdate={() => fetchAllData()}
           isAdmin={user.role === 'admin'}
@@ -528,7 +528,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       {gmailDetailClient && (
         <GmailDetailModal
           client={gmailDetailClient}
-          licenses={rawGmailLicenses.filter(l => l.clientId === gmailDetailClient.id)}
+          licenses={processedGmailLicenses.filter(l => l.clientId === gmailDetailClient.id)}
           onClose={() => setGmailDetailClient(null)}
           onUpdate={() => fetchAllData()}
           isAdmin={user.role === 'admin'}

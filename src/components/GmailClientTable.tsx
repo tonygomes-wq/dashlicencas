@@ -56,10 +56,10 @@ const GmailClientTable: React.FC<GmailClientTableProps> = ({ clients, licenses, 
                     <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
                         <ChevronRight className="w-4 h-4 text-blue-600" />
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm font-semibold">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-900 dark:text-white">
                       {client.clientName}
                     </td>
-                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white">
                       {client.contactEmail || 'N/A'}
                     </td>
                     <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-center">
