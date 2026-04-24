@@ -37,7 +37,7 @@ const AddFortigateModal: React.FC<AddFortigateModalProps> = ({ isOpen, onClose, 
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-60 z-[100] flex justify-center items-center p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-lg w-full transform transition-all">
         <div className="flex justify-between items-center p-4 border-b dark:border-gray-700">
           <h2 className="text-xl font-bold text-gray-800 dark:text-white">Adicionar Novo Dispositivo Fortigate</h2>
