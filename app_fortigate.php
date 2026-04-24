@@ -94,28 +94,63 @@ switch ($method) {
         }
         $data = json_decode(file_get_contents('php://input'), true);
 
-        $fields = [];
-        $params = [];
-        foreach ($data as $key => $value) {
-            if ($key === 'id' || $key === 'user_id' || $key === 'created_at') continue;
-            $fields[] = "$key = ?";
-            $params[] = $value;
+        // Debug: Log dos dados recebidos
+        error_log("FortiGate Update - ID: $id, Data: " . json_encode($data));
+
+        // Verificar se os campos existem na tabela antes de tentar atualizar
+        try {
+            $stmt = $pdo->prepare("DESCRIBE fortigate_devices");
+            $stmt->execute();
+            $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            $validFields = [];
+            $params = [];
+            
+            foreach ($data as $key => $value) {
+                if ($key === 'id' || $key === 'user_id' || $key === 'created_at') continue;
+                
+                // Verificar se o campo existe na tabela
+                if (in_array($key, $columns)) {
+                    $validFields[] = "$key = ?";
+                    $params[] = $value;
+                } else {
+                    error_log("FortiGate Update - Campo '$key' não existe na tabela");
+                }
+            }
+
+            if (empty($validFields)) {
+                http_response_code(400);
+                echo json_encode([
+                    'error' => 'No valid fields to update',
+                    'available_columns' => $columns,
+                    'received_data' => array_keys($data)
+                ]);
+                exit;
+            }
+
+            $params[] = $id;
+            $sql = "UPDATE fortigate_devices SET " . implode(', ', $validFields) . " WHERE id = ?";
+            
+            error_log("FortiGate Update - SQL: $sql");
+            error_log("FortiGate Update - Params: " . json_encode($params));
+            
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+
+            $stmt = $pdo->prepare('SELECT * FROM fortigate_devices WHERE id = ?');
+            $stmt->execute([$id]);
+            $result = $stmt->fetch();
+            
+            echo json_encode($result);
+            
+        } catch (Exception $e) {
+            error_log("FortiGate Update Error: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode([
+                'error' => 'Database error: ' . $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
         }
-
-        if (empty($fields)) {
-            http_response_code(400);
-            echo json_encode(['error' => 'No fields to update']);
-            exit;
-        }
-
-        $params[] = $id;
-        $sql = "UPDATE fortigate_devices SET " . implode(', ', $fields) . " WHERE id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-
-        $stmt = $pdo->prepare('SELECT * FROM fortigate_devices WHERE id = ?');
-        $stmt->execute([$id]);
-        echo json_encode($stmt->fetch());
         break;
 
     case 'DELETE':
