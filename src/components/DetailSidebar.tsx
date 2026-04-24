@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, LoaderCircle } from 'lucide-react';
+import { X, Save, LoaderCircle, RefreshCw } from 'lucide-react';
 import { BitdefenderLicense, FortigateDevice, RenewalStatus } from '../types';
 import toast from 'react-hot-toast';
+import { apiClient } from '../lib/apiClient';
 
 type ItemDetail = (BitdefenderLicense & { type: 'bitdefender' }) | (FortigateDevice & { type: 'fortigate' });
 
@@ -18,6 +19,7 @@ const renewalStatusOptions: RenewalStatus[] = ['Pendente', 'Em Negociação', 'R
 const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, onUpdate, isAdmin }) => {
   const [formData, setFormData] = useState<Partial<BitdefenderLicense | FortigateDevice>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     if (item) {
@@ -67,6 +69,65 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
     }
   };
 
+  const handleSync = async () => {
+    if (!isAdmin) {
+      toast.error("Você não tem permissão para sincronizar.");
+      return;
+    }
+
+    if (isBitdefender) {
+      // Sincronizar Bitdefender
+      const hasApiKey = (formData as any).clientApiKey;
+      const hasAccessUrl = (formData as any).clientAccessUrl;
+
+      if (!hasApiKey || !hasAccessUrl) {
+        toast.error("Configure a API Key e Access URL antes de sincronizar.");
+        return;
+      }
+
+      setIsSyncing(true);
+      try {
+        const result = await apiClient.bitdefenderAPI.syncClient(item.id);
+        if (result.success) {
+          toast.success(`Sincronizado com sucesso! ${result.devices_synced || 0} dispositivos atualizados.`);
+          // Recarregar dados
+          window.location.reload();
+        } else {
+          toast.error(result.message || 'Erro ao sincronizar');
+        }
+      } catch (error: any) {
+        toast.error(error.message || 'Erro ao sincronizar com Bitdefender API');
+      } finally {
+        setIsSyncing(false);
+      }
+    } else {
+      // Sincronizar FortiGate
+      const hasApiToken = (formData as any).apiToken;
+      const hasApiIp = (formData as any).apiIp;
+
+      if (!hasApiToken || !hasApiIp) {
+        toast.error("Configure o API Token e IP antes de sincronizar.");
+        return;
+      }
+
+      setIsSyncing(true);
+      try {
+        const result = await apiClient.fortigateAPI.syncDevice(item.id);
+        if (result.success) {
+          toast.success('Dispositivo sincronizado com sucesso!');
+          // Recarregar dados
+          window.location.reload();
+        } else {
+          toast.error(result.message || 'Erro ao sincronizar');
+        }
+      } catch (error: any) {
+        toast.error(error.message || 'Erro ao sincronizar com FortiGate API');
+      } finally {
+        setIsSyncing(false);
+      }
+    }
+  };
+
   const fields = isBitdefender ? [
     { label: 'Empresa', name: 'company', type: 'text', value: (formData as BitdefenderLicense).company, required: true },
     { label: 'Responsável', name: 'contactPerson', type: 'text', value: (formData as BitdefenderLicense).contactPerson },
@@ -83,6 +144,8 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
     { label: 'Modelo', name: 'model', type: 'text', value: (formData as FortigateDevice).model, required: true },
     { label: 'Data de Registro', name: 'registrationDate', type: 'date', value: (formData as FortigateDevice).registrationDate },
     { label: 'Vencimento', name: 'vencimento', type: 'date', value: (formData as FortigateDevice).vencimento },
+    { label: 'API Token (Opcional)', name: 'apiToken', type: 'password', value: (formData as any).apiToken, required: false },
+    { label: 'API IP/Hostname (Opcional)', name: 'apiIp', type: 'text', value: (formData as any).apiIp, required: false },
   ];
 
   return (
@@ -158,7 +221,39 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
             </div>
           </form>
 
-          <div className="p-4 border-t dark:border-gray-700 flex justify-end">
+          <div className="p-4 border-t dark:border-gray-700 flex justify-between items-center">
+            {/* Botão Sincronizar (apenas se tiver API configurada) */}
+            {isAdmin && (
+              (isBitdefender && (formData as any).clientApiKey && (formData as any).clientAccessUrl) ||
+              (!isBitdefender && (formData as any).apiToken && (formData as any).apiIp)
+            ) && (
+              <button
+                type="button"
+                onClick={handleSync}
+                disabled={isSyncing}
+                className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:bg-green-400 flex items-center"
+              >
+                {isSyncing ? (
+                  <>
+                    <LoaderCircle className="w-4 h-4 mr-2 animate-spin" />
+                    Sincronizando...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Sincronizar
+                  </>
+                )}
+              </button>
+            )}
+            
+            {/* Espaçador se não houver botão sincronizar */}
+            {!(isAdmin && (
+              (isBitdefender && (formData as any).clientApiKey && (formData as any).clientAccessUrl) ||
+              (!isBitdefender && (formData as any).apiToken && (formData as any).apiIp)
+            )) && <div></div>}
+
+            {/* Botão Salvar */}
             <button 
               type="submit" 
               onClick={handleSubmit}

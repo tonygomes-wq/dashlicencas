@@ -84,6 +84,14 @@ export const apiClient = {
         bulkRemove: (ids: number[]) => request('/app_bitdefender.php', { method: 'DELETE', body: JSON.stringify({ ids }) }),
     },
 
+    // Bitdefender API Methods (Sync)
+    bitdefenderAPI: {
+        syncClient: (clientId: number) => request('/app_bitdefender_sync_client.php', { 
+            method: 'POST', 
+            body: JSON.stringify({ client_id: clientId }) 
+        }),
+    },
+
     // Fortigate Methods
     fortigate: {
         list: () => request('/app_fortigate.php'),
