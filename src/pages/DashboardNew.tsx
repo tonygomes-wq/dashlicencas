@@ -386,6 +386,12 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
                 <button
                   onClick={() => {
                     console.log('🔵 Abrindo modal Bitdefender');
+                    // Fechar todos os outros modais primeiro
+                    setIsAddFortigateOpen(false);
+                    setIsAddO365ClientOpen(false);
+                    setIsAddGmailClientOpen(false);
+                    setIsAddHardwareOpen(false);
+                    // Abrir apenas este modal
                     setIsAddBitdefenderOpen(true);
                   }}
                   className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium shadow-lg"
@@ -420,7 +426,16 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               </div>
               {isAdmin && (
                 <button
-                  onClick={() => setIsAddFortigateOpen(true)}
+                  onClick={() => {
+                    console.log('🟠 Abrindo modal Fortigate');
+                    // Fechar todos os outros modais primeiro
+                    setIsAddBitdefenderOpen(false);
+                    setIsAddO365ClientOpen(false);
+                    setIsAddGmailClientOpen(false);
+                    setIsAddHardwareOpen(false);
+                    // Abrir apenas este modal
+                    setIsAddFortigateOpen(true);
+                  }}
                   className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2 font-medium shadow-lg"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -454,7 +469,16 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               </div>
               {isAdmin && (
                 <button
-                  onClick={() => setIsAddO365ClientOpen(true)}
+                  onClick={() => {
+                    console.log('🔷 Abrindo modal Office 365');
+                    // Fechar todos os outros modais primeiro
+                    setIsAddBitdefenderOpen(false);
+                    setIsAddFortigateOpen(false);
+                    setIsAddGmailClientOpen(false);
+                    setIsAddHardwareOpen(false);
+                    // Abrir apenas este modal
+                    setIsAddO365ClientOpen(true);
+                  }}
                   className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 font-medium shadow-lg"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -488,7 +512,16 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               </div>
               {isAdmin && (
                 <button
-                  onClick={() => setIsAddGmailClientOpen(true)}
+                  onClick={() => {
+                    console.log('🔴 Abrindo modal Gmail');
+                    // Fechar todos os outros modais primeiro
+                    setIsAddBitdefenderOpen(false);
+                    setIsAddFortigateOpen(false);
+                    setIsAddO365ClientOpen(false);
+                    setIsAddHardwareOpen(false);
+                    // Abrir apenas este modal
+                    setIsAddGmailClientOpen(true);
+                  }}
                   className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2 font-medium shadow-lg"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -535,7 +568,16 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               </div>
               {isAdmin && (
                 <button
-                  onClick={() => setIsAddHardwareOpen(true)}
+                  onClick={() => {
+                    console.log('🟣 Abrindo modal Hardware');
+                    // Fechar todos os outros modais primeiro
+                    setIsAddBitdefenderOpen(false);
+                    setIsAddFortigateOpen(false);
+                    setIsAddO365ClientOpen(false);
+                    setIsAddGmailClientOpen(false);
+                    // Abrir apenas este modal
+                    setIsAddHardwareOpen(true);
+                  }}
                   className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 font-medium shadow-lg"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
