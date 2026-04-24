@@ -1,5 +1,8 @@
 <?php
 // api/bitdefender.php - CRUD for Bitdefender Licenses
+error_reporting(0);
+ini_set('display_errors', '0');
+
 session_start();
 
 require_once 'srv/config.php';
@@ -24,8 +27,9 @@ if (!hasPermission('bitdefender')) {
 $method = $_SERVER['REQUEST_METHOD'];
 $user_id = $_SESSION['user_id'];
 
-switch ($method) {
-    case 'GET':
+try {
+    switch ($method) {
+        case 'GET':
         $id = $_GET['id'] ?? null;
         if ($id) {
             $stmt = $pdo->prepare('SELECT * FROM bitdefender_licenses WHERE id = ?');
@@ -173,4 +177,22 @@ switch ($method) {
         http_response_code(405);
         echo json_encode(['error' => 'Method not allowed']);
         break;
+    }
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        'error' => 'Internal Server Error',
+        'message' => $e->getMessage(),
+        'file' => basename($e->getFile()),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString()
+    ]);
+} catch (Error $e) {
+    http_response_code(500);
+    echo json_encode([
+        'error' => 'Fatal Error',
+        'message' => $e->getMessage(),
+        'file' => basename($e->getFile()),
+        'line' => $e->getLine()
+    ]);
 }
