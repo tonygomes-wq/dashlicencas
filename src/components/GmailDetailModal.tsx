@@ -343,7 +343,7 @@ const GmailDetailModal: React.FC<GmailDetailModalProps> = ({ isOpen, onClose, cl
                                                         ) : (
                                                             <div className="flex items-center space-x-2">
                                                                 <User className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                                                                <span className="truncate">{license.username}</span>
+                                                                <span className="truncate text-gray-900 dark:text-white">{license.username}</span>
                                                             </div>
                                                         )}
                                                     </td>
@@ -364,7 +364,7 @@ const GmailDetailModal: React.FC<GmailDetailModalProps> = ({ isOpen, onClose, cl
                                                         ) : (
                                                             <div className="flex items-center space-x-2">
                                                                 <Mail className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                                                                <span className="truncate">{license.email}</span>
+                                                                <span className="truncate text-gray-900 dark:text-white">{license.email}</span>
                                                             </div>
                                                         )}
                                                     </td>
@@ -382,7 +382,7 @@ const GmailDetailModal: React.FC<GmailDetailModalProps> = ({ isOpen, onClose, cl
                                                         ) : (
                                                             <div className="flex items-center space-x-1">
                                                                 <Key className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                                                                <span>{license.licenseType || 'N/A'}</span>
+                                                                <span className="text-gray-900 dark:text-white">{license.licenseType || 'N/A'}</span>
                                                             </div>
                                                         )}
                                                     </td>
@@ -401,7 +401,7 @@ const GmailDetailModal: React.FC<GmailDetailModalProps> = ({ isOpen, onClose, cl
                                                             <div className="flex items-center space-x-1">
                                                                 {license.password ? (
                                                                     <>
-                                                                        <span className="font-mono text-xs">
+                                                                        <span className="font-mono text-xs text-gray-900 dark:text-white">
                                                                             {isPasswordVisible ? license.password : '********'}
                                                                         </span>
                                                                         <button
