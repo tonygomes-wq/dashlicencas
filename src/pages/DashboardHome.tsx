@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Flame, Mail, AtSign, HardDrive, Network } from 'lucide-react';
+import { Shield, Flame, Mail, AtSign, HardDrive, Network, Filter } from 'lucide-react';
 import StatsCard from '../components/dashboard/StatsCard';
 import BitdefenderAPIStats from '../components/dashboard/BitdefenderAPIStats';
 import AlertsList from '../components/dashboard/AlertsList';
@@ -20,40 +20,64 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate }) => {
   });
 
   const [loading, setLoading] = useState(true);
+  const [clientFilter, setClientFilter] = useState<string>('all');
+  const [clients, setClients] = useState<string[]>([]);
 
   useEffect(() => {
     fetchDashboardStats();
-  }, []);
+  }, [clientFilter]);
 
   const fetchDashboardStats = async () => {
     setLoading(true);
     try {
-      // Fetch Bitdefender stats
-      const bitdefenderData = await apiClient.bitdefender.getAll();
+      // Fetch all data
+      const [bitdefenderData, fortigateData, o365LicensesData, gmailLicensesData, hardwareData] = await Promise.all([
+        apiClient.bitdefender.list(),
+        apiClient.fortigate.list(),
+        apiClient.o365.licenses.list(),
+        apiClient.gmail.licenses.list(),
+        apiClient.hardware.list()
+      ]);
+
+      // Extract unique clients for filter
+      const uniqueClients = new Set<string>();
+      bitdefenderData.forEach((l: any) => l.company && uniqueClients.add(l.company));
+      fortigateData.forEach((d: any) => d.client && uniqueClients.add(d.client));
+      setClients(Array.from(uniqueClients).sort());
+
+      // Filter data by client if selected
+      const filteredBitdefender = clientFilter === 'all' 
+        ? bitdefenderData 
+        : bitdefenderData.filter((l: any) => l.company === clientFilter);
+      
+      const filteredFortigate = clientFilter === 'all'
+        ? fortigateData
+        : fortigateData.filter((d: any) => d.client === clientFilter);
+
+      // Calculate Bitdefender stats
       const bitdefenderStats = {
-        total: bitdefenderData.length,
-        expired: bitdefenderData.filter((l: any) => {
-          if (!l.expirationDate) return false;
-          return new Date(l.expirationDate) < new Date();
+        total: filteredBitdefender.length,
+        expired: filteredBitdefender.filter((l: any) => {
+          if (!l.expiration_date) return false;
+          return new Date(l.expiration_date) < new Date();
         }).length,
-        expiring: bitdefenderData.filter((l: any) => {
-          if (!l.expirationDate) return false;
-          const daysUntilExpiry = Math.ceil((new Date(l.expirationDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+        expiring: filteredBitdefender.filter((l: any) => {
+          if (!l.expiration_date) return false;
+          const daysUntilExpiry = Math.ceil((new Date(l.expiration_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
           return daysUntilExpiry > 0 && daysUntilExpiry <= 7;
         }).length,
         ok: 0
       };
       bitdefenderStats.ok = bitdefenderStats.total - bitdefenderStats.expired - bitdefenderStats.expiring;
 
-      // Fetch Fortigate stats
-      const fortigateData = await apiClient.fortigate.getAll();
+      // Calculate Fortigate stats
       const fortigateStats = {
-        total: fortigateData.length,
-        expired: fortigateData.filter((d: any) => {
+        total: filteredFortigate.length,
+        expired: filteredFortigate.filter((d: any) => {
           if (!d.vencimento) return false;
           return new Date(d.vencimento) < new Date();
         }).length,
-        expiring: fortigateData.filter((d: any) => {
+        expiring: filteredFortigate.filter((d: any) => {
           if (!d.vencimento) return false;
           const daysUntilExpiry = Math.ceil((new Date(d.vencimento).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
           return daysUntilExpiry > 0 && daysUntilExpiry <= 7;
@@ -62,15 +86,35 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate }) => {
       };
       fortigateStats.ok = fortigateStats.total - fortigateStats.expired - fortigateStats.expiring;
 
-      // TODO: Fetch other stats (O365, Gmail, Inventory, Network)
+      // Calculate O365 stats
+      const o365Stats = {
+        total: o365LicensesData.length,
+        active: o365LicensesData.filter((l: any) => l.renewal_status === 'Renovado').length,
+        inactive: o365LicensesData.filter((l: any) => l.renewal_status === 'Pendente').length
+      };
+
+      // Calculate Gmail stats
+      const gmailStats = {
+        total: gmailLicensesData.length,
+        active: gmailLicensesData.filter((l: any) => l.renewal_status === 'Renovado').length,
+        inactive: gmailLicensesData.filter((l: any) => l.renewal_status === 'Pendente').length
+      };
+
+      // Calculate Hardware stats
+      const hardwareStats = {
+        total: hardwareData.length,
+        desktop: hardwareData.filter((d: any) => d.device_type === 'Desktop').length,
+        notebook: hardwareData.filter((d: any) => d.device_type === 'Notebook').length,
+        server: hardwareData.filter((d: any) => d.device_type === 'Servidor').length
+      };
       
       setStats({
         bitdefender: bitdefenderStats,
         fortigate: fortigateStats,
-        office365: { total: 120, active: 115, inactive: 5 },
-        gmail: { total: 85, active: 80, inactive: 5 },
-        inventory: { total: 85, desktop: 45, notebook: 32, server: 8 },
-        network: { total: 70, online: 67, offline: 3 }
+        office365: o365Stats,
+        gmail: gmailStats,
+        inventory: hardwareStats,
+        network: { total: 0, online: 0, offline: 0 } // Network não tem dados ainda
       });
     } catch (error) {
       console.error('Erro ao buscar estatísticas:', error);
@@ -90,13 +134,30 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate }) => {
   return (
     <div className="space-y-8">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Dashboard - Visão Geral
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Acompanhe todas as suas licenças e dispositivos em um só lugar
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Dashboard - Visão Geral
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Acompanhe todas as suas licenças e dispositivos em um só lugar
+          </p>
+        </div>
+
+        {/* Client Filter */}
+        <div className="flex items-center gap-2">
+          <Filter className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <select
+            value={clientFilter}
+            onChange={(e) => setClientFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">Todos os Clientes</option>
+            {clients.map(client => (
+              <option key={client} value={client}>{client}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Stats Cards Grid */}
