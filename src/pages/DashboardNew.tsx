@@ -178,7 +178,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
   const handleUpdateO365License = async (id: number, data: Partial<O365License>) => {
     try {
-      await apiClient.o365.updateLicense(id, data);
+      await apiClient.o365.licenses.update(id, data);
       await fetchAllData();
       toast.success('Licença atualizada com sucesso!');
     } catch (error) {
@@ -189,7 +189,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
   const handleDeleteHardware = async (id: number) => {
     try {
-      await apiClient.hardware.delete(id);
+      await apiClient.hardware.remove(id);
       await fetchAllData();
       toast.success('Hardware deletado com sucesso!');
     } catch (error) {
@@ -207,13 +207,13 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
     setIsLoading(true);
     try {
       const [bitdefenderData, fortigateData, o365ClientsData, o365LicensesData, gmailClientsData, gmailLicensesData, hardwareData] = await Promise.all([
-        apiClient.bitdefender.getAll(),
-        apiClient.fortigate.getAll(),
-        apiClient.o365.getClients(),
-        apiClient.o365.getLicenses(),
-        apiClient.gmail.getClients(),
-        apiClient.gmail.getLicenses(),
-        apiClient.hardware.getAll()
+        apiClient.bitdefender.list(),
+        apiClient.fortigate.list(),
+        apiClient.o365.clients.list(),
+        apiClient.o365.licenses.list(),
+        apiClient.gmail.clients.list(),
+        apiClient.gmail.licenses.list(),
+        apiClient.hardware.list()
       ]);
 
       setRawBitdefender(bitdefenderData);
