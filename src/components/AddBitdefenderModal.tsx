@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BitdefenderLicense } from '../types';
 import { X } from 'lucide-react';
 import { apiClient } from '../lib/apiClient';
+import toast from 'react-hot-toast';
 
 interface AddBitdefenderModalProps {
   isOpen: boolean;
@@ -17,13 +18,14 @@ const AddBitdefenderModal: React.FC<AddBitdefenderModalProps> = ({ isOpen, onClo
     licenseKey: '',
     totalLicenses: 0,
     expirationDate: '',
+    notes: ''
   };
   const [formData, setFormData] = useState(initialState);
   const [isSaving, setIsSaving] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -36,17 +38,21 @@ const AddBitdefenderModal: React.FC<AddBitdefenderModalProps> = ({ isOpen, onClo
     setIsSaving(true);
     try {
       await apiClient.bitdefender.create({
-        ...formData,
+        company: formData.company,
+        contact_person: formData.contactPerson,
+        email: formData.email,
+        license_key: formData.licenseKey,
         total_licenses: Number(formData.totalLicenses),
         expiration_date: formData.expirationDate,
-        contact_person: formData.contactPerson,
-        license_key: formData.licenseKey
+        renewal_status: 'Pendente',
+        notes: formData.notes || ''
       });
+      toast.success('Licença adicionada com sucesso!');
       setFormData(initialState);
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao adicionar licença:', error);
-      alert('Erro ao adicionar licença');
+      toast.error(error.message || 'Erro ao adicionar licença');
     } finally {
       setIsSaving(false);
     }
@@ -69,6 +75,7 @@ const AddBitdefenderModal: React.FC<AddBitdefenderModalProps> = ({ isOpen, onClo
             <input type="text" name="licenseKey" placeholder="Serial Chave" value={formData.licenseKey} onChange={handleChange} required className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
             <input type="number" name="totalLicenses" placeholder="Total de Licenças" value={formData.totalLicenses} onChange={handleChange} required className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
             <input type="date" name="expirationDate" placeholder="Vencimento" value={formData.expirationDate} onChange={handleChange} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+            <textarea name="notes" placeholder="Observações" value={formData.notes} onChange={handleChange} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white md:col-span-2" rows={3}></textarea>
           </div>
           <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 rounded-b-lg flex justify-end space-x-3">
             <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500">Cancelar</button>
