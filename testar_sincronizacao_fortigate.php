@@ -20,8 +20,7 @@ try {
     $tablesStatus = [];
     
     foreach ($tables as $table) {
-        $stmt = $pdo->prepare("SHOW TABLES LIKE ?");
-        $stmt->execute([$table]);
+        $stmt = $pdo->query("SHOW TABLES LIKE '{$table}'");
         $exists = $stmt->fetch() !== false;
         $tablesStatus[$table] = $exists;
         
