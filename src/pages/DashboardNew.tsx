@@ -45,6 +45,21 @@ import {
   WarrantyStatus
 } from '../types';
 
+// Funções auxiliares para mapear entre snake_case (DB) e camelCase (JS)
+const toCamelCase = (s: string) => s.replace(/([-_][a-z])/ig, ($1) => $1.toUpperCase().replace('-', '').replace('_', ''));
+
+const transformKeys = (obj: any, transformer: (key: string) => string): any => {
+  if (Array.isArray(obj)) {
+    return obj.map(v => transformKeys(v, transformer));
+  } else if (obj !== null && obj.constructor === Object) {
+    return Object.keys(obj).reduce((result, key) => {
+      result[transformer(key)] = transformKeys(obj[key], transformer);
+      return result;
+    }, {} as any);
+  }
+  return obj;
+};
+
 interface DashboardNewProps {
   user: User;
 }
@@ -226,13 +241,13 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
         hardware: hardwareData?.length || 0
       });
 
-      setRawBitdefender(bitdefenderData);
-      setRawFortigate(fortigateData);
-      setRawO365Clients(o365ClientsData);
-      setRawO365Licenses(o365LicensesData);
-      setRawGmailClients(gmailClientsData);
-      setRawGmailLicenses(gmailLicensesData);
-      setRawHardware(hardwareData);
+      setRawBitdefender(transformKeys(bitdefenderData, toCamelCase));
+      setRawFortigate(transformKeys(fortigateData, toCamelCase));
+      setRawO365Clients(transformKeys(o365ClientsData, toCamelCase));
+      setRawO365Licenses(transformKeys(o365LicensesData, toCamelCase));
+      setRawGmailClients(transformKeys(gmailClientsData, toCamelCase));
+      setRawGmailLicenses(transformKeys(gmailLicensesData, toCamelCase));
+      setRawHardware(transformKeys(hardwareData, toCamelCase));
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       toast.error('Erro ao carregar dados do dashboard');

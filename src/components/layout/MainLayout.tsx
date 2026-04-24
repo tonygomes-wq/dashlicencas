@@ -21,6 +21,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 }) => {
   const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
   const [notificationCount] = useState(3); // TODO: Get from API
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const handleSettingsClick = () => {
     onNavigate('settings');
@@ -42,10 +43,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         currentPage={currentPage}
         onNavigate={onNavigate}
         onLogout={onLogout}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
       />
 
       {/* Main Content */}
-      <main className="pt-16 pl-64 transition-all duration-300">
+      <main className={`pt-16 transition-all duration-300 ${isSidebarCollapsed ? 'pl-16' : 'pl-64'}`}>
         <div className="p-8">
           {children}
         </div>

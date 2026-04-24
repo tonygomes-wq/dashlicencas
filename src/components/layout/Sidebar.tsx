@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   LayoutDashboard, 
   Shield, 
@@ -17,6 +17,8 @@ interface SidebarProps {
   currentPage: string;
   onNavigate: (page: string) => void;
   onLogout: () => void;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
 interface MenuItem {
@@ -26,8 +28,7 @@ interface MenuItem {
   color: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate, onLogout }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate, onLogout, isCollapsed, onToggleCollapse }) => {
 
   const menuItems: MenuItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, color: 'text-blue-600 dark:text-blue-400' },
@@ -56,7 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate, onLogout }) 
     >
       {/* Toggle Button */}
       <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
+        onClick={onToggleCollapse}
         className="absolute -right-3 top-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full p-1 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
       >
         {isCollapsed ? (
