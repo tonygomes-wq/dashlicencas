@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from './lib/apiClient';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
+import DashboardNew from './pages/DashboardNew';
 import { LoaderCircle } from 'lucide-react';
 import { User } from './types';
 
@@ -40,7 +40,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <Dashboard key={user.id} user={user} />
+    <DashboardNew key={user.id} user={user} />
   );
 };
 
