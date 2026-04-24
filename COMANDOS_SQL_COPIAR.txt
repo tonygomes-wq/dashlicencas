@@ -1,0 +1,38 @@
+========================================
+COMANDOS SQL - CAMPO DE OBSERVAÇÕES
+========================================
+
+Execute UM comando por vez no phpMyAdmin!
+
+========================================
+COMANDO 1: bitdefender_licenses
+========================================
+
+ALTER TABLE `bitdefender_licenses` ADD COLUMN `notes` TEXT DEFAULT NULL COMMENT 'Observações e informações extras';
+
+========================================
+COMANDO 2: fortigate_devices
+========================================
+
+ALTER TABLE `fortigate_devices` ADD COLUMN `notes` TEXT DEFAULT NULL COMMENT 'Observações e informações extras';
+
+========================================
+VERIFICAR SE FUNCIONOU
+========================================
+
+DESCRIBE bitdefender_licenses;
+
+========================================
+FIM
+========================================
+
+Instruções:
+1. Copie o COMANDO 1
+2. Cole no phpMyAdmin (aba SQL)
+3. Clique em "Executar"
+4. Copie o COMANDO 2
+5. Cole no phpMyAdmin
+6. Clique em "Executar"
+7. Pronto!
+
+Se aparecer "Query OK", funcionou! ✅

@@ -134,6 +134,26 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
                 />
               </div>
             ))}
+
+            {/* Campo de Observações */}
+            <div>
+              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Observações
+              </label>
+              <textarea
+                id="notes"
+                name="notes"
+                value={formData.notes || ''}
+                onChange={handleChange}
+                disabled={!isAdmin}
+                rows={4}
+                placeholder="Adicione informações extras, observações ou notas importantes..."
+                className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-700/50 resize-vertical"
+              />
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Use este campo para adicionar informações extras que possam ser úteis
+              </p>
+            </div>
           </form>
 
           <div className="p-4 border-t dark:border-gray-700 flex justify-end">

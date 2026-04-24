@@ -19,6 +19,7 @@ export interface BitdefenderLicense extends BaseItem {
   expirationDate: string | null; // YYYY-MM-DD
   totalLicenses: number;
   licenseKey: string;
+  notes?: string | null; // Observações e informações extras
 }
 
 export interface BitdefenderLicenseWithStatus extends BitdefenderLicense {
@@ -33,6 +34,7 @@ export interface FortigateDevice extends BaseItem {
   email: string;
   vencimento: string | null; // YYYY-MM-DD
   registrationDate: string | null; // YYYY-MM-DD
+  notes?: string | null; // Observações e informações extras
 }
 
 export interface FortigateDeviceWithStatus extends FortigateDevice {
