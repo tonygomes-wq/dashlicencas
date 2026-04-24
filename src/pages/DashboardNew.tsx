@@ -373,13 +373,26 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       case 'bitdefender':
         return (
           <div>
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Bitdefender - Gerenciamento de Licenças
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Gerencie todas as licenças Bitdefender
-              </p>
+            <div className="mb-6 flex justify-between items-start">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Bitdefender - Gerenciamento de Licenças
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Gerencie todas as licenças Bitdefender
+                </p>
+              </div>
+              {isAdmin && (
+                <button
+                  onClick={() => setIsAddBitdefenderOpen(true)}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium shadow-lg"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Adicionar Nova Licença
+                </button>
+              )}
             </div>
             <BitdefenderTable
               licenses={processedBitdefender}
@@ -393,13 +406,26 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       case 'fortigate':
         return (
           <div>
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Fortigate - Gerenciamento de Dispositivos
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Gerencie todos os dispositivos Fortigate
-              </p>
+            <div className="mb-6 flex justify-between items-start">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Fortigate - Gerenciamento de Dispositivos
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Gerencie todos os dispositivos Fortigate
+                </p>
+              </div>
+              {isAdmin && (
+                <button
+                  onClick={() => setIsAddFortigateOpen(true)}
+                  className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2 font-medium shadow-lg"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Adicionar Novo Dispositivo
+                </button>
+              )}
             </div>
             <FortigateTable
               devices={processedFortigate}
@@ -414,13 +440,26 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       case 'office365':
         return (
           <div>
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Office 365 - Gerenciamento de Licenças
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Gerencie clientes e licenças Office 365
-              </p>
+            <div className="mb-6 flex justify-between items-start">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Office 365 - Gerenciamento de Licenças
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Gerencie clientes e licenças Office 365
+                </p>
+              </div>
+              {isAdmin && (
+                <button
+                  onClick={() => setIsAddO365ClientOpen(true)}
+                  className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 font-medium shadow-lg"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Adicionar Novo Cliente
+                </button>
+              )}
             </div>
             <O365ClientTable
               clients={rawO365Clients}
@@ -435,13 +474,26 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       case 'gmail':
         return (
           <div>
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Gmail - Gerenciamento de Licenças
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Gerencie clientes e licenças Gmail
-              </p>
+            <div className="mb-6 flex justify-between items-start">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Gmail - Gerenciamento de Licenças
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Gerencie clientes e licenças Gmail
+                </p>
+              </div>
+              {isAdmin && (
+                <button
+                  onClick={() => setIsAddGmailClientOpen(true)}
+                  className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2 font-medium shadow-lg"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Adicionar Novo Cliente
+                </button>
+              )}
             </div>
             <GmailClientTable
               clients={rawGmailClients}
@@ -469,13 +521,26 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       case 'inventory':
         return (
           <div>
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Inventário de Hardware
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Gerencie o inventário de dispositivos
-              </p>
+            <div className="mb-6 flex justify-between items-start">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Inventário de Hardware
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Gerencie o inventário de dispositivos
+                </p>
+              </div>
+              {isAdmin && (
+                <button
+                  onClick={() => setIsAddHardwareOpen(true)}
+                  className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 font-medium shadow-lg"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Adicionar Novo Dispositivo
+                </button>
+              )}
             </div>
             <HardwareInventoryTable
               devices={processedHardware}
