@@ -55,12 +55,14 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
     
     setIsSaving(true);
     try {
-        // Filtra apenas os campos que mudaram (opcional, mas bom para otimização)
-        const updatedFields: Partial<BitdefenderLicense | FortigateDevice> = {};
+        // Filtra apenas os campos que mudaram e converte para snake_case
+        const updatedFields: any = {};
         Object.keys(formData).forEach(key => {
             const k = key as keyof (BitdefenderLicense | FortigateDevice);
             if (formData[k] !== item[k]) {
-                updatedFields[k] = formData[k] as any;
+                // Converter camelCase para snake_case para o backend
+                const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+                updatedFields[snakeKey] = formData[k] as any;
             }
         });
 
