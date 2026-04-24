@@ -709,9 +709,9 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               } else {
                 await apiClient.fortigate.update(id, data);
               }
-              await fetchAllData();
               toast.success('Atualizado com sucesso!');
               setIsDetailSidebarOpen(false);
+              await fetchAllData();
             } catch (error) {
               toast.error('Erro ao atualizar');
             }

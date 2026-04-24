@@ -575,6 +575,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
     const tableName = type === 'bitdefender' ? 'bitdefender_licenses' : 'fortigate_devices';
     const success = await handleUpdateRecord(tableName, id, data);
     if (success) {
+      // Fechar o modal após salvar
+      setIsDetailSidebarOpen(false);
       // Se a atualização for bem-sucedida, atualiza o item selecionado no sidebar
       setSelectedItemDetail(prev => {
         if (!prev) return null;
