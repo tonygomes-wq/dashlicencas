@@ -36,22 +36,33 @@ const AddBitdefenderModal: React.FC<AddBitdefenderModalProps> = ({ isOpen, onClo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
+    
+    const payload = {
+      company: formData.company,
+      contact_person: formData.contactPerson,
+      email: formData.email,
+      license_key: formData.licenseKey,
+      total_licenses: Number(formData.totalLicenses),
+      expiration_date: formData.expirationDate,
+      renewal_status: 'Pendente',
+      notes: formData.notes || ''
+    };
+    
+    console.log('📤 Enviando dados:', payload);
+    
     try {
-      await apiClient.bitdefender.create({
-        company: formData.company,
-        contact_person: formData.contactPerson,
-        email: formData.email,
-        license_key: formData.licenseKey,
-        total_licenses: Number(formData.totalLicenses),
-        expiration_date: formData.expirationDate,
-        renewal_status: 'Pendente',
-        notes: formData.notes || ''
-      });
+      const result = await apiClient.bitdefender.create(payload);
+      console.log('✅ Resposta recebida:', result);
       toast.success('Licença adicionada com sucesso!');
       setFormData(initialState);
       onSuccess();
     } catch (error: any) {
-      console.error('Erro ao adicionar licença:', error);
+      console.error('❌ Erro ao adicionar licença:', error);
+      console.error('❌ Detalhes do erro:', {
+        message: error.message,
+        stack: error.stack,
+        error: error
+      });
       toast.error(error.message || 'Erro ao adicionar licença');
     } finally {
       setIsSaving(false);

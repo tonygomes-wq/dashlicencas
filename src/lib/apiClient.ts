@@ -22,9 +22,12 @@ const request = async (path: string, options: RequestInit = {}) => {
     if (!response.ok) {
         if (isJson) {
             const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            const errorMessage = errorData.message || errorData.error || `HTTP error! status: ${response.status}`;
+            console.error('API Error:', errorData);
+            throw new Error(errorMessage);
         } else {
             const text = await response.text();
+            console.error('Non-JSON Error Response:', text);
             if (text.includes('<!doctype') || text.includes('<html')) {
                 throw new Error(`Erro no Servidor (HTML recebido em vez de JSON). Status: ${response.status}. Por favor, limpe o cache do navegador.`);
             }
