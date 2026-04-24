@@ -98,6 +98,9 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
   const [gmailDetailClient, setGmailDetailClient] = useState<GmailClient | null>(null);
   const [hardwareDetailDevice, setHardwareDetailDevice] = useState<HardwareDevice | null>(null);
 
+  const [isO365DetailModalOpen, setIsO365DetailModalOpen] = useState(false);
+  const [isGmailDetailModalOpen, setIsGmailDetailModalOpen] = useState(false);
+
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
     type: 'bitdefender' | 'fortigate' | 'o365' | 'gmail' | 'hardware' | null;
@@ -216,11 +219,79 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
   const handleO365ClientClick = (client: O365Client) => {
     console.log('📋 Abrindo modal O365 para cliente:', client);
     setO365DetailClient(client);
+    setIsO365DetailModalOpen(true);
   };
 
   const handleGmailClientClick = (client: GmailClient) => {
     console.log('📋 Abrindo modal Gmail para cliente:', client);
     setGmailDetailClient(client);
+    setIsGmailDetailModalOpen(true);
+  };
+
+  const handleRemoveO365License = async (id: number) => {
+    try {
+      await apiClient.o365.licenses.remove(id);
+      await fetchAllData();
+      toast.success('Licença removida com sucesso!');
+    } catch (error) {
+      console.error('Erro ao remover licença:', error);
+      toast.error('Erro ao remover licença');
+    }
+  };
+
+  const handleAddO365License = async (clientId: string, licenseData: Omit<O365License, 'id' | 'clientId' | 'renewalStatus'>) => {
+    try {
+      await apiClient.o365.licenses.create({ ...licenseData, client_id: clientId, renewal_status: 'Pendente' });
+      await fetchAllData();
+      toast.success('Licença adicionada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao adicionar licença:', error);
+      toast.error('Erro ao adicionar licença');
+    }
+  };
+
+  const handleBulkImportO365Licenses = async (clientId: string, licenses: Omit<O365License, 'id' | 'clientId' | 'renewalStatus'>[]) => {
+    try {
+      await apiClient.o365.licenses.bulkCreate(licenses.map(l => ({ ...l, client_id: clientId, renewal_status: 'Pendente' })));
+      await fetchAllData();
+      toast.success(`${licenses.length} licenças importadas com sucesso!`);
+    } catch (error) {
+      console.error('Erro ao importar licenças:', error);
+      toast.error('Erro ao importar licenças');
+    }
+  };
+
+  const handleRemoveGmailLicense = async (id: number) => {
+    try {
+      await apiClient.gmail.licenses.remove(id);
+      await fetchAllData();
+      toast.success('Licença removida com sucesso!');
+    } catch (error) {
+      console.error('Erro ao remover licença:', error);
+      toast.error('Erro ao remover licença');
+    }
+  };
+
+  const handleAddGmailLicense = async (clientId: string, licenseData: Omit<GmailLicense, 'id' | 'clientId' | 'renewalStatus'>) => {
+    try {
+      await apiClient.gmail.licenses.create({ ...licenseData, client_id: clientId, renewal_status: 'Pendente' });
+      await fetchAllData();
+      toast.success('Licença adicionada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao adicionar licença:', error);
+      toast.error('Erro ao adicionar licença');
+    }
+  };
+
+  const handleBulkImportGmailLicenses = async (clientId: string, licenses: Omit<GmailLicense, 'id' | 'clientId' | 'renewalStatus'>[]) => {
+    try {
+      await apiClient.gmail.licenses.bulkCreate(licenses.map(l => ({ ...l, client_id: clientId, renewal_status: 'Pendente' })));
+      await fetchAllData();
+      toast.success(`${licenses.length} licenças importadas com sucesso!`);
+    } catch (error) {
+      console.error('Erro ao importar licenças:', error);
+      toast.error('Erro ao importar licenças');
+    }
   };
 
   // Fetch all data
@@ -525,31 +596,44 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
         />
       )}
 
-      {o365DetailClient && (
-        <>
-          {console.log('🔵 Renderizando O365DetailModal para:', o365DetailClient)}
-          <O365DetailModal
-            client={o365DetailClient}
-            licenses={processedO365Licenses.filter(l => l.clientId === o365DetailClient.id)}
-            onClose={() => setO365DetailClient(null)}
-            onUpdate={() => fetchAllData()}
-            isAdmin={user.role === 'admin'}
-          />
-        </>
-      )}
+      <O365DetailModal
+        isOpen={isO365DetailModalOpen}
+        onClose={() => {
+          setIsO365DetailModalOpen(false);
+          setO365DetailClient(null);
+        }}
+        client={o365DetailClient}
+        licenses={processedO365Licenses.filter(l => o365DetailClient && l.clientId === o365DetailClient.id)}
+        onLicenseUpdate={handleUpdateO365License}
+        onLicenseRemove={handleRemoveO365License}
+        onAddLicense={handleAddO365License}
+        onBulkImport={handleBulkImportO365Licenses}
+        isAdmin={isAdmin}
+      />
 
-      {gmailDetailClient && (
-        <>
-          {console.log('🔴 Renderizando GmailDetailModal para:', gmailDetailClient)}
-          <GmailDetailModal
-            client={gmailDetailClient}
-            licenses={processedGmailLicenses.filter(l => l.clientId === gmailDetailClient.id)}
-            onClose={() => setGmailDetailClient(null)}
-            onUpdate={() => fetchAllData()}
-            isAdmin={user.role === 'admin'}
-          />
-        </>
-      )}
+      <GmailDetailModal
+        isOpen={isGmailDetailModalOpen}
+        onClose={() => {
+          setIsGmailDetailModalOpen(false);
+          setGmailDetailClient(null);
+        }}
+        client={gmailDetailClient}
+        licenses={processedGmailLicenses.filter(l => gmailDetailClient && l.clientId === gmailDetailClient.id)}
+        onLicenseUpdate={async (id, data) => {
+          try {
+            await apiClient.gmail.licenses.update(id, data);
+            await fetchAllData();
+            toast.success('Licença atualizada com sucesso!');
+          } catch (error) {
+            console.error('Erro ao atualizar licença:', error);
+            toast.error('Erro ao atualizar licença');
+          }
+        }}
+        onLicenseRemove={handleRemoveGmailLicense}
+        onAddLicense={handleAddGmailLicense}
+        onBulkImport={handleBulkImportGmailLicenses}
+        isAdmin={isAdmin}
+      />
 
       {hardwareDetailDevice && (
         <HardwareDetailModal
