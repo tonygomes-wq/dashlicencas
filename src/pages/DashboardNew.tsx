@@ -213,6 +213,16 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
     }
   };
 
+  const handleO365ClientClick = (client: O365Client) => {
+    console.log('📋 Abrindo modal O365 para cliente:', client);
+    setO365DetailClient(client);
+  };
+
+  const handleGmailClientClick = (client: GmailClient) => {
+    console.log('📋 Abrindo modal Gmail para cliente:', client);
+    setGmailDetailClient(client);
+  };
+
   // Fetch all data
   useEffect(() => {
     fetchAllData();
@@ -345,7 +355,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               licenses={processedO365Licenses}
               onLicenseUpdate={handleUpdateO365License}
               isAdmin={isAdmin}
-              onClientClick={setO365DetailClient}
+              onClientClick={handleO365ClientClick}
             />
           </div>
         );
@@ -364,7 +374,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
             <GmailClientTable
               clients={rawGmailClients}
               licenses={processedGmailLicenses}
-              onClientClick={setGmailDetailClient}
+              onClientClick={handleGmailClientClick}
             />
           </div>
         );
@@ -516,23 +526,29 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       )}
 
       {o365DetailClient && (
-        <O365DetailModal
-          client={o365DetailClient}
-          licenses={processedO365Licenses.filter(l => l.clientId === o365DetailClient.id)}
-          onClose={() => setO365DetailClient(null)}
-          onUpdate={() => fetchAllData()}
-          isAdmin={user.role === 'admin'}
-        />
+        <>
+          {console.log('🔵 Renderizando O365DetailModal para:', o365DetailClient)}
+          <O365DetailModal
+            client={o365DetailClient}
+            licenses={processedO365Licenses.filter(l => l.clientId === o365DetailClient.id)}
+            onClose={() => setO365DetailClient(null)}
+            onUpdate={() => fetchAllData()}
+            isAdmin={user.role === 'admin'}
+          />
+        </>
       )}
 
       {gmailDetailClient && (
-        <GmailDetailModal
-          client={gmailDetailClient}
-          licenses={processedGmailLicenses.filter(l => l.clientId === gmailDetailClient.id)}
-          onClose={() => setGmailDetailClient(null)}
-          onUpdate={() => fetchAllData()}
-          isAdmin={user.role === 'admin'}
-        />
+        <>
+          {console.log('🔴 Renderizando GmailDetailModal para:', gmailDetailClient)}
+          <GmailDetailModal
+            client={gmailDetailClient}
+            licenses={processedGmailLicenses.filter(l => l.clientId === gmailDetailClient.id)}
+            onClose={() => setGmailDetailClient(null)}
+            onUpdate={() => fetchAllData()}
+            isAdmin={user.role === 'admin'}
+          />
+        </>
       )}
 
       {hardwareDetailDevice && (

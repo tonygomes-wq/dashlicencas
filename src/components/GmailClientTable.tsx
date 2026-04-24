@@ -51,7 +51,10 @@ const GmailClientTable: React.FC<GmailClientTableProps> = ({ clients, licenses, 
                   <tr 
                     key={client.id} 
                     className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
-                    onClick={() => onClientClick(client)}
+                    onClick={() => {
+                      console.log('🖱️ Cliente Gmail clicado:', client);
+                      onClientClick(client);
+                    }}
                   >
                     <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
                         <ChevronRight className="w-4 h-4 text-blue-600" />
