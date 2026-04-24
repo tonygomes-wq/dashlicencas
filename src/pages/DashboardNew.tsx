@@ -703,17 +703,26 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
           onClose={() => setIsDetailSidebarOpen(false)}
           item={detailItem}
           onUpdate={async (id, data, type) => {
+            console.log('🟢 onUpdate (DashboardNew) chamado:', { id, data, type });
             try {
               if (type === 'bitdefender') {
+                console.log('🟢 Atualizando Bitdefender...');
                 await apiClient.bitdefender.update(id, data);
               } else {
+                console.log('🟢 Atualizando FortiGate...');
                 await apiClient.fortigate.update(id, data);
               }
+              console.log('🟢 Atualização concluída, mostrando toast...');
               toast.success('Atualizado com sucesso!');
+              console.log('🟢 Fechando modal...');
               setIsDetailSidebarOpen(false);
+              console.log('🟢 Modal fechado, atualizando dados...');
               await fetchAllData();
+              console.log('🟢 Dados atualizados!');
             } catch (error) {
+              console.error('❌ Erro no onUpdate:', error);
               toast.error('Erro ao atualizar');
+              // Não fechar o modal em caso de erro para que o usuário possa tentar novamente
             }
           }}
           onSyncSuccess={async () => {

@@ -70,7 +70,7 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
         if (Object.keys(updatedFields).length > 0) {
             console.log('🔵 Chamando onUpdate...');
             await onUpdate(item.id, updatedFields, item.type);
-            console.log('✅ onUpdate concluído');
+            console.log('✅ onUpdate concluído - handleSubmit finalizando');
         } else {
             console.log('⚠️ Nenhum campo foi alterado');
             toast.info('Nenhuma alteração detectada');
@@ -80,6 +80,7 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
         console.error('❌ Erro no handleSubmit:', error);
         // O toast de erro já é tratado no Dashboard.tsx
     } finally {
+        console.log('🔵 Finalizando handleSubmit - setIsSaving(false)');
         setIsSaving(false);
     }
   };
@@ -109,7 +110,7 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
           if (onSyncSuccess) {
             onSyncSuccess();
           }
-          onClose();
+          // Não fechar automaticamente - deixar o usuário decidir
         } else {
           toast.error(result.message || 'Erro ao sincronizar');
         }
@@ -137,7 +138,7 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
           if (onSyncSuccess) {
             onSyncSuccess();
           }
-          onClose();
+          // Não fechar automaticamente - deixar o usuário decidir
         } else {
           toast.error(result.message || 'Erro ao sincronizar');
         }
