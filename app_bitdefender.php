@@ -62,18 +62,39 @@ switch ($method) {
             exit;
         }
         $data = json_decode(file_get_contents('php://input'), true);
-        $sql = "INSERT INTO bitdefender_licenses (user_id, company, contact_person, email, expiration_date, total_licenses, license_key, renewal_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            $user_id,
-            $data['company'] ?? null,
-            $data['contact_person'] ?? null,
-            $data['email'] ?? null,
-            $data['expiration_date'] ?? null,
-            $data['total_licenses'] ?? 0,
-            $data['license_key'] ?? null,
-            $data['renewal_status'] ?? 'Pendente'
-        ]);
+        
+        // Verificar se a coluna notes existe
+        $checkColumn = $pdo->query("SHOW COLUMNS FROM bitdefender_licenses LIKE 'notes'");
+        $hasNotesColumn = $checkColumn->rowCount() > 0;
+        
+        if ($hasNotesColumn) {
+            $sql = "INSERT INTO bitdefender_licenses (user_id, company, contact_person, email, expiration_date, total_licenses, license_key, renewal_status, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                $user_id,
+                $data['company'] ?? null,
+                $data['contact_person'] ?? null,
+                $data['email'] ?? null,
+                $data['expiration_date'] ?? null,
+                $data['total_licenses'] ?? 0,
+                $data['license_key'] ?? null,
+                $data['renewal_status'] ?? 'Pendente',
+                $data['notes'] ?? null
+            ]);
+        } else {
+            $sql = "INSERT INTO bitdefender_licenses (user_id, company, contact_person, email, expiration_date, total_licenses, license_key, renewal_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                $user_id,
+                $data['company'] ?? null,
+                $data['contact_person'] ?? null,
+                $data['email'] ?? null,
+                $data['expiration_date'] ?? null,
+                $data['total_licenses'] ?? 0,
+                $data['license_key'] ?? null,
+                $data['renewal_status'] ?? 'Pendente'
+            ]);
+        }
         $new_id = $pdo->lastInsertId();
 
         $stmt = $pdo->prepare('SELECT * FROM bitdefender_licenses WHERE id = ?');
