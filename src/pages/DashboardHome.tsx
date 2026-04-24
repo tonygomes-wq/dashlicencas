@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Shield, Flame, Mail, AtSign, HardDrive, Network, Filter } from 'lucide-react';
 import StatsCard from '../components/dashboard/StatsCard';
 import BitdefenderAPIStats from '../components/dashboard/BitdefenderAPIStats';
+import FortigateAPIStats from '../components/dashboard/FortigateAPIStats';
 import AlertsList from '../components/dashboard/AlertsList';
 import { apiClient } from '../lib/apiClient';
 
@@ -247,6 +248,9 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate }) => {
 
       {/* Bitdefender API Stats */}
       <BitdefenderAPIStats />
+
+      {/* FortiGate API Stats */}
+      <FortigateAPIStats onSyncAll={fetchDashboardStats} />
 
       {/* Alerts List */}
       <AlertsList />

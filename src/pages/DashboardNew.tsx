@@ -406,6 +406,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               onRowClick={handleRowClick}
               selectedItems={selectedItems}
               onSelectionChange={handleSelectionChange}
+              onDataUpdate={fetchAllData}
             />
           </div>
         );

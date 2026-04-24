@@ -255,4 +255,36 @@ export const apiClient = {
         updateRenewal: (id: number, data: any) => request(`/app_contracts.php?id=${id}&action=renewal`, { method: 'PUT', body: JSON.stringify(data) }),
         remove: (id: number) => request(`/app_contracts.php?id=${id}`, { method: 'DELETE' }),
     },
+
+    // FortiGate API Methods
+    fortigateAPI: {
+        getConfig: (deviceId: number) => request(`/app_fortigate_api.php?action=get_config&device_id=${deviceId}`),
+        saveConfig: (data: { device_id: number; api_ip: string; api_token: string; api_port?: number; verify_ssl?: boolean; sync_interval?: number }) =>
+            request('/app_fortigate_api.php?action=save_config', { method: 'POST', body: JSON.stringify(data) }),
+        testConnection: (deviceId: number) =>
+            request('/app_fortigate_api.php?action=test_connection', { method: 'POST', body: JSON.stringify({ device_id: deviceId }) }),
+        syncDevice: (deviceId: number) =>
+            request('/app_fortigate_api.php?action=sync_device', { method: 'POST', body: JSON.stringify({ device_id: deviceId }) }),
+        syncAll: () => request('/app_fortigate_api.php?action=sync_all', { method: 'POST' }),
+        getHistory: (deviceId: number, limit?: number) => {
+            const url = limit 
+                ? `/app_fortigate_api.php?action=get_history&device_id=${deviceId}&limit=${limit}`
+                : `/app_fortigate_api.php?action=get_history&device_id=${deviceId}`;
+            return request(url);
+        },
+        getExtendedData: (deviceId: number) => request(`/app_fortigate_api.php?action=get_extended_data&device_id=${deviceId}`),
+        getAlerts: (params?: { device_id?: number; unread_only?: boolean; limit?: number }) => {
+            const queryParams = new URLSearchParams({ action: 'get_alerts' });
+            if (params) {
+                Object.entries(params).forEach(([key, value]) => {
+                    if (value !== undefined) queryParams.append(key, String(value));
+                });
+            }
+            return request(`/app_fortigate_api.php?${queryParams.toString()}`);
+        },
+        resolveAlert: (alertId: number) =>
+            request('/app_fortigate_api.php?action=resolve_alert', { method: 'POST', body: JSON.stringify({ alert_id: alertId }) }),
+        deleteConfig: (deviceId: number) => request(`/app_fortigate_api.php?action=delete_config&device_id=${deviceId}`, { method: 'DELETE' }),
+        getStats: () => request('/app_fortigate_api.php?action=get_stats'),
+    },
 };
