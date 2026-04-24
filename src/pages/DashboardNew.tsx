@@ -599,6 +599,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       <O365DetailModal
         isOpen={isO365DetailModalOpen}
         onClose={() => {
+          console.log('🔵 Fechando modal O365');
           setIsO365DetailModalOpen(false);
           setO365DetailClient(null);
         }}
@@ -614,6 +615,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       <GmailDetailModal
         isOpen={isGmailDetailModalOpen}
         onClose={() => {
+          console.log('🔴 Fechando modal Gmail');
           setIsGmailDetailModalOpen(false);
           setGmailDetailClient(null);
         }}
@@ -634,6 +636,13 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
         onBulkImport={handleBulkImportGmailLicenses}
         isAdmin={isAdmin}
       />
+
+      {console.log('🎯 Estados dos modais:', { 
+        isO365DetailModalOpen, 
+        isGmailDetailModalOpen,
+        o365DetailClient: o365DetailClient?.clientName,
+        gmailDetailClient: gmailDetailClient?.clientName
+      })}
 
       {hardwareDetailDevice && (
         <HardwareDetailModal
