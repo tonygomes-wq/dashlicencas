@@ -175,4 +175,84 @@ export const apiClient = {
         remove: (id: number) => request(`/app_hardware.php?id=${id}`, { method: 'DELETE' }),
         bulkRemove: (ids: number[]) => request('/app_hardware.php', { method: 'DELETE', body: JSON.stringify({ ids }) }),
     },
+
+    // Audit Log Methods
+    audit: {
+        list: (params?: { page?: number; limit?: number; user_id?: number; action?: string; table_name?: string; date_from?: string; date_to?: string }) => {
+            const queryParams = new URLSearchParams();
+            if (params) {
+                Object.entries(params).forEach(([key, value]) => {
+                    if (value !== undefined) queryParams.append(key, String(value));
+                });
+            }
+            return request(`/app_audit.php?${queryParams.toString()}`);
+        },
+        create: (data: { action: string; table_name: string; record_id?: number; old_values?: any; new_values?: any }) =>
+            request('/app_audit.php', { method: 'POST', body: JSON.stringify(data) }),
+    },
+
+    // Notifications Methods
+    notifications: {
+        list: (unread?: boolean) => request(`/app_notifications.php?action=list${unread ? '&unread=true' : ''}`),
+        unreadCount: () => request('/app_notifications.php?action=unread_count'),
+        settings: () => request('/app_notifications.php?action=settings'),
+        create: (data: { type: string; title: string; message?: string; related_table?: string; related_id?: number; priority?: string }) =>
+            request('/app_notifications.php', { method: 'POST', body: JSON.stringify(data) }),
+        markAsRead: (id: number) => request('/app_notifications.php?action=mark_read', { method: 'PUT', body: JSON.stringify({ id }) }),
+        markAllAsRead: () => request('/app_notifications.php?action=mark_all_read', { method: 'PUT' }),
+        updateSettings: (data: any) => request('/app_notifications.php?action=settings', { method: 'PUT', body: JSON.stringify(data) }),
+        remove: (id: number) => request(`/app_notifications.php?id=${id}`, { method: 'DELETE' }),
+    },
+
+    // Bitdefender Endpoints Methods
+    endpoints: {
+        list: (params?: { client_id?: number; protection_status?: string }) => {
+            const queryParams = new URLSearchParams({ action: 'list' });
+            if (params) {
+                Object.entries(params).forEach(([key, value]) => {
+                    if (value !== undefined) queryParams.append(key, String(value));
+                });
+            }
+            return request(`/app_bitdefender_endpoints.php?${queryParams.toString()}`);
+        },
+        stats: () => request('/app_bitdefender_endpoints.php?action=stats'),
+        sync: (clientId?: number) => {
+            if (clientId) {
+                return request('/app_bitdefender_endpoints.php', { 
+                    method: 'POST', 
+                    body: JSON.stringify({ client_id: clientId }) 
+                });
+            }
+            return request('/app_bitdefender_endpoints.php?action=sync');
+        },
+        update: (id: number, data: { hardware_id?: number; is_managed?: boolean }) =>
+            request(`/app_bitdefender_endpoints.php?id=${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+        remove: (id: number) => request(`/app_bitdefender_endpoints.php?id=${id}`, { method: 'DELETE' }),
+    },
+
+    // Contracts Methods
+    contracts: {
+        list: (params?: { status?: string; service_type?: string; client_name?: string }) => {
+            const queryParams = new URLSearchParams({ action: 'list' });
+            if (params) {
+                Object.entries(params).forEach(([key, value]) => {
+                    if (value !== undefined) queryParams.append(key, String(value));
+                });
+            }
+            return request(`/app_contracts.php?${queryParams.toString()}`);
+        },
+        stats: () => request('/app_contracts.php?action=stats'),
+        renewals: (contractId?: number) => {
+            const url = contractId 
+                ? `/app_contracts.php?action=renewals&contract_id=${contractId}`
+                : '/app_contracts.php?action=renewals';
+            return request(url);
+        },
+        expiring: (days: number = 30) => request(`/app_contracts.php?action=expiring&days=${days}`),
+        create: (data: any) => request('/app_contracts.php?action=create', { method: 'POST', body: JSON.stringify(data) }),
+        createRenewal: (data: any) => request('/app_contracts.php?action=renewal', { method: 'POST', body: JSON.stringify(data) }),
+        update: (id: number, data: any) => request(`/app_contracts.php?id=${id}&action=update`, { method: 'PUT', body: JSON.stringify(data) }),
+        updateRenewal: (id: number, data: any) => request(`/app_contracts.php?id=${id}&action=renewal`, { method: 'PUT', body: JSON.stringify(data) }),
+        remove: (id: number) => request(`/app_contracts.php?id=${id}`, { method: 'DELETE' }),
+    },
 };
