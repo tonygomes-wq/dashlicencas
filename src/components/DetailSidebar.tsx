@@ -11,12 +11,13 @@ interface DetailSidebarProps {
   onClose: () => void;
   item: ItemDetail | null;
   onUpdate: (id: number, data: Partial<BitdefenderLicense | FortigateDevice>, type: 'bitdefender' | 'fortigate') => Promise<void>;
+  onSyncSuccess?: () => void;
   isAdmin: boolean;
 }
 
 const renewalStatusOptions: RenewalStatus[] = ['Pendente', 'Em Negociação', 'Renovado', 'Cancelado'];
 
-const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, onUpdate, isAdmin }) => {
+const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, onUpdate, onSyncSuccess, isAdmin }) => {
   const [formData, setFormData] = useState<Partial<BitdefenderLicense | FortigateDevice>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -90,8 +91,11 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
         const result = await apiClient.bitdefenderAPI.syncClient(item.id);
         if (result.success) {
           toast.success(`Sincronizado com sucesso! ${result.devices_synced || 0} dispositivos atualizados.`);
-          // Recarregar dados
-          window.location.reload();
+          // Chamar callback para atualizar dados
+          if (onSyncSuccess) {
+            onSyncSuccess();
+          }
+          onClose();
         } else {
           toast.error(result.message || 'Erro ao sincronizar');
         }
@@ -115,8 +119,11 @@ const DetailSidebar: React.FC<DetailSidebarProps> = ({ isOpen, onClose, item, on
         const result = await apiClient.fortigateAPI.syncDevice(item.id);
         if (result.success) {
           toast.success('Dispositivo sincronizado com sucesso!');
-          // Recarregar dados
-          window.location.reload();
+          // Chamar callback para atualizar dados
+          if (onSyncSuccess) {
+            onSyncSuccess();
+          }
+          onClose();
         } else {
           toast.error(result.message || 'Erro ao sincronizar');
         }

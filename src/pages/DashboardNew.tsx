@@ -716,6 +716,9 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               toast.error('Erro ao atualizar');
             }
           }}
+          onSyncSuccess={async () => {
+            await fetchAllData();
+          }}
           isAdmin={user.role === 'admin'}
         />
       )}

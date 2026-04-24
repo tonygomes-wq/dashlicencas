@@ -867,6 +867,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
         onClose={() => setIsDetailSidebarOpen(false)}
         item={selectedItemDetail}
         onUpdate={handleUpdateFromSidebar}
+        onSyncSuccess={async () => {
+          await fetchAllData();
+        }}
         isAdmin={canEdit}
       />
 
