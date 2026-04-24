@@ -1,4 +1,29 @@
-# Dockerfile para Dashboard de Licenças
+# Dockerfile para Dashboard de Licenças - COM BUILD DO FRONTEND
+# Stage 1: Build do Frontend React/Vite
+FROM node:18-alpine AS frontend-builder
+
+WORKDIR /app
+
+# Copiar package.json e package-lock.json
+COPY package*.json ./
+
+# Instalar dependências
+RUN npm ci
+
+# Copiar código fonte
+COPY src/ ./src/
+COPY public/ ./public/ 2>/dev/null || true
+COPY index.html ./
+COPY vite.config.ts ./
+COPY tsconfig.json ./
+COPY tsconfig.node.json ./
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
+
+# Build do frontend
+RUN npm run build
+
+# Stage 2: Servidor PHP/Apache
 FROM php:8.2-apache
 
 # Instalar extensões PHP necessárias
@@ -24,12 +49,16 @@ RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/Allo
 # Definir diretório de trabalho
 WORKDIR /var/www/html
 
-# Copiar arquivos do projeto
-COPY . /var/www/html/
+# Copiar arquivos PHP do backend
+COPY --chown=www-data:www-data *.php ./
+COPY --chown=www-data:www-data srv/ ./srv/
+COPY --chown=www-data:www-data db_init/ ./db_init/ 2>/dev/null || true
+
+# Copiar arquivos buildados do frontend do stage anterior
+COPY --from=frontend-builder --chown=www-data:www-data /app/dist/ ./
 
 # Ajustar permissões
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
+RUN chmod -R 755 /var/www/html
 
 # Expor porta 80
 EXPOSE 80
