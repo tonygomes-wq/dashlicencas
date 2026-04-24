@@ -65,6 +65,9 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
   const [isLoading, setIsLoading] = useState(true);
 
+  // Selection state
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+
   // Modal states
   const [isAddBitdefenderOpen, setIsAddBitdefenderOpen] = useState(false);
   const [isAddFortigateOpen, setIsAddFortigateOpen] = useState(false);
@@ -97,6 +100,103 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
     title: string;
     message: string;
   }>({ isOpen: false, title: '', message: '' });
+
+  // Process data with status
+  const processedBitdefender: BitdefenderLicenseWithStatus[] = rawBitdefender.map(license => {
+    const expirationDate = license.expirationDate ? new Date(license.expirationDate) : null;
+    const today = new Date();
+    const remainingDays = expirationDate ? Math.ceil((expirationDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) : 999;
+    
+    let status: LicenseStatus;
+    if (remainingDays < 0) status = LicenseStatus.Vencido;
+    else if (remainingDays === 0) status = LicenseStatus.VenceHoje;
+    else if (remainingDays <= 7) status = LicenseStatus.VenceEm7Dias;
+    else status = LicenseStatus.OK;
+
+    return { ...license, remainingDays, status };
+  });
+
+  const processedFortigate: FortigateDeviceWithStatus[] = rawFortigate.map(device => {
+    const expirationDate = device.vencimento ? new Date(device.vencimento) : null;
+    const today = new Date();
+    const remainingDays = expirationDate ? Math.ceil((expirationDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) : 999;
+    
+    let status: LicenseStatus;
+    if (remainingDays < 0) status = LicenseStatus.Vencido;
+    else if (remainingDays === 0) status = LicenseStatus.VenceHoje;
+    else if (remainingDays <= 7) status = LicenseStatus.VenceEm7Dias;
+    else status = LicenseStatus.OK;
+
+    return { ...device, remainingDays, status };
+  });
+
+  const processedO365Licenses: O365LicenseWithClient[] = rawO365Licenses.map(license => {
+    const client = rawO365Clients.find(c => c.id === license.clientId);
+    return { ...license, clientName: client?.clientName || 'Cliente não encontrado' };
+  });
+
+  const processedGmailLicenses: GmailLicenseWithClient[] = rawGmailLicenses.map(license => {
+    const client = rawGmailClients.find(c => c.id === license.clientId);
+    return { ...license, clientName: client?.clientName || 'Cliente não encontrado' };
+  });
+
+  const processedHardware: HardwareWithWarrantyStatus[] = rawHardware.map(device => {
+    const warrantyDate = device.warrantyExpiration ? new Date(device.warrantyExpiration) : null;
+    const today = new Date();
+    const warrantyDaysRemaining = warrantyDate ? Math.ceil((warrantyDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) : -999;
+    
+    let warrantyStatus: WarrantyStatus;
+    if (warrantyDaysRemaining < 0) warrantyStatus = 'Expirada';
+    else if (warrantyDaysRemaining <= 30) warrantyStatus = 'Expira em 30 dias';
+    else warrantyStatus = 'Válida';
+
+    return { ...device, warrantyDaysRemaining, warrantyStatus };
+  });
+
+  const isAdmin = user.role === 'admin';
+
+  const handleSelectionChange = (itemId: string) => {
+    setSelectedItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+      } else {
+        newSet.add(itemId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleRowClick = (item: BitdefenderLicenseWithStatus | FortigateDeviceWithStatus) => {
+    if ('company' in item) {
+      setDetailItem({ ...item, type: 'bitdefender' });
+    } else {
+      setDetailItem({ ...item, type: 'fortigate' });
+    }
+    setIsDetailSidebarOpen(true);
+  };
+
+  const handleUpdateO365License = async (id: number, data: Partial<O365License>) => {
+    try {
+      await apiClient.o365.updateLicense(id, data);
+      await fetchAllData();
+      toast.success('Licença atualizada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao atualizar licença:', error);
+      toast.error('Erro ao atualizar licença');
+    }
+  };
+
+  const handleDeleteHardware = async (id: number) => {
+    try {
+      await apiClient.hardware.delete(id);
+      await fetchAllData();
+      toast.success('Hardware deletado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao deletar hardware:', error);
+      toast.error('Erro ao deletar hardware');
+    }
+  };
 
   // Fetch all data
   useEffect(() => {
@@ -176,15 +276,10 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               </p>
             </div>
             <BitdefenderTable
-              data={rawBitdefender}
-              onAdd={() => setIsAddBitdefenderOpen(true)}
-              onEdit={(item) => {
-                setDetailItem({ ...item, type: 'bitdefender' });
-                setIsDetailSidebarOpen(true);
-              }}
-              onDelete={(ids) => setDeleteConfirm({ isOpen: true, type: 'bitdefender', ids })}
-              onSendEmail={(id) => setSendEmailModal({ isOpen: true, type: 'bitdefender', itemId: id })}
-              isAdmin={user.role === 'admin'}
+              licenses={processedBitdefender}
+              onRowClick={handleRowClick}
+              selectedItems={selectedItems}
+              onSelectionChange={handleSelectionChange}
             />
           </div>
         );
@@ -201,15 +296,10 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               </p>
             </div>
             <FortigateTable
-              data={rawFortigate}
-              onAdd={() => setIsAddFortigateOpen(true)}
-              onEdit={(item) => {
-                setDetailItem({ ...item, type: 'fortigate' });
-                setIsDetailSidebarOpen(true);
-              }}
-              onDelete={(ids) => setDeleteConfirm({ isOpen: true, type: 'fortigate', ids })}
-              onSendEmail={(id) => setSendEmailModal({ isOpen: true, type: 'fortigate', itemId: id })}
-              isAdmin={user.role === 'admin'}
+              devices={processedFortigate}
+              onRowClick={handleRowClick}
+              selectedItems={selectedItems}
+              onSelectionChange={handleSelectionChange}
             />
           </div>
         );
@@ -227,11 +317,10 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
             </div>
             <O365ClientTable
               clients={rawO365Clients}
-              licenses={rawO365Licenses}
-              onAddClient={() => setIsAddO365ClientOpen(true)}
-              onViewClient={(client) => setO365DetailClient(client)}
-              onDeleteClient={(id) => setDeleteConfirm({ isOpen: true, type: 'o365', ids: [parseInt(id)] })}
-              isAdmin={user.role === 'admin'}
+              licenses={processedO365Licenses}
+              onLicenseUpdate={handleUpdateO365License}
+              isAdmin={isAdmin}
+              onClientClick={setO365DetailClient}
             />
           </div>
         );
@@ -249,11 +338,8 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
             </div>
             <GmailClientTable
               clients={rawGmailClients}
-              licenses={rawGmailLicenses}
-              onAddClient={() => setIsAddGmailClientOpen(true)}
-              onViewClient={(client) => setGmailDetailClient(client)}
-              onDeleteClient={(id) => setDeleteConfirm({ isOpen: true, type: 'gmail', ids: [parseInt(id)] })}
-              isAdmin={user.role === 'admin'}
+              licenses={processedGmailLicenses}
+              onClientClick={setGmailDetailClient}
             />
           </div>
         );
@@ -285,11 +371,11 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               </p>
             </div>
             <HardwareInventoryTable
-              data={rawHardware}
-              onAdd={() => setIsAddHardwareOpen(true)}
-              onEdit={(device) => setHardwareDetailDevice(device)}
-              onDelete={(ids) => setDeleteConfirm({ isOpen: true, type: 'hardware', ids })}
-              isAdmin={user.role === 'admin'}
+              devices={processedHardware}
+              onRowClick={setHardwareDetailDevice}
+              onDelete={isAdmin ? handleDeleteHardware : undefined}
+              canEdit={isAdmin}
+              canDelete={isAdmin}
             />
           </div>
         );
