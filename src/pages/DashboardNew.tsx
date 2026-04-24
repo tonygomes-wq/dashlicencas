@@ -644,6 +644,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       
       {isAddBitdefenderOpen && (
         <AddBitdefenderModal
+          isOpen={isAddBitdefenderOpen}
           onClose={() => setIsAddBitdefenderOpen(false)}
           onSuccess={() => {
             fetchAllData();
@@ -654,6 +655,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
       {isAddFortigateOpen && (
         <AddFortigateModal
+          isOpen={isAddFortigateOpen}
           onClose={() => setIsAddFortigateOpen(false)}
           onSuccess={() => {
             fetchAllData();
@@ -664,6 +666,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
       {isAddO365ClientOpen && (
         <AddO365ClientModal
+          isOpen={isAddO365ClientOpen}
           onClose={() => setIsAddO365ClientOpen(false)}
           onSuccess={() => {
             fetchAllData();
@@ -674,6 +677,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
       {isAddGmailClientOpen && (
         <AddGmailClientModal
+          isOpen={isAddGmailClientOpen}
           onClose={() => setIsAddGmailClientOpen(false)}
           onSuccess={() => {
             fetchAllData();
@@ -684,6 +688,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
       {isAddHardwareOpen && (
         <AddHardwareModal
+          isOpen={isAddHardwareOpen}
           onClose={() => setIsAddHardwareOpen(false)}
           onSuccess={() => {
             fetchAllData();

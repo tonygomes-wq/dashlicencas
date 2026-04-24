@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { BitdefenderLicense } from '../types';
 import { X } from 'lucide-react';
+import { apiClient } from '../lib/apiClient';
 
 interface AddBitdefenderModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: Omit<BitdefenderLicense, 'id'>) => Promise<void>;
+  onSuccess: () => void;
 }
 
-const AddBitdefenderModal: React.FC<AddBitdefenderModalProps> = ({ isOpen, onClose, onSave }) => {
+const AddBitdefenderModal: React.FC<AddBitdefenderModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const initialState = {
     company: '',
     contactPerson: '',
@@ -33,13 +34,22 @@ const AddBitdefenderModal: React.FC<AddBitdefenderModalProps> = ({ isOpen, onClo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    await onSave({
+    try {
+      await apiClient.bitdefender.create({
         ...formData,
-        totalLicenses: Number(formData.totalLicenses)
-    });
-    setIsSaving(false);
-    setFormData(initialState);
-    onClose();
+        total_licenses: Number(formData.totalLicenses),
+        expiration_date: formData.expirationDate,
+        contact_person: formData.contactPerson,
+        license_key: formData.licenseKey
+      });
+      setFormData(initialState);
+      onSuccess();
+    } catch (error) {
+      console.error('Erro ao adicionar licença:', error);
+      alert('Erro ao adicionar licença');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
