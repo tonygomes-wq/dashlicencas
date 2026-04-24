@@ -384,7 +384,10 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               </div>
               {isAdmin && (
                 <button
-                  onClick={() => setIsAddBitdefenderOpen(true)}
+                  onClick={() => {
+                    console.log('🔵 Abrindo modal Bitdefender');
+                    setIsAddBitdefenderOpen(true);
+                  }}
                   className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium shadow-lg"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -589,6 +592,14 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       {renderPageContent()}
 
       {/* Modals */}
+      {console.log('🎯 Estados dos modais:', { 
+        isAddBitdefenderOpen, 
+        isAddFortigateOpen,
+        isAddO365ClientOpen,
+        isAddGmailClientOpen,
+        isAddHardwareOpen
+      })}
+      
       {isAddBitdefenderOpen && (
         <AddBitdefenderModal
           onClose={() => setIsAddBitdefenderOpen(false)}
