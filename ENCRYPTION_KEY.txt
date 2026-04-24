@@ -1,0 +1,32 @@
+# CHAVE DE CRIPTOGRAFIA - FortiGate API
+# MANTENHA ESTE ARQUIVO SEGURO E NÃO COMPARTILHE!
+
+ENCRYPTION_KEY=ca043add73ede2a40b3a51e99d1debf5257c129a11eb5fa1f01e458476ae387c
+
+# INSTRUÇÕES DE USO:
+
+## Opção 1: Adicionar ao arquivo .env (RECOMENDADO)
+# Copie a linha acima e adicione ao arquivo .env na raiz do projeto
+
+## Opção 2: Adicionar como variável de ambiente no servidor
+# No Easypanel ou servidor, adicione esta variável de ambiente:
+# Nome: ENCRYPTION_KEY
+# Valor: ca043add73ede2a40b3a51e99d1debf5257c129a11eb5fa1f01e458476ae387c
+
+## Opção 3: Adicionar ao sistema (Linux/SSH)
+# Execute no terminal:
+# export ENCRYPTION_KEY="ca043add73ede2a40b3a51e99d1debf5257c129a11eb5fa1f01e458476ae387c"
+# echo 'export ENCRYPTION_KEY="ca043add73ede2a40b3a51e99d1debf5257c129a11eb5fa1f01e458476ae387c"' >> ~/.bashrc
+
+# VERIFICAR SE ESTÁ CONFIGURADA:
+# php -r "echo getenv('ENCRYPTION_KEY') ? 'OK' : 'ERRO';"
+
+# IMPORTANTE:
+# - Esta chave é usada para criptografar os tokens de API do FortiGate
+# - Sem esta chave, o sistema não conseguirá salvar ou ler tokens
+# - Se perder esta chave, será necessário reconfigurar todos os dispositivos
+# - Faça backup desta chave em local seguro
+
+# GERADA EM: 24/04/2026
+# ALGORITMO: AES-256-CBC
+# TAMANHO: 256 bits (64 caracteres hexadecimais)
