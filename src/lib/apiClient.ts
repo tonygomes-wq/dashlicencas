@@ -88,7 +88,7 @@ export const apiClient = {
     bitdefenderAPI: {
         syncClient: (clientId: number) => request('/app_bitdefender_sync_client.php', { 
             method: 'POST', 
-            body: JSON.stringify({ client_id: clientId }) 
+            body: JSON.stringify({ clientId: clientId }) 
         }),
     },
 
