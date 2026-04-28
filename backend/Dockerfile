@@ -7,14 +7,17 @@ WORKDIR /app
 # Copiar arquivos de dependências
 COPY package*.json ./
 
-# Instalar dependências de produção
-RUN npm ci --only=production
+# Instalar TODAS as dependências (incluindo devDependencies para build)
+RUN npm ci
 
 # Copiar código fonte
 COPY . .
 
 # Build do TypeScript
 RUN npm run build
+
+# Remover devDependencies após build
+RUN npm prune --production
 
 # Expor porta
 EXPOSE 3001
