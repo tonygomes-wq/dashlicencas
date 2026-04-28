@@ -2,6 +2,7 @@
 /**
  * API de Endpoints Bitdefender
  * Gerencia inventário de dispositivos protegidos pelo Bitdefender
+ * Versão: 2.0 - Atualizado em 28/04/2026
  */
 
 header('Content-Type: application/json');

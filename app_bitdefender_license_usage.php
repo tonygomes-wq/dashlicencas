@@ -2,6 +2,7 @@
 /**
  * API para obter informações de uso de licença Bitdefender
  * Retorna dados de assentos usados vs disponíveis para cada cliente
+ * Versão: 2.0 - Atualizado em 28/04/2026
  */
 
 header('Content-Type: application/json');
