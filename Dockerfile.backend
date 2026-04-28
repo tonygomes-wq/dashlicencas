@@ -10,17 +10,29 @@ WORKDIR /app
 COPY backend/package.json backend/package-lock.json ./
 COPY backend/tsconfig.json ./
 
+# Debug: Ver o que foi copiado
+RUN echo "=== Arquivos copiados ===" && ls -la
+
 # Instalar todas as dependências
 RUN npm ci
+
+# Debug: Ver node_modules
+RUN echo "=== node_modules instalados ===" && ls -la node_modules | head -20
 
 # Copiar código fonte do backend
 COPY backend/src ./src
 
+# Debug: Ver estrutura antes do build
+RUN echo "=== Estrutura antes do build ===" && ls -la && echo "=== Conteúdo de src ===" && ls -la src
+
 # Build do TypeScript
 RUN npm run build
 
-# Verificar se dist foi criado
-RUN ls -la && ls -la dist || echo "Dist não existe!"
+# Debug: Ver o que foi gerado
+RUN echo "=== Após build ===" && ls -la && echo "=== Conteúdo de dist (se existir) ===" && (ls -la dist || echo "dist não existe!")
+
+# Verificar se server.js existe
+RUN test -f dist/server.js && echo "✅ server.js encontrado!" || (echo "❌ server.js NÃO encontrado!" && exit 1)
 
 # Remover devDependencies
 RUN npm prune --omit=dev
