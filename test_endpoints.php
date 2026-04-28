@@ -1,50 +1,70 @@
 <?php
-// test_endpoints.php - Testar todos os endpoints
-
-session_start();
+/**
+ * Teste simples de endpoints
+ */
 
 header('Content-Type: application/json');
 
-$endpoints = [
-    'app_bitdefender.php',
-    'app_fortigate.php',
-    'app_o365.php',
-    'app_gmail.php'
+$tests = [];
+
+// Teste 1: Verificar se arquivos existem
+$files = [
+    'app_bitdefender_license_usage.php',
+    'app_bitdefender_endpoints.php'
 ];
 
-$results = [];
-
-foreach ($endpoints as $endpoint) {
-    $url = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $endpoint;
-    
-    // Iniciar cURL
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_COOKIE, session_name() . '=' . session_id());
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Cookie: ' . session_name() . '=' . session_id()
-    ]);
-    
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $error = curl_error($ch);
-    curl_close($ch);
-    
-    $results[$endpoint] = [
-        'http_code' => $httpCode,
-        'error' => $error ?: null,
-        'response_preview' => substr($response, 0, 500),
-        'is_json' => json_decode($response) !== null,
-        'response_length' => strlen($response)
+foreach ($files as $file) {
+    $tests[$file] = [
+        'exists' => file_exists($file),
+        'readable' => file_exists($file) && is_readable($file),
+        'size' => file_exists($file) ? filesize($file) : 0
     ];
 }
 
-// Verificar sessão
-$results['session_info'] = [
-    'session_id' => session_id(),
+// Teste 2: Verificar sessão
+session_start();
+$tests['session'] = [
+    'started' => session_status() === PHP_SESSION_ACTIVE,
     'user_id' => $_SESSION['user_id'] ?? null,
-    'session_data' => $_SESSION
+    'authenticated' => isset($_SESSION['user_id'])
 ];
 
-echo json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+// Teste 3: Verificar banco de dados
+try {
+    require_once 'srv/config.php';
+    $stmt = $pdo->query("SELECT COUNT(*) as total FROM bitdefender_licenses");
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $tests['database'] = [
+        'connected' => true,
+        'bitdefender_licenses_count' => $result['total']
+    ];
+} catch (Exception $e) {
+    $tests['database'] = [
+        'connected' => false,
+        'error' => $e->getMessage()
+    ];
+}
+
+// Teste 4: Tentar chamar endpoint diretamente
+if (file_exists('app_bitdefender_license_usage.php')) {
+    ob_start();
+    $_GET['action'] = 'list';
+    try {
+        include 'app_bitdefender_license_usage.php';
+        $output = ob_get_clean();
+        $tests['endpoint_test'] = [
+            'success' => true,
+            'output_length' => strlen($output),
+            'is_json' => json_decode($output) !== null
+        ];
+    } catch (Exception $e) {
+        ob_end_clean();
+        $tests['endpoint_test'] = [
+            'success' => false,
+            'error' => $e->getMessage()
+        ];
+    }
+}
+
+echo json_encode($tests, JSON_PRETTY_PRINT);
+?>
