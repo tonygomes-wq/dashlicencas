@@ -55,7 +55,7 @@ export async function login(req: Request, res: Response): Promise<void> {
         role: user.role,
       },
       config.jwt.secret,
-      { expiresIn: config.jwt.expiresIn }
+      { expiresIn: '7d' }
     );
 
     // Preparar resposta (sem dados sensíveis)
