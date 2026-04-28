@@ -172,26 +172,19 @@ function syncClientEndpoints($pdo, $clientId) {
 
     try {
         // Chamar API Bitdefender para listar endpoints
-        // Método correto: getNetworkInventoryItems
+        // Método: getNetworkInventoryItems (API "Rede" habilitada)
         $endpoints = callBitdefenderAPI($accessUrl, $apiKey, 'getNetworkInventoryItems', [
             'perPage' => 100,
-            'page' => 1,
-            'filters' => [
-                'type' => ['computers', 'virtualMachines']
-            ]
+            'page' => 1
         ]);
 
-        if (!$endpoints || !isset($endpoints['result'])) {
-            // Se não funcionar, tentar método alternativo
-            error_log("Tentando método alternativo: getManagedEndpointsList");
-            $endpoints = callBitdefenderAPI($accessUrl, $apiKey, 'getManagedEndpointsList', [
-                'perPage' => 100,
-                'page' => 1
-            ]);
-        }
-
-        if (!$endpoints || !isset($endpoints['result'])) {
+        if (!$endpoints || (!isset($endpoints['result']) && !isset($endpoints['error']))) {
             return ['error' => 'Resposta inválida da API Bitdefender'];
+        }
+        
+        // Se houver erro na API, retornar
+        if (isset($endpoints['error'])) {
+            return ['error' => 'API Bitdefender: ' . $endpoints['error']['message']];
         }
 
         $processed = 0;
@@ -281,7 +274,18 @@ function syncClientEndpoints($pdo, $clientId) {
  * Chamar API Bitdefender
  */
 function callBitdefenderAPI($accessUrl, $apiKey, $method, $params = []) {
-    $url = rtrim($accessUrl, '/') . '/v1.0/jsonrpc/' . $method;
+    // Normalizar URL - adicionar /v1.0/jsonrpc se não tiver
+    $accessUrl = rtrim($accessUrl, '/');
+    
+    // Se a URL não terminar com /jsonrpc, adicionar o caminho completo
+    if (!str_ends_with($accessUrl, '/jsonrpc')) {
+        if (!str_ends_with($accessUrl, '/api')) {
+            $accessUrl .= '/api';
+        }
+        $accessUrl .= '/v1.0/jsonrpc';
+    }
+    
+    $url = $accessUrl . '/' . $method;
 
     $payload = json_encode([
         'params' => $params,

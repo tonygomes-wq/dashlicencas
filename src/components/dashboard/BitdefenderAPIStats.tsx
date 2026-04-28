@@ -47,11 +47,22 @@ const BitdefenderAPIStats: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [hasData, setHasData] = useState(false);
 
+  // Desabilitar temporariamente até configurar API corretamente
+  const API_DISABLED = true;
+
   useEffect(() => {
-    fetchAPIStats();
+    if (!API_DISABLED) {
+      fetchAPIStats();
+    }
   }, []);
 
   const fetchAPIStats = async () => {
+    if (API_DISABLED) {
+      setHasData(false);
+      setLoading(false);
+      return;
+    }
+    
     setLoading(true);
     try {
       // Tentar buscar dados, mas não falhar se endpoint não existir
@@ -120,17 +131,22 @@ const BitdefenderAPIStats: React.FC = () => {
         <div className="text-center py-8 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
           <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            Nenhum Endpoint Sincronizado
+            {API_DISABLED ? 'Funcionalidade Temporariamente Desabilitada' : 'Nenhum Endpoint Sincronizado'}
           </h3>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Configure as APIs dos clientes Bitdefender para visualizar estatísticas em tempo real.
+            {API_DISABLED 
+              ? 'A sincronização com a API Bitdefender está temporariamente desabilitada. Entre em contato com o suporte para configurar corretamente.'
+              : 'Configure as APIs dos clientes Bitdefender para visualizar estatísticas em tempo real.'
+            }
           </p>
-          <button
-            onClick={() => apiClient.endpoints.sync()}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            📡 Sincronizar Todos os Clientes
-          </button>
+          {!API_DISABLED && (
+            <button
+              onClick={() => apiClient.endpoints.sync()}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              📡 Sincronizar Todos os Clientes
+            </button>
+          )}
         </div>
       )}
 
