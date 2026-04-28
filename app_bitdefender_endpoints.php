@@ -5,17 +5,11 @@
  * Versão: 2.0 - Atualizado em 28/04/2026
  */
 
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
-
+// Incluir config primeiro (ele já define os headers CORS)
 require_once __DIR__ . '/srv/config.php';
+
+// Definir Content-Type como JSON (depois do config para não conflitar)
+header('Content-Type: application/json');
 // Autenticação desabilitada temporariamente para debug
 // require_once __DIR__ . '/app_auth.php';
 
