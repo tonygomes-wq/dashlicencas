@@ -149,9 +149,6 @@ function handlePost($pdo, $user) {
     echo json_encode($result);
 }
 
-/**
- * Sincronizar endpoints de um cliente específico
- */
 function syncClientEndpoints($pdo, $clientId) {
     // Buscar informações do cliente
     $stmt = $pdo->prepare("
@@ -175,10 +172,23 @@ function syncClientEndpoints($pdo, $clientId) {
 
     try {
         // Chamar API Bitdefender para listar endpoints
-        $endpoints = callBitdefenderAPI($accessUrl, $apiKey, 'getEndpointsList', [
+        // Método correto: getNetworkInventoryItems
+        $endpoints = callBitdefenderAPI($accessUrl, $apiKey, 'getNetworkInventoryItems', [
             'perPage' => 100,
-            'page' => 1
+            'page' => 1,
+            'filters' => [
+                'type' => ['computers', 'virtualMachines']
+            ]
         ]);
+
+        if (!$endpoints || !isset($endpoints['result'])) {
+            // Se não funcionar, tentar método alternativo
+            error_log("Tentando método alternativo: getManagedEndpointsList");
+            $endpoints = callBitdefenderAPI($accessUrl, $apiKey, 'getManagedEndpointsList', [
+                'perPage' => 100,
+                'page' => 1
+            ]);
+        }
 
         if (!$endpoints || !isset($endpoints['result'])) {
             return ['error' => 'Resposta inválida da API Bitdefender'];
@@ -188,13 +198,19 @@ function syncClientEndpoints($pdo, $clientId) {
         $created = 0;
         $updated = 0;
 
-        foreach ($endpoints['result']['items'] as $endpoint) {
-            $endpointId = $endpoint['id'];
-            $name = $endpoint['name'] ?? 'Unknown';
+        $items = $endpoints['result']['items'] ?? [];
+
+        foreach ($items as $endpoint) {
+            $endpointId = $endpoint['id'] ?? null;
+            $name = $endpoint['name'] ?? $endpoint['label'] ?? 'Unknown';
             $ip = $endpoint['ip'] ?? null;
             $mac = $endpoint['mac'] ?? null;
-            $os = $endpoint['operatingSystemVersion'] ?? null;
+            $os = $endpoint['operatingSystemVersion'] ?? $endpoint['os'] ?? null;
             $agentVersion = $endpoint['agent']['version'] ?? null;
+            
+            if (!$endpointId) {
+                continue; // Pular se não tiver ID
+            }
             
             // Determinar status de proteção
             $protectionStatus = 'protected';
@@ -256,6 +272,7 @@ function syncClientEndpoints($pdo, $clientId) {
         ];
 
     } catch (Exception $e) {
+        error_log("Erro ao sincronizar cliente {$clientId}: " . $e->getMessage());
         return ['error' => $e->getMessage()];
     }
 }

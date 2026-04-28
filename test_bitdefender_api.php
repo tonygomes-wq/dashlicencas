@@ -40,16 +40,19 @@ try {
         'api_key_preview' => substr($apiKey, 0, 10) . '...'
     ], JSON_PRETTY_PRINT) . "\n\n";
 
-    // Testar chamada à API
-    $url = rtrim($accessUrl, '/') . '/v1.0/jsonrpc/getEndpointsList';
+    // Testar chamada à API - Método 1: getNetworkInventoryItems
+    $url = rtrim($accessUrl, '/') . '/v1.0/jsonrpc/getNetworkInventoryItems';
     
     $payload = json_encode([
         'params' => [
             'perPage' => 5,
-            'page' => 1
+            'page' => 1,
+            'filters' => [
+                'type' => ['computers', 'virtualMachines']
+            ]
         ],
         'jsonrpc' => '2.0',
-        'method' => 'getEndpointsList',
+        'method' => 'getNetworkInventoryItems',
         'id' => '1'
     ]);
 
