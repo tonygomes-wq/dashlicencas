@@ -173,16 +173,9 @@ function syncClientEndpoints($pdo, $clientId) {
     try {
         // Chamar API Bitdefender para listar endpoints
         // Módulo: network, Método: getNetworkInventoryItems
-        // Filtrar apenas computadores (type: 1) e máquinas virtuais (type: 2)
         $endpoints = callBitdefenderAPI($accessUrl, $apiKey, 'network', 'getNetworkInventoryItems', [
             'perPage' => 100,
-            'page' => 1,
-            'filters' => [
-                'type' => [
-                    'type' => 1, // Computadores
-                    'type' => 2  // Máquinas virtuais
-                ]
-            ]
+            'page' => 1
         ]);
 
         if (!$endpoints || (!isset($endpoints['result']) && !isset($endpoints['error']))) {
@@ -201,6 +194,7 @@ function syncClientEndpoints($pdo, $clientId) {
         $items = $endpoints['result']['items'] ?? [];
         
         // Filtrar apenas itens que são computadores (type 1 ou 2)
+        // Type 1 = Computador, Type 2 = Máquina Virtual, Type 4 = Grupo
         $items = array_filter($items, function($item) {
             return isset($item['type']) && ($item['type'] == 1 || $item['type'] == 2);
         });
