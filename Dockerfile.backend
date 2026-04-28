@@ -7,7 +7,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Copiar arquivos de configuração do backend
-COPY backend/package*.json ./
+COPY backend/package.json backend/package-lock.json ./
 COPY backend/tsconfig.json ./
 
 # Instalar todas as dependências
