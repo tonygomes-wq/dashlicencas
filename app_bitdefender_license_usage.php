@@ -26,6 +26,10 @@ if (!$auth['authenticated']) {
 
 $method = $_SERVER['REQUEST_METHOD'];
 
+// Debug: Log do método recebido
+error_log("app_bitdefender_license_usage.php - Método: $method");
+error_log("app_bitdefender_license_usage.php - Query String: " . ($_SERVER['QUERY_STRING'] ?? 'vazio'));
+
 try {
     switch ($method) {
         case 'GET':
@@ -35,10 +39,16 @@ try {
             handlePost($pdo);
             break;
         default:
+            error_log("app_bitdefender_license_usage.php - Método não permitido: $method");
             http_response_code(405);
-            echo json_encode(['error' => 'Método não permitido']);
+            echo json_encode([
+                'error' => 'Method not allowed',
+                'method_received' => $method,
+                'allowed_methods' => ['GET', 'POST']
+            ]);
     }
 } catch (Exception $e) {
+    error_log("app_bitdefender_license_usage.php - Erro: " . $e->getMessage());
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);
 }

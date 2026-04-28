@@ -27,6 +27,10 @@ if (!$auth['authenticated']) {
 $user = $auth['user'];
 $method = $_SERVER['REQUEST_METHOD'];
 
+// Debug: Log do método recebido
+error_log("app_bitdefender_endpoints.php - Método: $method");
+error_log("app_bitdefender_endpoints.php - Query String: " . ($_SERVER['QUERY_STRING'] ?? 'vazio'));
+
 try {
     switch ($method) {
         case 'GET':
@@ -42,10 +46,16 @@ try {
             handleDelete($pdo, $user);
             break;
         default:
+            error_log("app_bitdefender_endpoints.php - Método não permitido: $method");
             http_response_code(405);
-            echo json_encode(['error' => 'Método não permitido']);
+            echo json_encode([
+                'error' => 'Method not allowed',
+                'method_received' => $method,
+                'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE']
+            ]);
     }
 } catch (Exception $e) {
+    error_log("app_bitdefender_endpoints.php - Erro: " . $e->getMessage());
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);
 }
