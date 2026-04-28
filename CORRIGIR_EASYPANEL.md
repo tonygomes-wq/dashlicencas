@@ -1,43 +1,56 @@
-# 🔧 Corrigir Configuração do Easypanel
+# 🔧 Status do Deploy - Easypanel
 
-## 🚨 Problema
+## ✅ STATUS ATUAL
 
-O Easypanel está fazendo build na **raiz do projeto** (onde está o frontend), não na pasta `backend/`!
+**Último commit**: `1d3b1ce` - fix: desabilitar noUnusedLocals e noUnusedParameters no tsconfig
 
-Por isso está tentando rodar `vite build` ao invés de `tsc`.
-
-## ✅ Solução: Configurar Context Correto
-
-### Passo 1: Ir nas Configurações do Serviço
-
-1. No Easypanel, ir no serviço **dashlicencas-backend**
-2. Clicar em **"Fonte"** ou **"Source"**
-
-### Passo 2: Configurar Build Context
-
-Procure por uma opção chamada:
-- **"Build Context"** ou
-- **"Context"** ou
-- **"Working Directory"**
-
-Configure para: **`backend`**
-
-### Passo 3: Configurar Dockerfile Path
-
-- **Dockerfile Path**: `Dockerfile` (não `backend/Dockerfile`)
-
-**Por quê?**
-- O Context já está em `backend/`
-- Então o Dockerfile está em `backend/Dockerfile` → `./Dockerfile`
-
-### Passo 4: Salvar e Fazer Redeploy
-
-1. Salvar configurações
-2. Clicar em **"Implantar"** ou **"Deploy"**
+**Ações realizadas**:
+1. ✅ Removido `package-lock.json` do `.gitignore` da raiz
+2. ✅ Commitado o `backend/package-lock.json` no Git
+3. ✅ Desabilitado `noUnusedLocals` e `noUnusedParameters` no `backend/tsconfig.json`
+4. ✅ Push realizado para o GitHub
+5. ⏳ **AGUARDANDO**: Novo build automático no Easypanel
 
 ---
 
-## 📊 Configuração Correta Final
+## 📋 Próximos Passos
+
+### 1. Aguardar Build Automático
+O Easypanel deve detectar o novo commit e iniciar o build automaticamente.
+
+### 2. Verificar Logs do Build
+Acesse o Easypanel e verifique os logs. Você deve ver:
+
+```bash
+✅ ESPERADO:
+> dashlicencas-backend@1.0.0 build
+> tsc
+
+# Compilação TypeScript bem-sucedida
+# server.js criado em dist/
+```
+
+### 3. Se o Build Falhar com Erros TypeScript
+
+Caso apareça erro de tipo no `jwt.sign()`, execute localmente:
+
+```bash
+cd backend
+npm run build
+```
+
+Se houver erros, corrija-os antes de commitar novamente.
+
+### 4. Após Build Bem-Sucedido
+
+1. **Configurar domínio**: `api.dashlicencas.macip.com.br`
+2. **Testar health check**: `https://api.dashlicencas.macip.com.br/health`
+3. **Testar login**: `POST https://api.dashlicencas.macip.com.br/api/v1/auth/login`
+4. **Atualizar frontend** para usar a nova API
+
+---
+
+## � Configuração Atual do Easypanel
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -48,86 +61,81 @@ Configure para: **`backend`**
 │ Branch: main                                            │
 │                                                         │
 │ Build Method: Dockerfile                                │
-│ Dockerfile Path: Dockerfile                             │
-│ Context: backend                    ← IMPORTANTE!       │
+│ Dockerfile Path: Dockerfile.backend                     │
+│ Context: . (raiz)                                       │
+│                                                         │
+│ Porta: 3001                                             │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🎯 Alternativa: Dockerfile na Raiz
+## 🐛 Histórico de Problemas Resolvidos
 
-Se não conseguir configurar o Context, podemos criar um Dockerfile na raiz:
+### Problema 1: Vite sendo chamado ao invés de tsc
+**Causa**: Build context estava na raiz do projeto  
+**Solução**: Criado `Dockerfile.backend` na raiz que copia arquivos de `backend/`
 
-### Criar `Dockerfile.backend` na raiz
+### Problema 2: dist/server.js não encontrado
+**Causa**: Build do TypeScript não estava sendo executado corretamente  
+**Solução**: Ajustado Dockerfile para copiar arquivos na ordem correta
 
-```dockerfile
-# Usar imagem Node.js Alpine
-FROM node:20-alpine
+### Problema 3: package-lock.json não encontrado
+**Causa**: Arquivo estava no `.gitignore` da raiz  
+**Solução**: Removido do `.gitignore` e commitado no Git
 
-# Definir diretório de trabalho
-WORKDIR /app
-
-# Copiar arquivos do backend
-COPY backend/package*.json ./
-COPY backend/tsconfig.json ./
-
-# Instalar dependências
-RUN npm ci
-
-# Copiar código fonte do backend
-COPY backend/src ./src
-
-# Build do TypeScript
-RUN npm run build
-
-# Remover devDependencies
-RUN npm prune --omit=dev
-
-# Expor porta
-EXPOSE 3001
-
-# Variáveis de ambiente
-ENV NODE_ENV=production
-ENV PORT=3001
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
-
-# Iniciar aplicação
-CMD ["node", "dist/server.js"]
-```
-
-Depois configurar no Easypanel:
-- **Dockerfile Path**: `Dockerfile.backend`
-- **Context**: `.` (raiz)
+### Problema 4: Erros de compilação TypeScript
+**Causa**: `noUnusedLocals` e `noUnusedParameters` estavam habilitados  
+**Solução**: Desabilitados no `tsconfig.json`
 
 ---
 
-## 🔍 Como Verificar se Está Correto
+## 📝 Comandos Úteis
 
-Nos logs do build, você deve ver:
-
+### Verificar status do Git
+```bash
+git status
+git log --oneline -5
 ```
-✅ CORRETO:
-> dashlicencas-backend@1.0.0 build
-> tsc
 
-❌ ERRADO:
-> dashboard-licencas@1.0.0 build
-> vite build
+### Fazer novo commit e push
+```bash
+git add .
+git commit -m "fix: descrição da correção"
+git push
+```
+
+### Testar build localmente
+```bash
+cd backend
+npm run build
+node dist/server.js
 ```
 
 ---
 
-## 📝 Resumo
+## 🎯 Checklist de Deploy
 
-**Problema**: Easypanel está na pasta errada  
-**Solução**: Configurar Context para `backend/`  
-**Alternativa**: Criar Dockerfile na raiz
+- [x] Dockerfile criado e configurado
+- [x] package-lock.json commitado
+- [x] tsconfig.json ajustado
+- [x] Push realizado para GitHub
+- [ ] Build bem-sucedido no Easypanel
+- [ ] Domínio configurado
+- [ ] Health check funcionando
+- [ ] Endpoints testados
+- [ ] Frontend atualizado
 
 ---
 
-Qual opção você prefere tentar primeiro? 🤔
+## 🆘 Se Ainda Houver Problemas
+
+1. **Verificar logs completos** no Easypanel
+2. **Copiar mensagem de erro** completa
+3. **Testar build localmente** com `npm run build`
+4. **Verificar se todos os arquivos** estão commitados no Git
+
+---
+
+Aguarde o build automático do Easypanel e verifique os logs! 🚀

@@ -273,6 +273,12 @@ function callBitdefenderAPI($accessUrl, $apiKey, $method, $params = []) {
         'id' => uniqid()
     ]);
 
+    // Debug: Log da requisição
+    error_log("=== Bitdefender API Call ===");
+    error_log("URL: $url");
+    error_log("Method: $method");
+    error_log("Payload: $payload");
+
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
@@ -282,16 +288,33 @@ function callBitdefenderAPI($accessUrl, $apiKey, $method, $params = []) {
         'Authorization: Basic ' . base64_encode($apiKey . ':')
     ]);
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Desabilitar verificação SSL temporariamente
 
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
     curl_close($ch);
 
-    if ($httpCode !== 200) {
-        throw new Exception("Erro na API Bitdefender: HTTP $httpCode");
+    // Debug: Log da resposta
+    error_log("HTTP Code: $httpCode");
+    error_log("Response: " . substr($response, 0, 500)); // Primeiros 500 caracteres
+    if ($curlError) {
+        error_log("CURL Error: $curlError");
     }
 
-    return json_decode($response, true);
+    if ($httpCode !== 200) {
+        throw new Exception("Erro na API Bitdefender: HTTP $httpCode - $curlError");
+    }
+
+    $decoded = json_decode($response, true);
+    
+    // Debug: Verificar se a resposta é válida
+    if (!$decoded) {
+        error_log("Erro ao decodificar JSON. Response: $response");
+        throw new Exception("Resposta JSON inválida da API Bitdefender");
+    }
+
+    return $decoded;
 }
 
 /**

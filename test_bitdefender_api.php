@@ -1,38 +1,132 @@
 <?php
-// test_bitdefender_api.php - Testar API do Bitdefender
+/**
+ * Script de Teste da API Bitdefender
+ * Testa a conexão com a API de um cliente específico
+ */
 
-session_start();
 header('Content-Type: application/json');
-require_once 'srv/config.php';
+require_once __DIR__ . '/srv/config.php';
 
-// Simular sessão de admin se não estiver logado
-if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 1; // Admin
-    $_SESSION['user_email'] = 'suporte@macip.com.br';
-}
+// ID do cliente para testar (você pode mudar)
+$clientId = isset($_GET['client_id']) ? (int)$_GET['client_id'] : 3;
 
 try {
-    // Buscar todos os registros
-    $stmt = $pdo->query("
-        SELECT id, company, contactPerson as contact_person, email, 
-               licenseKey as license_key, totalLicenses as total_licenses, 
-               expirationDate as expiration_date, renewalStatus as renewal_status
-        FROM bitdefender_licenses
-        ORDER BY company
+    // Buscar informações do cliente
+    $stmt = $pdo->prepare("
+        SELECT id, company, client_api_key, client_access_url 
+        FROM bitdefender_licenses 
+        WHERE id = ?
     ");
-    
-    $licenses = $stmt->fetchAll();
-    
+    $stmt->execute([$clientId]);
+    $client = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$client) {
+        throw new Exception("Cliente não encontrado");
+    }
+
+    if (!$client['client_api_key']) {
+        throw new Exception("Cliente não possui API Key configurada");
+    }
+
+    $apiKey = $client['client_api_key'];
+    $accessUrl = $client['client_access_url'] ?: 'https://cloud.gravityzone.bitdefender.com/api';
+
     echo json_encode([
-        'success' => true,
-        'count' => count($licenses),
-        'data' => $licenses
-    ], JSON_PRETTY_PRINT);
+        'step' => 1,
+        'message' => 'Cliente encontrado',
+        'client' => $client['company'],
+        'access_url' => $accessUrl,
+        'api_key_length' => strlen($apiKey),
+        'api_key_preview' => substr($apiKey, 0, 10) . '...'
+    ], JSON_PRETTY_PRINT) . "\n\n";
+
+    // Testar chamada à API
+    $url = rtrim($accessUrl, '/') . '/v1.0/jsonrpc/getEndpointsList';
     
+    $payload = json_encode([
+        'params' => [
+            'perPage' => 5,
+            'page' => 1
+        ],
+        'jsonrpc' => '2.0',
+        'method' => 'getEndpointsList',
+        'id' => '1'
+    ]);
+
+    echo json_encode([
+        'step' => 2,
+        'message' => 'Preparando requisição',
+        'url' => $url,
+        'payload' => json_decode($payload)
+    ], JSON_PRETTY_PRINT) . "\n\n";
+
+    // Fazer requisição
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Authorization: Basic ' . base64_encode($apiKey . ':')
+    ]);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_VERBOSE, true);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    $curlInfo = curl_getinfo($ch);
+    curl_close($ch);
+
+    echo json_encode([
+        'step' => 3,
+        'message' => 'Resposta recebida',
+        'http_code' => $httpCode,
+        'curl_error' => $curlError ?: null,
+        'response_length' => strlen($response),
+        'response_preview' => substr($response, 0, 500)
+    ], JSON_PRETTY_PRINT) . "\n\n";
+
+    // Tentar decodificar resposta
+    $decoded = json_decode($response, true);
+    
+    if (!$decoded) {
+        echo json_encode([
+            'step' => 4,
+            'error' => 'Erro ao decodificar JSON',
+            'json_error' => json_last_error_msg(),
+            'raw_response' => $response
+        ], JSON_PRETTY_PRINT) . "\n\n";
+    } else {
+        echo json_encode([
+            'step' => 4,
+            'message' => 'JSON decodificado com sucesso',
+            'has_result' => isset($decoded['result']),
+            'has_error' => isset($decoded['error']),
+            'decoded' => $decoded
+        ], JSON_PRETTY_PRINT) . "\n\n";
+    }
+
+    // Verificar se há endpoints
+    if (isset($decoded['result']['items'])) {
+        echo json_encode([
+            'step' => 5,
+            'message' => 'Endpoints encontrados',
+            'total_endpoints' => count($decoded['result']['items']),
+            'first_endpoint' => $decoded['result']['items'][0] ?? null
+        ], JSON_PRETTY_PRINT) . "\n\n";
+    } elseif (isset($decoded['error'])) {
+        echo json_encode([
+            'step' => 5,
+            'error' => 'API retornou erro',
+            'api_error' => $decoded['error']
+        ], JSON_PRETTY_PRINT) . "\n\n";
+    }
+
 } catch (Exception $e) {
-    http_response_code(500);
     echo json_encode([
-        'success' => false,
-        'error' => $e->getMessage()
+        'error' => $e->getMessage(),
+        'trace' => $e->getTraceAsString()
     ], JSON_PRETTY_PRINT);
 }
