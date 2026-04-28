@@ -54,16 +54,23 @@ const BitdefenderAPIStats: React.FC = () => {
   const fetchAPIStats = async () => {
     setLoading(true);
     try {
-      const data = await apiClient.endpoints.stats();
-      setStats({
-        total: parseInt(data.total) || 0,
-        protected: parseInt(data.protected) || 0,
-        at_risk: parseInt(data.at_risk) || 0,
-        offline: parseInt(data.offline) || 0,
-        online_24h: parseInt(data.online_24h) || 0,
-        complianceRate: data.total > 0 ? Math.round((data.protected / data.total) * 100) : 0
-      });
-      setHasData(data.total > 0);
+      // Tentar buscar dados, mas não falhar se endpoint não existir
+      try {
+        const data = await apiClient.endpoints.stats();
+        setStats({
+          total: parseInt(data.total) || 0,
+          protected: parseInt(data.protected) || 0,
+          at_risk: parseInt(data.at_risk) || 0,
+          offline: parseInt(data.offline) || 0,
+          online_24h: parseInt(data.online_24h) || 0,
+          complianceRate: data.total > 0 ? Math.round((data.protected / data.total) * 100) : 0
+        });
+        setHasData(data.total > 0);
+      } catch (endpointError) {
+        console.warn('Endpoint de estatísticas não disponível:', endpointError);
+        // Manter dados zerados se endpoint não existir
+        setHasData(false);
+      }
     } catch (error) {
       console.error('Erro ao carregar estatísticas:', error);
       setHasData(false);

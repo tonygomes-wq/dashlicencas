@@ -250,8 +250,8 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate }) => {
       {/* Bitdefender API Stats */}
       <BitdefenderAPIStats />
 
-      {/* License Usage Alerts */}
-      <LicenseUsageAlerts />
+      {/* License Usage Alerts - Temporariamente desabilitado até deploy */}
+      {/* <LicenseUsageAlerts /> */}
 
       {/* FortiGate API Stats */}
       <FortigateAPIStats onSyncAll={fetchDashboardStats} />
