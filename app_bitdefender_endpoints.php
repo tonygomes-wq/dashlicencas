@@ -119,18 +119,36 @@ function listEndpoints($pdo, $user) {
 }
 
 function getStats($pdo, $user) {
+    // Buscar estatísticas baseadas nas licenças Bitdefender
+    // (não em endpoints individuais, pois a API não retorna)
     $stmt = $pdo->query("
         SELECT 
-            COUNT(*) as total,
-            SUM(CASE WHEN protection_status = 'protected' THEN 1 ELSE 0 END) as protected,
-            SUM(CASE WHEN protection_status = 'at_risk' THEN 1 ELSE 0 END) as at_risk,
-            SUM(CASE WHEN protection_status = 'offline' THEN 1 ELSE 0 END) as offline,
-            SUM(CASE WHEN last_seen > DATE_SUB(NOW(), INTERVAL 24 HOUR) THEN 1 ELSE 0 END) as online_24h
-        FROM bitdefender_endpoints
+            COUNT(*) as total_licenses,
+            SUM(COALESCE(total_licenses, 0)) as total_slots,
+            SUM(COALESCE(used_licenses, 0)) as used_slots,
+            SUM(COALESCE(free_licenses, 0)) as free_slots,
+            AVG(COALESCE(usage_percentage, 0)) as avg_usage,
+            SUM(CASE WHEN over_limit = 1 THEN 1 ELSE 0 END) as over_limit_count,
+            SUM(CASE WHEN usage_percentage >= 90 THEN 1 ELSE 0 END) as high_usage_count,
+            SUM(CASE WHEN expiration_date <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as expiring_soon
+        FROM bitdefender_licenses
+        WHERE client_api_key IS NOT NULL
     ");
     $stats = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    echo json_encode($stats);
+    // Formatar resposta
+    echo json_encode([
+        'total' => (int)$stats['total_slots'],
+        'protected' => (int)$stats['used_slots'],
+        'at_risk' => (int)$stats['over_limit_count'],
+        'offline' => (int)$stats['high_usage_count'],
+        'online_24h' => (int)$stats['free_slots'],
+        'licenses' => [
+            'total' => (int)$stats['total_licenses'],
+            'avg_usage' => round($stats['avg_usage'], 2),
+            'expiring_soon' => (int)$stats['expiring_soon']
+        ]
+    ]);
 }
 
 /**

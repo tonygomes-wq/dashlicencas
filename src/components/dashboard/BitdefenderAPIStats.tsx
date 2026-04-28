@@ -105,7 +105,7 @@ const BitdefenderAPIStats: React.FC = () => {
               Estatísticas Bitdefender API
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {hasData ? 'Dados em tempo real via API' : 'Nenhum endpoint sincronizado'}
+              {hasData ? 'Estatísticas baseadas em licenças sincronizadas' : 'Nenhum endpoint sincronizado'}
             </p>
           </div>
         </div>
@@ -160,10 +160,10 @@ const BitdefenderAPIStats: React.FC = () => {
                 <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Endpoints Protegidos</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total de Slots</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.protected.toLocaleString()}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                de {stats.total} total
+                Slots em uso
               </p>
             </div>
 
@@ -177,10 +177,10 @@ const BitdefenderAPIStats: React.FC = () => {
                   <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
                 )}
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Em Risco</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Sobre o Limite</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.at_risk.toLocaleString()}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {stats.at_risk === 0 ? 'Todos protegidos' : 'Requer atenção'}
+                {stats.at_risk === 0 ? 'Nenhuma licença' : 'Licenças excedidas'}
               </p>
             </div>
 
@@ -194,10 +194,10 @@ const BitdefenderAPIStats: React.FC = () => {
                   <TrendingDown className="w-4 h-4 text-green-600 dark:text-green-400" />
                 )}
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Offline</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Uso Alto</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.offline}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Não conectados
+                Licenças com uso ≥90%
               </p>
             </div>
 
@@ -209,10 +209,10 @@ const BitdefenderAPIStats: React.FC = () => {
                   {stats.complianceRate >= 95 ? '✓ Excelente' : stats.complianceRate >= 80 ? '⚠ Bom' : '❌ Crítico'}
                 </span>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Taxa de Proteção</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Taxa de Uso Média</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.complianceRate}%</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Endpoints protegidos
+                Uso médio de slots
               </p>
             </div>
           </div>
