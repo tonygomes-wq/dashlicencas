@@ -1,10 +1,16 @@
 <?php
 // srv/config.php - Database Configuration
 
+// Desabilitar exibição de warnings (apenas em produção)
+// Warnings são registrados no error_log, mas não exibidos
+error_reporting(E_ALL & ~E_WARNING);
+ini_set('display_errors', '0');
+
 // Allow from any origin (Adjust for production)
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+// Usar @ para suprimir warnings se headers já foram enviados
+@header("Access-Control-Allow-Origin: *");
+@header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+@header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit(0);

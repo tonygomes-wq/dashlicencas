@@ -9,7 +9,8 @@
 require_once __DIR__ . '/srv/config.php';
 
 // Definir Content-Type como JSON (depois do config para não conflitar)
-header('Content-Type: application/json');
+// Usar @ para suprimir warnings se headers já foram enviados
+@header('Content-Type: application/json');
 // Autenticação desabilitada temporariamente para debug
 // require_once __DIR__ . '/app_auth.php';
 
