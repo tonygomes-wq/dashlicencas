@@ -47,8 +47,8 @@ const BitdefenderAPIStats: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [hasData, setHasData] = useState(false);
 
-  // Desabilitar temporariamente até configurar API corretamente
-  const API_DISABLED = true;
+  // API funcionando! Reabilitada
+  const API_DISABLED = false;
 
   useEffect(() => {
     if (!API_DISABLED) {
