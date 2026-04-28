@@ -120,35 +120,83 @@ function listEndpoints($pdo, $user) {
 
 function getStats($pdo, $user) {
     // Buscar estatísticas baseadas nas licenças Bitdefender
-    // (não em endpoints individuais, pois a API não retorna)
-    $stmt = $pdo->query("
-        SELECT 
-            COUNT(*) as total_licenses,
-            SUM(COALESCE(total_licenses, 0)) as total_slots,
-            SUM(COALESCE(used_licenses, 0)) as used_slots,
-            SUM(COALESCE(free_licenses, 0)) as free_slots,
-            AVG(COALESCE(usage_percentage, 0)) as avg_usage,
-            SUM(CASE WHEN over_limit = 1 THEN 1 ELSE 0 END) as over_limit_count,
-            SUM(CASE WHEN usage_percentage >= 90 THEN 1 ELSE 0 END) as high_usage_count,
-            SUM(CASE WHEN expiration_date <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as expiring_soon
-        FROM bitdefender_licenses
-        WHERE client_api_key IS NOT NULL
-    ");
-    $stats = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Verificar quais colunas existem na tabela
+    try {
+        $columnsStmt = $pdo->query("SHOW COLUMNS FROM bitdefender_licenses");
+        $columns = $columnsStmt->fetchAll(PDO::FETCH_COLUMN);
+        
+        // Verificar se as colunas de uso existem
+        $hasUsedSlots = in_array('used_slots', $columns);
+        $hasTotalSlots = in_array('total_slots', $columns);
+        $hasUsagePercent = in_array('license_usage_percent', $columns);
+        $hasUsageAlert = in_array('license_usage_alert', $columns);
+        
+        // Construir query baseado nas colunas disponíveis
+        if ($hasUsedSlots && $hasTotalSlots && $hasUsagePercent) {
+            // Usar colunas novas (add_license_usage_fields.sql)
+            $stmt = $pdo->query("
+                SELECT 
+                    COUNT(*) as total_licenses,
+                    SUM(COALESCE(total_slots, total_licenses, 0)) as total_slots,
+                    SUM(COALESCE(used_slots, 0)) as used_slots,
+                    SUM(COALESCE(total_slots, total_licenses, 0) - COALESCE(used_slots, 0)) as free_slots,
+                    AVG(COALESCE(license_usage_percent, 0)) as avg_usage,
+                    SUM(CASE WHEN used_slots > total_slots THEN 1 ELSE 0 END) as over_limit_count,
+                    SUM(CASE WHEN license_usage_percent >= 90 THEN 1 ELSE 0 END) as high_usage_count,
+                    SUM(CASE WHEN expiration_date <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as expiring_soon
+                FROM bitdefender_licenses
+                WHERE client_api_key IS NOT NULL AND client_api_key != ''
+            ");
+        } else {
+            // Fallback: usar apenas colunas básicas
+            $stmt = $pdo->query("
+                SELECT 
+                    COUNT(*) as total_licenses,
+                    SUM(COALESCE(total_licenses, 0)) as total_slots,
+                    0 as used_slots,
+                    0 as free_slots,
+                    0 as avg_usage,
+                    0 as over_limit_count,
+                    0 as high_usage_count,
+                    SUM(CASE WHEN expiration_date <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as expiring_soon
+                FROM bitdefender_licenses
+                WHERE client_api_key IS NOT NULL AND client_api_key != ''
+            ");
+        }
+        
+        $stats = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Formatar resposta
-    echo json_encode([
-        'total' => (int)$stats['total_slots'],
-        'protected' => (int)$stats['used_slots'],
-        'at_risk' => (int)$stats['over_limit_count'],
-        'offline' => (int)$stats['high_usage_count'],
-        'online_24h' => (int)$stats['free_slots'],
-        'licenses' => [
-            'total' => (int)$stats['total_licenses'],
-            'avg_usage' => round($stats['avg_usage'], 2),
-            'expiring_soon' => (int)$stats['expiring_soon']
-        ]
-    ]);
+        // Formatar resposta
+        echo json_encode([
+            'total' => (int)$stats['total_slots'],
+            'protected' => (int)$stats['used_slots'],
+            'at_risk' => (int)$stats['over_limit_count'],
+            'offline' => (int)$stats['high_usage_count'],
+            'online_24h' => (int)$stats['free_slots'],
+            'licenses' => [
+                'total' => (int)$stats['total_licenses'],
+                'avg_usage' => round($stats['avg_usage'], 2),
+                'expiring_soon' => (int)$stats['expiring_soon']
+            ]
+        ]);
+        
+    } catch (Exception $e) {
+        error_log("Erro em getStats: " . $e->getMessage());
+        // Retornar estatísticas vazias em caso de erro
+        echo json_encode([
+            'total' => 0,
+            'protected' => 0,
+            'at_risk' => 0,
+            'offline' => 0,
+            'online_24h' => 0,
+            'licenses' => [
+                'total' => 0,
+                'avg_usage' => 0,
+                'expiring_soon' => 0
+            ],
+            'error' => $e->getMessage()
+        ]);
+    }
 }
 
 /**

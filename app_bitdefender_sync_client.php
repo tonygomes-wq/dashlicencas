@@ -89,16 +89,17 @@ function syncSingleClient($pdo, $client, $accessUrl) {
         $hasExtraColumns = checkExtraColumns($pdo);
         
         if ($hasExtraColumns) {
-            // Atualizar com campos extras
+            // Atualizar com campos extras (nomes corretos: used_slots, total_slots, license_usage_percent)
             $updateStmt = $pdo->prepare("
                 UPDATE bitdefender_licenses 
                 SET license_key = ?,
                     total_licenses = ?,
-                    used_licenses = ?,
-                    free_licenses = ?,
-                    usage_percentage = ?,
-                    over_limit = ?,
+                    used_slots = ?,
+                    total_slots = ?,
+                    license_usage_percent = ?,
+                    license_usage_alert = ?,
                     expiration_date = ?,
+                    license_usage_last_sync = NOW(),
                     last_sync = NOW()
                 WHERE id = ?
             ");
@@ -107,9 +108,9 @@ function syncSingleClient($pdo, $client, $accessUrl) {
                 $licenseKey,
                 $totalLicenses,
                 $usedLicenses,
-                $freeLicenses,
+                $totalLicenses, // total_slots = total_licenses
                 $usagePercentage,
-                $overLimit ? 1 : 0,
+                $usagePercentage >= 90 ? 1 : 0, // license_usage_alert
                 $expirationDate,
                 $client['id']
             ]);
@@ -185,7 +186,8 @@ function syncSingleClient($pdo, $client, $accessUrl) {
 
 function checkExtraColumns($pdo) {
     try {
-        $stmt = $pdo->query("SHOW COLUMNS FROM bitdefender_licenses LIKE 'used_licenses'");
+        // Verificar se a coluna used_slots existe (nome correto do SQL)
+        $stmt = $pdo->query("SHOW COLUMNS FROM bitdefender_licenses LIKE 'used_slots'");
         return $stmt->rowCount() > 0;
     } catch (Exception $e) {
         return false;
