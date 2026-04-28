@@ -172,8 +172,8 @@ function syncClientEndpoints($pdo, $clientId) {
 
     try {
         // Chamar API Bitdefender para listar endpoints
-        // Método: getNetworkInventoryItems (API "Rede" habilitada)
-        $endpoints = callBitdefenderAPI($accessUrl, $apiKey, 'getNetworkInventoryItems', [
+        // Módulo: network, Método: getNetworkInventoryItems
+        $endpoints = callBitdefenderAPI($accessUrl, $apiKey, 'network', 'getNetworkInventoryItems', [
             'perPage' => 100,
             'page' => 1
         ]);
@@ -273,8 +273,8 @@ function syncClientEndpoints($pdo, $clientId) {
 /**
  * Chamar API Bitdefender
  */
-function callBitdefenderAPI($accessUrl, $apiKey, $method, $params = []) {
-    // Normalizar URL - adicionar /v1.0/jsonrpc se não tiver
+function callBitdefenderAPI($accessUrl, $apiKey, $apiModule, $method, $params = []) {
+    // Normalizar URL - adicionar /v1.0/jsonrpc/<module> se não tiver
     $accessUrl = rtrim($accessUrl, '/');
     
     // Se a URL não terminar com /jsonrpc, adicionar o caminho completo
@@ -285,7 +285,8 @@ function callBitdefenderAPI($accessUrl, $apiKey, $method, $params = []) {
         $accessUrl .= '/v1.0/jsonrpc';
     }
     
-    $url = $accessUrl . '/' . $method;
+    // Adicionar módulo da API (licensing, network, etc.)
+    $url = $accessUrl . '/' . $apiModule;
 
     $payload = json_encode([
         'params' => $params,
@@ -297,6 +298,7 @@ function callBitdefenderAPI($accessUrl, $apiKey, $method, $params = []) {
     // Debug: Log da requisição
     error_log("=== Bitdefender API Call ===");
     error_log("URL: $url");
+    error_log("Module: $apiModule");
     error_log("Method: $method");
     error_log("Payload: $payload");
 
@@ -309,7 +311,7 @@ function callBitdefenderAPI($accessUrl, $apiKey, $method, $params = []) {
         'Authorization: Basic ' . base64_encode($apiKey . ':')
     ]);
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Desabilitar verificação SSL temporariamente
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -318,7 +320,7 @@ function callBitdefenderAPI($accessUrl, $apiKey, $method, $params = []) {
 
     // Debug: Log da resposta
     error_log("HTTP Code: $httpCode");
-    error_log("Response: " . substr($response, 0, 500)); // Primeiros 500 caracteres
+    error_log("Response: " . substr($response, 0, 500));
     if ($curlError) {
         error_log("CURL Error: $curlError");
     }
@@ -329,7 +331,6 @@ function callBitdefenderAPI($accessUrl, $apiKey, $method, $params = []) {
 
     $decoded = json_decode($response, true);
     
-    // Debug: Verificar se a resposta é válida
     if (!$decoded) {
         error_log("Erro ao decodificar JSON. Response: $response");
         throw new Exception("Resposta JSON inválida da API Bitdefender");
