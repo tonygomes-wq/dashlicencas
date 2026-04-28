@@ -1,288 +1,336 @@
-# 🚀 Deploy - Campo de Observações
+# 🚀 Deploy Agora - Passo a Passo
 
-**Status:** Build concluído ✅  
-**Próximo passo:** Deploy para produção
+## ✅ Pré-requisitos
+
+- [x] Código pronto
+- [x] Chaves geradas
+- [x] Dockerfile criado
+- [x] Easypanel configurado
 
 ---
 
-## ⚡ DEPLOY RÁPIDO (5 minutos)
-
-### Opção 1: Via Easypanel (Recomendado)
-
-1. Acesse o Easypanel
-2. Vá para seu projeto Dashboard
-3. Faça upload dos arquivos da pasta `dist/`
-4. Pronto!
-
-### Opção 2: Via FTP/SFTP
-
-1. Abra seu cliente FTP (FileZilla, WinSCP, etc.)
-2. Conecte ao servidor
-3. Navegue até a pasta do dashboard
-4. Faça backup dos arquivos atuais (opcional)
-5. Copie todos os arquivos de `dist/` para o servidor
-6. Pronto!
-
-### Opção 3: Via Linha de Comando
+## 📦 Passo 1: Commit e Push
 
 ```bash
-# Copiar arquivos via SCP
-scp -r dist/* usuario@servidor:/caminho/para/dashboard/
+# Adicionar todos os arquivos
+git add .
 
-# Ou via rsync
-rsync -avz dist/ usuario@servidor:/caminho/para/dashboard/
+# Commit
+git commit -m "feat: backend Node.js completo - estatísticas + Docker + deploy"
+
+# Push para GitHub
+git push origin main
 ```
 
 ---
 
-## 📋 CHECKLIST DE DEPLOY
+## 🐳 Passo 2: Configurar no Easypanel
 
-### Antes do Deploy
-- [x] Build realizado (`npm run build`)
-- [x] Arquivos gerados em `dist/`
-- [ ] Backup dos arquivos atuais em produção (opcional)
+### 2.1 Criar Serviço
 
-### Durante o Deploy
-- [ ] Conectar ao servidor
-- [ ] Navegar até a pasta do dashboard
-- [ ] Copiar arquivos de `dist/` para o servidor
-- [ ] Verificar se todos os arquivos foram copiados
+1. Acessar: https://easypanel.macip.com.br
+2. Selecionar projeto: **sistema**
+3. Clicar em **"+ Serviço"**
+4. Selecionar **"GitHub"**
+5. Escolher repositório: **dashlicencas**
+6. Nome do serviço: **dashlicencas-backend**
 
-### Após o Deploy
-- [ ] Limpar cache do browser (Ctrl+F5)
-- [ ] Acessar o dashboard
-- [ ] Fazer login
-- [ ] Testar funcionalidade
+### 2.2 Configurar Build
+
+**Build Settings:**
+- **Dockerfile Path**: `backend/Dockerfile`
+- **Context**: `backend/`
+- **Branch**: `main`
+- **Auto Deploy**: ✅ Ativado
+
+### 2.3 Adicionar Variáveis de Ambiente
+
+Copiar e colar no campo "Environment Variables":
+
+```env
+NODE_ENV=production
+PORT=3001
+API_PREFIX=/api/v1
+DB_HOST=sistema_mysql
+DB_PORT=3306
+DB_USER=mysql
+DB_PASSWORD=v3n6jxpe2qmky582gb3s
+DB_NAME=faceso56_dashlicencas
+JWT_SECRET=ac37484837f3cddcbb3674391be7d0ebb69eb155f23b932bf87bc3807279b5e62a32439bd1f2d2d5939ec32389cb94883b64aa3b1456a8d49fe364872a4379f7
+JWT_EXPIRES_IN=7d
+JWT_REFRESH_EXPIRES_IN=30d
+CRON_SECRET_TOKEN=a036f4146482d8ee63093fae67318a3809b105815c3354f49917c9649329e45b
+ENCRYPTION_KEY=ca043add73ede2a40b3a51e99d1debf5257c129a11eb5fa1f01e458476ae387c
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=seu_email@gmail.com
+SMTP_PASS=sua_senha_app
+SMTP_SECURE=tls
+COMPANY_NAME=Macip Tecnologia
+NOTIFICATION_EMAIL_FROM=suporte@macip.com.br
+CORS_ORIGIN=https://dashlicencas.macip.com.br,https://sistema-dashlicencas.ku83to.easypanel.host
+```
+
+### 2.4 Configurar Porta
+
+- **Port**: `3001`
+- **Protocol**: `HTTP`
+
+### 2.5 Configurar Domínio
+
+**Opção 1: Usar domínio existente com path**
+- Domínio: `dashlicencas.macip.com.br`
+- Path: `/api`
+- Rewrite: `/api` → `/`
+
+**Opção 2: Criar subdomínio (recomendado)**
+- Domínio: `api.dashlicencas.macip.com.br`
+- SSL: Automático
+
+### 2.6 Deploy
+
+1. Clicar em **"Deploy"**
+2. Aguardar build (2-3 minutos)
+3. Acompanhar logs
 
 ---
 
-## 🧪 TESTE COMPLETO
+## 🔍 Passo 3: Verificar Deploy
 
-### 1. Acessar Dashboard
-```
-1. Abra: https://seu-dashboard.com
-2. Faça login com suas credenciais
-3. Verifique se o dashboard carrega normalmente
-```
+### 3.1 Health Check
 
-### 2. Testar Campo de Observações
-
-#### Passo 1: Abrir Modal
-```
-1. Vá para a aba "Bitdefender"
-2. Clique em qualquer licença da tabela
-3. O modal de detalhes deve abrir à direita
+```bash
+# Testar health check
+curl https://api.dashlicencas.macip.com.br/health
 ```
 
-#### Passo 2: Verificar Campo
-```
-1. Role até o final do modal
-2. Você deve ver o campo "Observações"
-3. Deve ter um textarea (campo de texto grande)
-4. Deve ter um texto de ajuda abaixo
-```
-
-#### Passo 3: Adicionar Texto
-```
-1. Clique no campo de observações
-2. Digite um texto de teste:
-   "Teste do campo de observações - 24/04/2026"
-3. Clique em "Salvar Alterações"
-4. Aguarde a mensagem de sucesso
+**Resposta esperada:**
+```json
+{
+  "success": true,
+  "message": "API está funcionando",
+  "timestamp": "2026-04-28T...",
+  "environment": "production"
+}
 ```
 
-#### Passo 4: Verificar Salvamento
-```
-1. Feche o modal (clique no X)
-2. Abra o mesmo registro novamente
-3. O texto deve estar lá!
-4. Se estiver, funcionou! ✅
-```
+### 3.2 Testar Login
 
----
-
-## ✅ RESULTADO ESPERADO
-
-### Modal Antes
-```
-┌─────────────────────────────────────┐
-│ Detalhes da Licença            [X] │
-├─────────────────────────────────────┤
-│ Empresa: [...]                      │
-│ Email: [...]                        │
-│ Vencimento: [...]                   │
-│                                     │
-│ [Salvar Alterações]                 │
-└─────────────────────────────────────┘
+```bash
+# Fazer login
+curl -X POST https://api.dashlicencas.macip.com.br/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"senha123"}'
 ```
 
-### Modal Depois
-```
-┌─────────────────────────────────────┐
-│ Detalhes da Licença            [X] │
-├─────────────────────────────────────┤
-│ Empresa: [...]                      │
-│ Email: [...]                        │
-│ Vencimento: [...]                   │
-│                                     │
-│ Observações: ← NOVO                 │
-│ ┌─────────────────────────────────┐ │
-│ │ Teste do campo de observações   │ │
-│ │ - 24/04/2026                    │ │
-│ └─────────────────────────────────┘ │
-│ Use este campo para adicionar       │
-│ informações extras                  │
-│                                     │
-│ [Salvar Alterações]                 │
-└─────────────────────────────────────┘
+**Copiar o token da resposta!**
+
+### 3.3 Testar Estatísticas
+
+```bash
+# Substituir SEU_TOKEN pelo token obtido no login
+curl https://api.dashlicencas.macip.com.br/api/v1/bitdefender/stats \
+  -H "Authorization: Bearer SEU_TOKEN"
 ```
 
----
+### 3.4 Testar Alertas
 
-## ⚠️ TROUBLESHOOTING
-
-### Campo não aparece
-
-**Possíveis causas:**
-1. Cache do browser não foi limpo
-2. Arquivos não foram copiados corretamente
-3. Campo não foi adicionado no banco de dados
-
-**Soluções:**
-1. Limpe o cache: Ctrl+F5
-2. Verifique se os arquivos de `dist/` foram copiados
-3. Execute o SQL: `DESCRIBE bitdefender_licenses;`
-
-### Erro ao salvar
-
-**Possíveis causas:**
-1. Campo não existe no banco de dados
-2. Permissões incorretas
-3. Erro no PHP
-
-**Soluções:**
-1. Execute o script SQL novamente
-2. Verifique se você está logado como admin
-3. Verifique os logs do PHP
-
-### Texto não é salvo
-
-**Possíveis causas:**
-1. Campo não existe no banco
-2. Erro de conexão
-3. Erro no backend
-
-**Soluções:**
-1. Verifique: `SELECT notes FROM bitdefender_licenses LIMIT 1;`
-2. Verifique logs do servidor
-3. Verifique console do browser (F12)
-
----
-
-## 📊 ARQUIVOS PARA DEPLOY
-
-### Pasta dist/ contém:
-
-```
-dist/
-├── index.html                    (1.21 kB)
-├── assets/
-│   ├── index-bda104fb.css       (56.17 kB)
-│   └── index-5ca37a5a.js        (988.97 kB)
-└── (outros arquivos)
-```
-
-**Total:** ~1 MB (comprimido: ~300 kB)
-
----
-
-## 🎯 RESUMO
-
-### O que foi feito:
-1. ✅ Campo `notes` adicionado no banco de dados
-2. ✅ Tipos TypeScript atualizados
-3. ✅ Componente DetailSidebar atualizado
-4. ✅ Build realizado com sucesso
-5. ⚠️ Deploy pendente
-
-### O que falta:
-1. ⚠️ Copiar arquivos para produção
-2. ⚠️ Limpar cache do browser
-3. ⚠️ Testar funcionalidade
-
-### Tempo estimado:
-- Deploy: 5 minutos
-- Teste: 2 minutos
-- **Total: 7 minutos**
-
----
-
-## 🚀 AÇÃO IMEDIATA
-
-### Passo 1: Deploy (5 min)
-```
-1. Acesse seu servidor/Easypanel
-2. Copie arquivos de dist/ para produção
-3. Aguarde upload completar
-```
-
-### Passo 2: Teste (2 min)
-```
-1. Abra o dashboard
-2. Ctrl+F5 (limpar cache)
-3. Abra um modal
-4. Verifique se campo aparece
-5. Adicione texto de teste
-6. Salve e verifique
-```
-
-### Passo 3: Confirmar (1 min)
-```
-Se o texto foi salvo e aparece ao reabrir:
-✅ SUCESSO! Tudo funcionando!
-
-Se não:
-⚠️ Veja seção Troubleshooting acima
+```bash
+curl https://api.dashlicencas.macip.com.br/api/v1/bitdefender/alerts \
+  -H "Authorization: Bearer SEU_TOKEN"
 ```
 
 ---
 
-## 📞 SUPORTE
+## 🎨 Passo 4: Atualizar Frontend
 
-### Documentação Completa
-- `ADICAO_CAMPO_OBSERVACOES.md` - Tudo sobre o campo
-- `BUILD_CONCLUIDO.md` - Detalhes do build
-- `INSTRUCOES_SQL_OBSERVACOES.md` - Instruções SQL
+### 4.1 Atualizar apiClient.ts
 
-### Arquivos SQL
-- `add_notes_field_simple.sql` - Use este!
-- `COMANDOS_SQL_COPIAR.txt` - Comandos prontos
+Editar `src/lib/apiClient.ts`:
 
-### Guias
-- `GUIA_VISUAL_SQL.md` - Guia visual
-- `RESUMO_CAMPO_OBSERVACOES.md` - Resumo rápido
+```typescript
+import axios from 'axios';
+
+// URL base da API
+const API_BASE_URL = import.meta.env.PROD
+  ? 'https://api.dashlicencas.macip.com.br/api/v1'
+  : 'http://localhost:3001/api/v1';
+
+// Criar instância do axios
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Interceptor para adicionar token JWT
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Interceptor para tratar erros
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expirado ou inválido
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;
+
+// Função de login
+export async function login(email: string, password: string) {
+  const response = await api.post('/auth/login', { email, password });
+  const { token, user } = response.data.data;
+  
+  localStorage.setItem('token', token);
+  localStorage.setItem('user', JSON.stringify(user));
+  
+  return { token, user };
+}
+
+// Função de logout
+export async function logout() {
+  await api.post('/auth/logout');
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+}
+
+// Obter usuário autenticado
+export async function getMe() {
+  const response = await api.get('/auth/me');
+  return response.data.data;
+}
+```
+
+### 4.2 Criar .env.production
+
+Criar arquivo `.env.production` na raiz do frontend:
+
+```env
+VITE_API_URL=https://api.dashlicencas.macip.com.br/api/v1
+```
+
+### 4.3 Commit e Push
+
+```bash
+git add .
+git commit -m "feat: integração com backend Node.js"
+git push origin main
+```
+
+O Easypanel fará deploy automático do frontend!
 
 ---
 
-## ✅ CONCLUSÃO
+## ✅ Passo 5: Testar Integração
 
-**Build:** Concluído ✅  
-**Deploy:** Pendente ⚠️  
-**Tempo:** 7 minutos
+### 5.1 Acessar Frontend
 
-**Próxima ação:**
-Copie os arquivos de `dist/` para produção e teste!
+```
+https://dashlicencas.macip.com.br
+```
+
+### 5.2 Fazer Login
+
+- Email: `admin@example.com`
+- Senha: `senha123`
+
+### 5.3 Verificar Dashboard
+
+- Estatísticas devem carregar
+- Alertas devem aparecer
+- Tabelas devem funcionar
 
 ---
 
-**Desenvolvido por:** Kiro AI  
-**Para:** Macip Tecnologia  
-**Data:** 24 de Abril de 2026
+## 🐛 Troubleshooting
+
+### Erro: Build falhou
+
+**Solução:**
+1. Ver logs no Easypanel
+2. Verificar se `backend/Dockerfile` existe
+3. Verificar se `package.json` está correto
+
+### Erro: Cannot connect to database
+
+**Solução:**
+1. Verificar se MySQL está rodando
+2. Verificar variáveis de ambiente
+3. Verificar se `DB_HOST=sistema_mysql` está correto
+
+### Erro: CORS blocked
+
+**Solução:**
+1. Adicionar domínio em `CORS_ORIGIN`
+2. Verificar se HTTPS está ativo
+3. Reiniciar serviço
+
+### Erro: 502 Bad Gateway
+
+**Solução:**
+1. Verificar logs do serviço
+2. Verificar se porta 3001 está correta
+3. Verificar health check
+4. Reiniciar serviço
 
 ---
 
-**🎯 Comece agora:**
-1. Copie `dist/` para produção
-2. Ctrl+F5 no browser
-3. Teste o campo
-4. Pronto! 🎉
+## 📊 Checklist Final
+
+- [ ] Código commitado e pushed
+- [ ] Serviço criado no Easypanel
+- [ ] Variáveis de ambiente adicionadas
+- [ ] Dockerfile configurado
+- [ ] Porta configurada (3001)
+- [ ] Domínio configurado
+- [ ] Deploy realizado
+- [ ] Health check OK
+- [ ] Login testado
+- [ ] Estatísticas testadas
+- [ ] Frontend atualizado
+- [ ] Frontend deployado
+- [ ] Integração testada
+- [ ] Tudo funcionando! 🎉
+
+---
+
+## 🎉 Sucesso!
+
+Se todos os testes passaram, você tem:
+
+- ✅ Backend Node.js rodando em produção
+- ✅ API funcionando com JWT
+- ✅ Estatísticas e alertas ativos
+- ✅ Frontend integrado
+- ✅ Deploy automático configurado
+
+**Parabéns! 🚀**
+
+---
+
+## 📝 Próximos Passos
+
+1. Monitorar logs por alguns dias
+2. Migrar outros módulos (FortiGate, Office 365, Gmail)
+3. Implementar testes automatizados
+4. Adicionar rate limiting
+5. Implementar cache
+
+---
+
+**Data**: 28/04/2026  
+**Status**: Pronto para deploy! 🚀  
+**Tempo estimado**: 30-45 minutos

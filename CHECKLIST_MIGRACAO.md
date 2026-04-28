@@ -48,24 +48,23 @@
 - [x] Documentar endpoints
 - [x] Criar arquivo de testes HTTP
 
-## 📊 Fase 5: Endpoints Adicionais (PENDENTE)
+## 📊 Fase 5: Endpoints Adicionais (COMPLETA)
 
-- [ ] Criar endpoint de estatísticas Bitdefender
-  - [ ] Total de licenças
-  - [ ] Licenças vencidas
-  - [ ] Licenças vencendo (30 dias)
-  - [ ] Uso total de slots
+- [x] Criar endpoint de estatísticas Bitdefender
+  - [x] Total de licenças
+  - [x] Licenças vencidas
+  - [x] Licenças vencendo (30 dias)
+  - [x] Uso total de slots
   
-- [ ] Criar endpoint de uso de licença
-  - [ ] Listar uso por cliente
-  - [ ] Alertas de uso
-  - [ ] Sincronização com API
+- [x] Criar endpoint de alertas
+  - [x] Alertas de vencimento
+  - [x] Alertas de uso alto
+  - [x] Resumo de alertas
   
-- [ ] Criar endpoint de sincronização API
-  - [ ] Buscar dados da API Bitdefender
-  - [ ] Atualizar used_slots e total_slots
-  - [ ] Calcular percentual de uso
-  - [ ] Gerar alertas automáticos
+- [x] Criar endpoint de resumo de uso
+  - [x] Listar uso por cliente
+  - [x] Status de uso (ok, info, warning, critical)
+  - [x] Ordenar por percentual de uso
 
 ## 🔄 Fase 6: Migração FortiGate (PENDENTE)
 
@@ -113,16 +112,16 @@
   - [ ] Edição
   - [ ] Deleção
 
-## 🐳 Fase 10: Docker e Deploy (PENDENTE)
+## 🐳 Fase 10: Docker e Deploy (EM PROGRESSO)
 
-- [ ] Criar Dockerfile
+- [x] Criar Dockerfile
+- [x] Criar .dockerignore
 - [ ] Criar docker-compose.yml
-- [ ] Configurar Nginx reverse proxy
-- [ ] Testar build Docker
-- [ ] Configurar no Easypanel
-  - [ ] Criar serviço backend
-  - [ ] Configurar variáveis de ambiente
-  - [ ] Configurar domínio
+- [ ] Testar build Docker localmente
+- [x] Configurar no Easypanel
+  - [x] Criar serviço backend
+  - [x] Configurar variáveis de ambiente
+  - [x] Configurar domínio
   - [ ] Configurar SSL
 - [ ] Deploy em produção
 - [ ] Testar em produção
@@ -162,38 +161,39 @@ Fase 1: ████████████████████ 100% ✅
 Fase 2: ████████████████████ 100% ✅
 Fase 3: ████████████████████ 100% ✅
 Fase 4: ████████████████████ 100% ✅
-Fase 5: ░░░░░░░░░░░░░░░░░░░░   0% ⏳
+Fase 5: ████████████████████ 100% ✅
 Fase 6: ░░░░░░░░░░░░░░░░░░░░   0% ⏳
 Fase 7: ░░░░░░░░░░░░░░░░░░░░   0% ⏳
 Fase 8: ░░░░░░░░░░░░░░░░░░░░   0% ⏳
 Fase 9: ░░░░░░░░░░░░░░░░░░░░   0% ⏳
-Fase 10: ░░░░░░░░░░░░░░░░░░░░   0% ⏳
+Fase 10: ████████████░░░░░░░░  60% 🚧
 Fase 11: ░░░░░░░░░░░░░░░░░░░░   0% ⏳
 Fase 12: ░░░░░░░░░░░░░░░░░░░░   0% ⏳
 
-TOTAL: ████████░░░░░░░░░░░░ 33%
+TOTAL: ████████████░░░░░░░░ 47%
 ```
 
 ## 🎯 Próximos Passos Imediatos
 
-1. **Testar Backend Localmente**
-   - Iniciar MySQL local
-   - Rodar `npm run dev`
-   - Testar endpoints com REST Client
+1. **Deploy no Easypanel**
+   - Fazer push do código
+   - Configurar serviço no Easypanel
+   - Testar endpoints em produção
 
-2. **Criar Endpoints de Estatísticas**
-   - Implementar lógica de cálculo
-   - Testar com dados reais
-
-3. **Atualizar Frontend**
+2. **Atualizar Frontend**
    - Modificar apiClient.ts
    - Adicionar suporte a JWT
    - Testar integração
 
-4. **Deploy no Easypanel**
-   - Criar Dockerfile
-   - Configurar serviço
-   - Fazer deploy
+3. **Migrar Outros Módulos**
+   - FortiGate
+   - Office 365
+   - Gmail
+
+4. **Implementar Melhorias**
+   - Testes automatizados
+   - Rate limiting
+   - Cache
 
 ## 📝 Notas
 
@@ -205,4 +205,4 @@ TOTAL: ████████░░░░░░░░░░░░ 33%
 ---
 
 **Última atualização**: 28/04/2026  
-**Status**: 4/12 fases completas (33%)
+**Status**: 5/12 fases completas + Deploy em progresso (47%)

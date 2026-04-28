@@ -1,11 +1,33 @@
 import { Router } from 'express';
 import * as bitdefenderController from '../controllers/bitdefender.controller';
+import * as bitdefenderStatsController from '../controllers/bitdefender-stats.controller';
 import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
 // Todas as rotas requerem autenticação
 router.use(authenticate);
+
+/**
+ * @route GET /api/v1/bitdefender/stats
+ * @desc Obter estatísticas gerais
+ * @access Private
+ */
+router.get('/stats', bitdefenderStatsController.getStats);
+
+/**
+ * @route GET /api/v1/bitdefender/alerts
+ * @desc Obter alertas de vencimento e uso
+ * @access Private
+ */
+router.get('/alerts', bitdefenderStatsController.getAlerts);
+
+/**
+ * @route GET /api/v1/bitdefender/usage-summary
+ * @desc Obter resumo de uso de licenças
+ * @access Private
+ */
+router.get('/usage-summary', bitdefenderStatsController.getUsageSummary);
 
 /**
  * @route GET /api/v1/bitdefender
