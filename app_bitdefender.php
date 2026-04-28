@@ -139,18 +139,58 @@ try {
         }
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Build dynamic query
+        // Mapear campos camelCase para snake_case
+        $fieldMapping = [
+            'contactPerson' => 'contact_person',
+            'expirationDate' => 'expiration_date',
+            'totalLicenses' => 'total_licenses',
+            'licenseKey' => 'license_key',
+            'renewalStatus' => 'renewal_status',
+            'clientApiKey' => 'client_api_key',
+            'clientAccessUrl' => 'client_access_url',
+            'usedSlots' => 'used_slots',
+            'totalSlots' => 'total_slots',
+            'licenseUsagePercent' => 'license_usage_percent',
+            'licenseUsageAlert' => 'license_usage_alert',
+            'licenseUsageLastSync' => 'license_usage_last_sync'
+        ];
+
+        // Converter campos
+        $convertedData = [];
+        foreach ($data as $key => $value) {
+            $dbKey = $fieldMapping[$key] ?? $key;
+            $convertedData[$dbKey] = $value;
+        }
+
+        // Verificar quais colunas existem na tabela
+        $stmt = $pdo->query("SHOW COLUMNS FROM bitdefender_licenses");
+        $existingColumns = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $existingColumns[] = $row['Field'];
+        }
+
+        // Build dynamic query apenas com campos que existem
         $fields = [];
         $params = [];
-        foreach ($data as $key => $value) {
+        foreach ($convertedData as $key => $value) {
             if ($key === 'id' || $key === 'user_id' || $key === 'created_at') continue;
+            
+            // Verificar se coluna existe
+            if (!in_array($key, $existingColumns)) {
+                continue;
+            }
+            
             $fields[] = "$key = ?";
             $params[] = $value;
         }
 
         if (empty($fields)) {
             http_response_code(400);
-            echo json_encode(['error' => 'No fields to update']);
+            echo json_encode([
+                'error' => 'No valid fields to update',
+                'available_columns' => $existingColumns,
+                'received_data' => array_keys($convertedData)
+            ]);
             exit;
         }
 
