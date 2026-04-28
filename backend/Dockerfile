@@ -1,34 +1,27 @@
 # Usar imagem Node.js Alpine (mais leve)
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 
 # Definir diretório de trabalho
 WORKDIR /app
 
 # Copiar arquivos de dependências
 COPY package*.json ./
+COPY tsconfig.json ./
 
-# Instalar TODAS as dependências (incluindo devDependencies para build)
+# Instalar TODAS as dependências
 RUN npm ci
 
 # Copiar código fonte
-COPY . .
+COPY src ./src
 
 # Build do TypeScript
 RUN npm run build
 
-# Etapa de produção
-FROM node:20-alpine
+# Verificar se dist foi criado (debug)
+RUN ls -la && ls -la dist || echo "Dist não existe!"
 
-WORKDIR /app
-
-# Copiar package.json e package-lock.json
-COPY package*.json ./
-
-# Instalar apenas dependências de produção
-RUN npm ci --only=production
-
-# Copiar código compilado da etapa anterior
-COPY --from=builder /app/dist ./dist
+# Remover devDependencies
+RUN npm prune --omit=dev
 
 # Expor porta
 EXPOSE 3001
