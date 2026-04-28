@@ -92,6 +92,16 @@ export const apiClient = {
         }),
     },
 
+    // Bitdefender License Usage Methods
+    licenseUsage: {
+        list: () => request('/app_bitdefender_license_usage.php?action=list'),
+        alerts: () => request('/app_bitdefender_license_usage.php?action=alerts'),
+        syncClient: (clientId: number) => request('/app_bitdefender_license_usage.php', {
+            method: 'POST',
+            body: JSON.stringify({ client_id: clientId })
+        }),
+    },
+
     // Fortigate Methods
     fortigate: {
         list: () => request('/app_fortigate.php'),

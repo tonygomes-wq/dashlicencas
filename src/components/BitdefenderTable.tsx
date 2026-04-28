@@ -1,5 +1,6 @@
 import React from 'react';
 import { BitdefenderLicense, BitdefenderLicenseWithStatus, LicenseStatus } from '../types';
+import LicenseUsageIndicator from './LicenseUsageIndicator';
 
 interface BitdefenderTableProps {
   licenses: BitdefenderLicenseWithStatus[];
@@ -65,6 +66,9 @@ const BitdefenderTable: React.FC<BitdefenderTableProps> = ({ licenses, onRowClic
                 TOTAL DE LICENÇAS
               </th>
               <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-600 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                Uso de Licença
+              </th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-600 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                 Vencimento
               </th>
               <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-600 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
@@ -112,6 +116,20 @@ const BitdefenderTable: React.FC<BitdefenderTableProps> = ({ licenses, onRowClic
                     <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-center text-gray-900 dark:text-white">
                       {license.totalLicenses}
                     </td>
+                    <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm">
+                      {(license as any).usedSlots !== undefined && (license as any).totalSlots !== undefined ? (
+                        <LicenseUsageIndicator
+                          usedSlots={(license as any).usedSlots || 0}
+                          totalSlots={(license as any).totalSlots || license.totalLicenses}
+                          usagePercent={(license as any).licenseUsagePercent}
+                          size="sm"
+                        />
+                      ) : (
+                        <span className="text-xs text-gray-500 dark:text-gray-400 italic">
+                          Sincronizar para ver uso
+                        </span>
+                      )}
+                    </td>
                     <td className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white">
                       {formatDate(license.expirationDate)}
                     </td>
@@ -131,7 +149,7 @@ const BitdefenderTable: React.FC<BitdefenderTableProps> = ({ licenses, onRowClic
               })
             ) : (
               <tr>
-                <td colSpan={10} className="text-center py-10 text-gray-500 dark:text-gray-400">
+                <td colSpan={11} className="text-center py-10 text-gray-500 dark:text-gray-400">
                   Nenhum dado encontrado com os filtros aplicados.
                 </td>
               </tr>

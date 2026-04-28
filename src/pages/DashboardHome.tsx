@@ -4,6 +4,7 @@ import StatsCard from '../components/dashboard/StatsCard';
 import BitdefenderAPIStats from '../components/dashboard/BitdefenderAPIStats';
 import FortigateAPIStats from '../components/dashboard/FortigateAPIStats';
 import AlertsList from '../components/dashboard/AlertsList';
+import LicenseUsageAlerts from '../components/dashboard/LicenseUsageAlerts';
 import { apiClient } from '../lib/apiClient';
 
 interface DashboardHomeProps {
@@ -248,6 +249,9 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate }) => {
 
       {/* Bitdefender API Stats */}
       <BitdefenderAPIStats />
+
+      {/* License Usage Alerts */}
+      <LicenseUsageAlerts />
 
       {/* FortiGate API Stats */}
       <FortigateAPIStats onSyncAll={fetchDashboardStats} />
