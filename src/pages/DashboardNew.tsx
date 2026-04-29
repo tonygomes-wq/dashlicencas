@@ -374,6 +374,17 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
         return <DashboardHome onNavigate={handleNavigate} />;
 
       case 'bitdefender':
+        const filteredBitdefender = processedBitdefender.filter(license => {
+          if (!companyFilter) return true;
+          const searchTerm = companyFilter.toLowerCase();
+          return (
+            license.company?.toLowerCase().includes(searchTerm) ||
+            license.contactPerson?.toLowerCase().includes(searchTerm) ||
+            license.email?.toLowerCase().includes(searchTerm) ||
+            license.licenseKey?.toLowerCase().includes(searchTerm)
+          );
+        });
+
         return (
           <div>
             <div className="mb-6 flex justify-between items-start">
@@ -440,7 +451,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
             </div>
 
             <BitdefenderTable
-              licenses={processedBitdefender}
+              licenses={filteredBitdefender}
               onRowClick={handleRowClick}
               selectedItems={selectedItems}
               onSelectionChange={handleSelectionChange}
@@ -449,6 +460,17 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
         );
 
       case 'fortigate':
+        const filteredFortigate = processedFortigate.filter(device => {
+          if (!companyFilter) return true;
+          const searchTerm = companyFilter.toLowerCase();
+          return (
+            device.cliente?.toLowerCase().includes(searchTerm) ||
+            device.hostname?.toLowerCase().includes(searchTerm) ||
+            device.serialNumber?.toLowerCase().includes(searchTerm) ||
+            device.modelo?.toLowerCase().includes(searchTerm)
+          );
+        });
+
         return (
           <div>
             <div className="mb-6 flex justify-between items-start">
@@ -515,7 +537,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
             </div>
 
             <FortigateTable
-              devices={processedFortigate}
+              devices={filteredFortigate}
               onRowClick={handleRowClick}
               selectedItems={selectedItems}
               onSelectionChange={handleSelectionChange}
@@ -525,6 +547,16 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
         );
 
       case 'office365':
+        const filteredO365Clients = rawO365Clients.filter(client => {
+          if (!companyFilter) return true;
+          const searchTerm = companyFilter.toLowerCase();
+          return (
+            client.clientName?.toLowerCase().includes(searchTerm) ||
+            client.contactEmail?.toLowerCase().includes(searchTerm) ||
+            client.contactPerson?.toLowerCase().includes(searchTerm)
+          );
+        });
+
         return (
           <div>
             <div className="mb-6 flex justify-between items-start">
@@ -591,7 +623,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
             </div>
 
             <O365ClientTable
-              clients={rawO365Clients}
+              clients={filteredO365Clients}
               licenses={processedO365Licenses}
               onLicenseUpdate={handleUpdateO365License}
               isAdmin={isAdmin}
@@ -601,6 +633,16 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
         );
 
       case 'gmail':
+        const filteredGmailClients = rawGmailClients.filter(client => {
+          if (!companyFilter) return true;
+          const searchTerm = companyFilter.toLowerCase();
+          return (
+            client.clientName?.toLowerCase().includes(searchTerm) ||
+            client.contactEmail?.toLowerCase().includes(searchTerm) ||
+            client.contactPerson?.toLowerCase().includes(searchTerm)
+          );
+        });
+
         return (
           <div>
             <div className="mb-6 flex justify-between items-start">
@@ -667,7 +709,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
             </div>
 
             <GmailClientTable
-              clients={rawGmailClients}
+              clients={filteredGmailClients}
               licenses={processedGmailLicenses}
               onClientClick={handleGmailClientClick}
             />
@@ -937,14 +979,26 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
           onConfirm={async () => {
             try {
               if (deleteConfirm.type === 'bitdefender') {
-                await apiClient.bitdefender.deleteMultiple(deleteConfirm.ids);
+                await apiClient.bitdefender.bulkRemove(deleteConfirm.ids);
               } else if (deleteConfirm.type === 'fortigate') {
-                await apiClient.fortigate.deleteMultiple(deleteConfirm.ids);
+                await apiClient.fortigate.bulkRemove(deleteConfirm.ids);
+              } else if (deleteConfirm.type === 'o365') {
+                // Para O365, deletar clientes um por um
+                for (const id of deleteConfirm.ids) {
+                  await apiClient.o365.clients.remove(id.toString());
+                }
+              } else if (deleteConfirm.type === 'gmail') {
+                // Para Gmail, deletar clientes um por um
+                for (const id of deleteConfirm.ids) {
+                  await apiClient.gmail.clients.remove(id.toString());
+                }
               }
               await fetchAllData();
               toast.success('Deletado com sucesso!');
               setDeleteConfirm({ isOpen: false, type: null, ids: [] });
+              setSelectedItems(new Set()); // Limpar seleção após deletar
             } catch (error) {
+              console.error('Erro ao deletar:', error);
               toast.error('Erro ao deletar');
             }
           }}
