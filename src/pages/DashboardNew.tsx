@@ -80,6 +80,9 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
   const [isLoading, setIsLoading] = useState(true);
 
+  // Filter state
+  const [companyFilter, setCompanyFilter] = useState('');
+
   // Selection state
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
@@ -420,7 +423,12 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               {/* Botão Remover (aparece quando há itens selecionados) */}
               {selectedItems.size > 0 && isAdmin && (
                 <button
-                  onClick={() => setIsDeleteModalOpen(true)}
+                  onClick={() => {
+                    const ids = Array.from(selectedItems)
+                      .filter(id => id.startsWith('bitdefender-'))
+                      .map(id => parseInt(id.replace('bitdefender-', '')));
+                    setDeleteConfirm({ isOpen: true, type: 'bitdefender', ids });
+                  }}
                   className="px-4 py-2 font-semibold text-white bg-red-600 hover:bg-red-700 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200 flex items-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -490,7 +498,12 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               {/* Botão Remover (aparece quando há itens selecionados) */}
               {selectedItems.size > 0 && isAdmin && (
                 <button
-                  onClick={() => setIsDeleteModalOpen(true)}
+                  onClick={() => {
+                    const ids = Array.from(selectedItems)
+                      .filter(id => id.startsWith('fortigate-'))
+                      .map(id => parseInt(id.replace('fortigate-', '')));
+                    setDeleteConfirm({ isOpen: true, type: 'fortigate', ids });
+                  }}
                   className="px-4 py-2 font-semibold text-white bg-red-600 hover:bg-red-700 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200 flex items-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -561,7 +574,12 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               {/* Botão Remover (aparece quando há itens selecionados) */}
               {selectedItems.size > 0 && isAdmin && (
                 <button
-                  onClick={() => setIsDeleteModalOpen(true)}
+                  onClick={() => {
+                    const ids = Array.from(selectedItems)
+                      .filter(id => id.startsWith('o365-'))
+                      .map(id => parseInt(id.replace('o365-', '')));
+                    setDeleteConfirm({ isOpen: true, type: 'o365', ids });
+                  }}
                   className="px-4 py-2 font-semibold text-white bg-red-600 hover:bg-red-700 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200 flex items-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -632,7 +650,12 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               {/* Botão Remover (aparece quando há itens selecionados) */}
               {selectedItems.size > 0 && isAdmin && (
                 <button
-                  onClick={() => setIsDeleteModalOpen(true)}
+                  onClick={() => {
+                    const ids = Array.from(selectedItems)
+                      .filter(id => id.startsWith('gmail-'))
+                      .map(id => parseInt(id.replace('gmail-', '')));
+                    setDeleteConfirm({ isOpen: true, type: 'gmail', ids });
+                  }}
                   className="px-4 py-2 font-semibold text-white bg-red-600 hover:bg-red-700 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200 flex items-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
