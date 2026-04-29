@@ -86,13 +86,24 @@ switch ($method) {
                 $stmt = $pdo->prepare($sql);
 
                 foreach ($licenses as $license) {
+                    // Validar campos obrigatórios
+                    if (empty($license['username'])) {
+                        throw new Exception('Campo "username" é obrigatório para todas as licenças');
+                    }
+                    if (empty($license['email'])) {
+                        throw new Exception('Campo "email" é obrigatório para todas as licenças');
+                    }
+                    if (empty($license['license_type'])) {
+                        throw new Exception('Campo "license_type" é obrigatório para todas as licenças');
+                    }
+                    
                     $stmt->execute([
                         $license['client_id'],
                         $user_id,
-                        $license['username'] ?? null,
-                        $license['email'] ?? null,
-                        $license['password'] ?? null,
-                        $license['license_type'] ?? null,
+                        $license['username'],
+                        $license['email'],
+                        $license['password'] ?? '',
+                        $license['license_type'],
                         $license['renewal_status'] ?? 'Pendente'
                     ]);
                     $new_id = $pdo->lastInsertId();
@@ -142,13 +153,24 @@ switch ($method) {
                     $licenseStmt = $pdo->prepare($licenseSql);
 
                     foreach ($licenses as $license) {
+                        // Validar campos obrigatórios
+                        if (empty($license['username'])) {
+                            throw new Exception('Campo "username" é obrigatório para todas as licenças');
+                        }
+                        if (empty($license['email'])) {
+                            throw new Exception('Campo "email" é obrigatório para todas as licenças');
+                        }
+                        if (empty($license['license_type'])) {
+                            throw new Exception('Campo "license_type" é obrigatório para todas as licenças');
+                        }
+                        
                         $licenseStmt->execute([
                             $id,
                             $user_id,
-                            $license['username'] ?? null,
-                            $license['email'] ?? null,
-                            $license['password'] ?? null,
-                            $license['license_type'] ?? null,
+                            $license['username'],
+                            $license['email'],
+                            $license['password'] ?? '',
+                            $license['license_type'],
                             $license['renewal_status'] ?? 'Pendente'
                         ]);
                         $license_id = $pdo->lastInsertId();
@@ -192,21 +214,43 @@ switch ($method) {
             $stmt->execute([$id]);
             echo json_encode($stmt->fetch());
         } else {
+            // Validar campos obrigatórios
+            if (empty($data['username'])) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Campo "username" é obrigatório']);
+                exit;
+            }
+            if (empty($data['email'])) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Campo "email" é obrigatório']);
+                exit;
+            }
+            if (empty($data['license_type'])) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Campo "license_type" é obrigatório']);
+                exit;
+            }
+            
             $sql = "INSERT INTO gmail_licenses (client_id, user_id, username, email, password, license_type, renewal_status) VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                $data['client_id'],
-                $user_id,
-                $data['username'] ?? null,
-                $data['email'] ?? null,
-                $data['password'] ?? null,
-                $data['license_type'] ?? null,
-                $data['renewal_status'] ?? 'Pendente'
-            ]);
-            $new_id = $pdo->lastInsertId();
-            $stmt = $pdo->prepare('SELECT * FROM gmail_licenses WHERE id = ?');
-            $stmt->execute([$new_id]);
-            echo json_encode($stmt->fetch());
+            try {
+                $stmt->execute([
+                    $data['client_id'],
+                    $user_id,
+                    $data['username'],
+                    $data['email'],
+                    $data['password'] ?? '',
+                    $data['license_type'],
+                    $data['renewal_status'] ?? 'Pendente'
+                ]);
+                $new_id = $pdo->lastInsertId();
+                $stmt = $pdo->prepare('SELECT * FROM gmail_licenses WHERE id = ?');
+                $stmt->execute([$new_id]);
+                echo json_encode($stmt->fetch());
+            } catch (PDOException $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Erro ao inserir licença: ' . $e->getMessage()]);
+            }
         }
         break;
 

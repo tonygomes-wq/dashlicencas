@@ -73,6 +73,18 @@ try {
             exit;
         }
         
+        // Validar campos importantes (não obrigatórios, mas recomendados)
+        if (empty($data['company'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Campo "company" (empresa) é obrigatório']);
+            exit;
+        }
+        if (empty($data['license_key'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Campo "license_key" (chave de licença) é obrigatório']);
+            exit;
+        }
+        
         // Verificar se a coluna notes existe
         $checkColumn = $pdo->query("SHOW COLUMNS FROM bitdefender_licenses LIKE 'notes'");
         $hasNotesColumn = $checkColumn->rowCount() > 0;
@@ -83,12 +95,12 @@ try {
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([
                     $user_id,
-                    $data['company'] ?? null,
+                    $data['company'],
                     $data['contact_person'] ?? null,
                     $data['email'] ?? null,
                     $data['expiration_date'] ?? null,
                     $data['total_licenses'] ?? 0,
-                    $data['license_key'] ?? null,
+                    $data['license_key'],
                     $data['renewal_status'] ?? 'Pendente',
                     $data['notes'] ?? null
                 ]);
@@ -97,12 +109,12 @@ try {
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([
                     $user_id,
-                    $data['company'] ?? null,
+                    $data['company'],
                     $data['contact_person'] ?? null,
                     $data['email'] ?? null,
                     $data['expiration_date'] ?? null,
                     $data['total_licenses'] ?? 0,
-                    $data['license_key'] ?? null,
+                    $data['license_key'],
                     $data['renewal_status'] ?? 'Pendente'
                 ]);
             }
@@ -120,7 +132,11 @@ try {
                     'message' => 'Esta chave de licença já existe no sistema. Por favor, use uma chave diferente.'
                 ]);
             } else {
-                throw $e;
+                http_response_code(500);
+                echo json_encode([
+                    'error' => 'Database Error',
+                    'message' => 'Erro ao inserir licença: ' . $e->getMessage()
+                ]);
             }
         }
         break;
