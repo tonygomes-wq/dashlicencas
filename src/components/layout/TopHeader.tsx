@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Bell, User, ChevronDown, LogOut, Settings as SettingsIcon } from 'lucide-react';
 import ThemeToggle from '../ThemeToggle';
 import { User as UserType } from '../../types';
+import logo from '../../assets/logo.png';
 
 interface TopHeaderProps {
   user: UserType;
@@ -38,8 +39,8 @@ const TopHeader: React.FC<TopHeaderProps> = ({
       <div className="h-full px-6 flex items-center justify-between">
         {/* Logo and Title */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-lg">
-            <span className="text-white font-bold text-xl">M</span>
+          <div className="flex items-center justify-center">
+            <img src={logo} alt="MAC-IP Tecnologia" className="h-10 w-auto" />
           </div>
           <div>
             <h1 className="text-lg font-bold text-gray-900 dark:text-white">
