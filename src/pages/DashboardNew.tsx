@@ -244,7 +244,14 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
   const handleAddO365License = async (clientId: string, licenseData: Omit<O365License, 'id' | 'clientId' | 'renewalStatus'>) => {
     try {
-      await apiClient.o365.licenses.create({ ...licenseData, client_id: clientId, renewal_status: 'Pendente' });
+      await apiClient.o365.licenses.create({ 
+        username: licenseData.username,
+        email: licenseData.email,
+        password: licenseData.password,
+        license_type: licenseData.licenseType, // Converter camelCase para snake_case
+        client_id: clientId, 
+        renewal_status: 'Pendente' 
+      });
       await fetchAllData();
       toast.success('Licença adicionada com sucesso!');
     } catch (error) {
@@ -255,7 +262,14 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
   const handleBulkImportO365Licenses = async (clientId: string, licenses: Omit<O365License, 'id' | 'clientId' | 'renewalStatus'>[]) => {
     try {
-      await apiClient.o365.licenses.bulkCreate(licenses.map(l => ({ ...l, client_id: clientId, renewal_status: 'Pendente' })));
+      await apiClient.o365.licenses.bulkCreate(licenses.map(l => ({ 
+        username: l.username,
+        email: l.email,
+        password: l.password,
+        license_type: l.licenseType, // Converter camelCase para snake_case
+        client_id: clientId, 
+        renewal_status: 'Pendente' 
+      })));
       await fetchAllData();
       toast.success(`${licenses.length} licenças importadas com sucesso!`);
     } catch (error) {
@@ -277,7 +291,14 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
   const handleAddGmailLicense = async (clientId: string, licenseData: Omit<GmailLicense, 'id' | 'clientId' | 'renewalStatus'>) => {
     try {
-      await apiClient.gmail.licenses.create({ ...licenseData, client_id: clientId, renewal_status: 'Pendente' });
+      await apiClient.gmail.licenses.create({ 
+        username: licenseData.username,
+        email: licenseData.email,
+        password: licenseData.password,
+        license_type: licenseData.licenseType, // Converter camelCase para snake_case
+        client_id: clientId, 
+        renewal_status: 'Pendente' 
+      });
       await fetchAllData();
       toast.success('Licença adicionada com sucesso!');
     } catch (error) {
@@ -288,7 +309,14 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
   const handleBulkImportGmailLicenses = async (clientId: string, licenses: Omit<GmailLicense, 'id' | 'clientId' | 'renewalStatus'>[]) => {
     try {
-      await apiClient.gmail.licenses.bulkCreate(licenses.map(l => ({ ...l, client_id: clientId, renewal_status: 'Pendente' })));
+      await apiClient.gmail.licenses.bulkCreate(licenses.map(l => ({ 
+        username: l.username,
+        email: l.email,
+        password: l.password,
+        license_type: l.licenseType, // Converter camelCase para snake_case
+        client_id: clientId, 
+        renewal_status: 'Pendente' 
+      })));
       await fetchAllData();
       toast.success(`${licenses.length} licenças importadas com sucesso!`);
     } catch (error) {
