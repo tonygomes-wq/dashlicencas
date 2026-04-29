@@ -97,16 +97,16 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate }) => {
 
       // Calculate Bitdefender stats
       const bitdefenderStats = {
-        total: filteredBitdefender.length,
+        total: filteredBitdefender.reduce((sum: number, l: any) => sum + (parseInt(l.total_licenses) || 0), 0),
         expired: filteredBitdefender.filter((l: any) => {
           if (!l.expiration_date) return false;
           return new Date(l.expiration_date) < new Date();
-        }).length,
+        }).reduce((sum: number, l: any) => sum + (parseInt(l.total_licenses) || 0), 0),
         expiring: filteredBitdefender.filter((l: any) => {
           if (!l.expiration_date) return false;
           const daysUntilExpiry = Math.ceil((new Date(l.expiration_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
           return daysUntilExpiry > 0 && daysUntilExpiry <= 7;
-        }).length,
+        }).reduce((sum: number, l: any) => sum + (parseInt(l.total_licenses) || 0), 0),
         ok: 0
       };
       bitdefenderStats.ok = bitdefenderStats.total - bitdefenderStats.expired - bitdefenderStats.expiring;
