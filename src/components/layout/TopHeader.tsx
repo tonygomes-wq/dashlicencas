@@ -37,19 +37,9 @@ const TopHeader: React.FC<TopHeaderProps> = ({
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40">
       <div className="h-full px-6 flex items-center justify-between">
-        {/* Logo and Title */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center">
-            <img src={logo} alt="MAC-IP Tecnologia" className="h-10 w-auto" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-gray-900 dark:text-white">
-              Dashboard Macip
-            </h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Tecnologia
-            </p>
-          </div>
+        {/* Logo */}
+        <div className="flex items-center">
+          <img src={logo} alt="MAC-IP Tecnologia" className="h-10 w-auto" />
         </div>
 
         {/* Right Side Actions */}
