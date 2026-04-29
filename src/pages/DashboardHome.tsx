@@ -32,29 +32,68 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate }) => {
   const fetchDashboardStats = async () => {
     setLoading(true);
     try {
-      // Fetch all data
-      const [bitdefenderData, fortigateData, o365LicensesData, gmailLicensesData, hardwareData] = await Promise.all([
+      // Fetch all data including O365 and Gmail clients for name-based filtering
+      const [bitdefenderData, fortigateData, o365ClientsData, o365LicensesData, gmailClientsData, gmailLicensesData, hardwareData] = await Promise.all([
         apiClient.bitdefender.list(),
         apiClient.fortigate.list(),
+        apiClient.o365.clients.list(),
         apiClient.o365.licenses.list(),
+        apiClient.gmail.clients.list(),
         apiClient.gmail.licenses.list(),
         apiClient.hardware.list()
       ]);
 
-      // Extract unique clients for filter
+      // Build lookup maps: client_id -> client_name (normalized to uppercase for matching)
+      const o365ClientMap = new Map<string, string>();
+      o365ClientsData.forEach((c: any) => {
+        if (c.id && c.client_name) o365ClientMap.set(c.id, c.client_name);
+      });
+
+      const gmailClientMap = new Map<string, string>();
+      gmailClientsData.forEach((c: any) => {
+        if (c.id && c.client_name) gmailClientMap.set(c.id, c.client_name);
+      });
+
+      // Extract unique clients for filter dropdown (from all sources)
       const uniqueClients = new Set<string>();
       bitdefenderData.forEach((l: any) => l.company && uniqueClients.add(l.company));
-      fortigateData.forEach((d: any) => d.client && uniqueClients.add(d.client));
+      fortigateData.forEach((d: any) => d.client && uniqueClients.add(d.client.trim()));
+      o365ClientsData.forEach((c: any) => c.client_name && uniqueClients.add(c.client_name));
+      gmailClientsData.forEach((c: any) => c.client_name && uniqueClients.add(c.client_name));
       setClients(Array.from(uniqueClients).sort());
 
+      // Helper: normalize name for comparison (trim + uppercase)
+      const normalize = (s: string) => (s || '').trim().toUpperCase();
+
       // Filter data by client if selected
-      const filteredBitdefender = clientFilter === 'all' 
-        ? bitdefenderData 
-        : bitdefenderData.filter((l: any) => l.company === clientFilter);
-      
+      const filteredBitdefender = clientFilter === 'all'
+        ? bitdefenderData
+        : bitdefenderData.filter((l: any) => normalize(l.company) === normalize(clientFilter));
+
       const filteredFortigate = clientFilter === 'all'
         ? fortigateData
-        : fortigateData.filter((d: any) => d.client === clientFilter);
+        : fortigateData.filter((d: any) => normalize(d.client) === normalize(clientFilter));
+
+      // For O365: find matching client IDs, then filter licenses by those IDs
+      const filteredO365Licenses = clientFilter === 'all'
+        ? o365LicensesData
+        : o365LicensesData.filter((l: any) => {
+            const clientName = o365ClientMap.get(l.client_id) || '';
+            return normalize(clientName) === normalize(clientFilter);
+          });
+
+      // For Gmail: find matching client IDs, then filter licenses by those IDs
+      const filteredGmailLicenses = clientFilter === 'all'
+        ? gmailLicensesData
+        : gmailLicensesData.filter((l: any) => {
+            const clientName = gmailClientMap.get(l.client_id) || '';
+            return normalize(clientName) === normalize(clientFilter);
+          });
+
+      // For Hardware: filter by client field if it exists
+      const filteredHardware = clientFilter === 'all'
+        ? hardwareData
+        : hardwareData.filter((d: any) => normalize(d.client || d.company || d.client_name || '') === normalize(clientFilter));
 
       // Calculate Bitdefender stats
       const bitdefenderStats = {
@@ -88,28 +127,28 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onNavigate }) => {
       };
       fortigateStats.ok = fortigateStats.total - fortigateStats.expired - fortigateStats.expiring;
 
-      // Calculate O365 stats
+      // Calculate O365 stats (using filtered licenses)
       const o365Stats = {
-        total: o365LicensesData.length,
-        active: o365LicensesData.filter((l: any) => l.renewal_status === 'Renovado').length,
-        inactive: o365LicensesData.filter((l: any) => l.renewal_status === 'Pendente').length
+        total: filteredO365Licenses.length,
+        active: filteredO365Licenses.filter((l: any) => l.renewal_status === 'Renovado').length,
+        inactive: filteredO365Licenses.filter((l: any) => l.renewal_status === 'Pendente').length
       };
 
-      // Calculate Gmail stats
+      // Calculate Gmail stats (using filtered licenses)
       const gmailStats = {
-        total: gmailLicensesData.length,
-        active: gmailLicensesData.filter((l: any) => l.renewal_status === 'Renovado').length,
-        inactive: gmailLicensesData.filter((l: any) => l.renewal_status === 'Pendente').length
+        total: filteredGmailLicenses.length,
+        active: filteredGmailLicenses.filter((l: any) => l.renewal_status === 'Renovado').length,
+        inactive: filteredGmailLicenses.filter((l: any) => l.renewal_status === 'Pendente').length
       };
 
-      // Calculate Hardware stats
+      // Calculate Hardware stats (using filtered hardware)
       const hardwareStats = {
-        total: hardwareData.length,
-        desktop: hardwareData.filter((d: any) => d.device_type === 'Desktop').length,
-        notebook: hardwareData.filter((d: any) => d.device_type === 'Notebook').length,
-        server: hardwareData.filter((d: any) => d.device_type === 'Servidor').length
+        total: filteredHardware.length,
+        desktop: filteredHardware.filter((d: any) => d.device_type === 'Desktop').length,
+        notebook: filteredHardware.filter((d: any) => d.device_type === 'Notebook').length,
+        server: filteredHardware.filter((d: any) => d.device_type === 'Servidor').length
       };
-      
+
       setStats({
         bitdefender: bitdefenderStats,
         fortigate: fortigateStats,
