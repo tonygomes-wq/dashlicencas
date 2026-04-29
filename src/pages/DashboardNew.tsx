@@ -968,7 +968,9 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
 
       {isUserManagementOpen && user.role === 'admin' && (
         <UserManagementModal
+          isOpen={isUserManagementOpen}
           onClose={() => setIsUserManagementOpen(false)}
+          currentUser={user}
         />
       )}
 
