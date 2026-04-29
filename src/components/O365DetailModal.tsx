@@ -47,7 +47,6 @@ const O365DetailModal: React.FC<O365DetailModalProps> = ({ isOpen, onClose, clie
 
     // Novos estados para filtro
     const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
 
     // --- HOOKS MOVIDOS PARA O TOPO ---
 
@@ -68,12 +67,8 @@ const O365DetailModal: React.FC<O365DetailModalProps> = ({ isOpen, onClose, clie
             );
         }
 
-        if (statusFilter !== 'all') {
-            filtered = filtered.filter(license => license.renewalStatus === statusFilter);
-        }
-
         return filtered;
-    }, [clientLicenses, searchTerm, statusFilter]);
+    }, [clientLicenses, searchTerm]);
 
     // --- FIM DOS HOOKS MOVIDOS ---
 
@@ -87,7 +82,6 @@ const O365DetailModal: React.FC<O365DetailModalProps> = ({ isOpen, onClose, clie
             setIsImportModalOpen(false);
             setShowPassword({}); // Limpa o estado de visualização de senha
             setSearchTerm(''); // Limpa filtro
-            setStatusFilter('all'); // Limpa filtro
         }
     }, [isOpen]);
 
@@ -242,7 +236,7 @@ const O365DetailModal: React.FC<O365DetailModalProps> = ({ isOpen, onClose, clie
                         </div>
 
                         <div className="flex justify-between items-center flex-wrap gap-3">
-                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Usuários e Status de Renovação</h3>
+                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Usuários e Licenças</h3>
                             {isAdmin && (
                                 <div className="flex space-x-3">
                                     <button
@@ -280,16 +274,6 @@ const O365DetailModal: React.FC<O365DetailModalProps> = ({ isOpen, onClose, clie
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="px-3 py-2 border rounded dark:bg-gray-600 dark:text-white text-sm flex-grow min-w-[200px]"
                             />
-                            <select
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                                className="px-3 py-2 border rounded dark:bg-gray-600 dark:text-white text-sm min-w-[150px]"
-                            >
-                                <option value="all">Todos os Status</option>
-                                {renewalStatusOptions.map(status => (
-                                    <option key={status} value={status}>{status}</option>
-                                ))}
-                            </select>
                             <p className="text-sm text-gray-500 dark:text-gray-400 self-center">
                                 {filteredLicenses.length} de {clientLicenses.length} licenças visíveis.
                             </p>
@@ -323,7 +307,6 @@ const O365DetailModal: React.FC<O365DetailModalProps> = ({ isOpen, onClose, clie
                                             <th className="px-4 py-2 text-left font-semibold text-gray-600 dark:text-gray-300">Email</th>
                                             <th className="px-4 py-2 text-left font-semibold text-gray-600 dark:text-gray-300">Tipo de Licença</th>
                                             <th className="px-4 py-2 text-left font-semibold text-gray-600 dark:text-gray-300">Senha</th>
-                                            <th className="px-4 py-2 text-left font-semibold text-gray-600 dark:text-gray-300">Renovação</th>
                                             <th className="px-4 py-2 text-center font-semibold text-gray-600 dark:text-gray-300 w-20">Ações</th>
                                         </tr>
                                     </thead>
@@ -424,23 +407,6 @@ const O365DetailModal: React.FC<O365DetailModalProps> = ({ isOpen, onClose, clie
                                                                     <span className="text-gray-500 dark:text-gray-400">N/A</span>
                                                                 )}
                                                             </div>
-                                                        )}
-                                                    </td>
-                                                    {/* Coluna Renovação */}
-                                                    <td className="px-4 py-3">
-                                                        {isEditing && isAdmin ? (
-                                                            <select
-                                                                name="renewalStatus"
-                                                                value={tempEditData.renewalStatus || 'Pendente'}
-                                                                onChange={handleTempChange}
-                                                                className="px-2 py-1 border rounded dark:bg-gray-700 dark:text-white text-sm"
-                                                            >
-                                                                {renewalStatusOptions.map(status => (
-                                                                    <option key={status} value={status}>{status}</option>
-                                                                ))}
-                                                            </select>
-                                                        ) : (
-                                                            <RenewalBadge status={license.renewalStatus} />
                                                         )}
                                                     </td>
                                                     {/* Coluna Ações */}
