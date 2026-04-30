@@ -208,6 +208,18 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
     }
   };
 
+  const handleUpdateO365Client = async (id: string, data: Partial<O365Client>) => {
+    try {
+      await apiClient.o365.clients.update(id, data);
+      await fetchAllData();
+      toast.success('Cliente atualizado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao atualizar cliente:', error);
+      toast.error('Erro ao atualizar cliente');
+      throw error;
+    }
+  };
+
   const handleDeleteHardware = async (id: number) => {
     try {
       await apiClient.hardware.remove(id);
@@ -654,6 +666,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
               clients={filteredO365Clients}
               licenses={processedO365Licenses}
               onLicenseUpdate={handleUpdateO365License}
+              onClientUpdate={handleUpdateO365Client}
               isAdmin={isAdmin}
               onClientClick={handleO365ClientClick}
             />
