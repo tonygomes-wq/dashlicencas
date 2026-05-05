@@ -9,6 +9,7 @@ ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarEle
 interface BitdefenderReportModalProps {
   isOpen: boolean;
   onClose: () => void;
+  clientId?: number | null; // Cliente específico (opcional)
 }
 
 interface ReportData {
@@ -27,7 +28,9 @@ interface ReportData {
   };
 }
 
-const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen, onClose }) => {
+const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen, onClose, clientId: initialClientId }) => {
+  const [selectedClientId, setSelectedClientId] = useState<number | null>(initialClientId || null);
+  const [clients, setClients] = useState<Array<{ id: number; company: string }>>([]);
   const [reportData, setReportData] = useState<ReportData>({
     totalEndpoints: 0,
     protectedEndpoints: 0,
@@ -47,26 +50,51 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
 
   useEffect(() => {
     if (isOpen) {
+      fetchClients();
       fetchReportData();
     }
-  }, [isOpen]);
+  }, [isOpen, selectedClientId]);
+
+  const fetchClients = async () => {
+    try {
+      const bitdefenderData = await apiClient.bitdefender.list();
+      const uniqueClients = Array.from(
+        new Map(bitdefenderData.map((item: any) => [item.id, { id: item.id, company: item.company }])).values()
+      );
+      setClients(uniqueClients);
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error);
+    }
+  };
 
   const fetchReportData = async () => {
     setLoading(true);
     try {
       // Buscar dados da API
       const stats = await apiClient.endpoints.stats();
-      const licenseUsageData = await apiClient.licenseUsage.list();
+      let licenseUsageData = await apiClient.licenseUsage.list();
+      
+      // Filtrar por cliente se selecionado
+      if (selectedClientId) {
+        licenseUsageData = Array.isArray(licenseUsageData) 
+          ? licenseUsageData.filter((item: any) => item.client_id === selectedClientId)
+          : [];
+      }
       
       // Garantir que licenseUsageData é um array
       const licenseUsageArray = Array.isArray(licenseUsageData) ? licenseUsageData : [];
       
+      // Calcular totais baseados no filtro
+      const totalUsed = licenseUsageArray.reduce((sum: number, item: any) => sum + (parseInt(item.used_slots) || 0), 0);
+      const totalAvailable = licenseUsageArray.reduce((sum: number, item: any) => sum + (parseInt(item.total_slots) || 0), 0);
+      const overLimitCount = licenseUsageArray.filter((item: any) => (parseFloat(item.license_usage_percent) || 0) >= 100).length;
+      
       // Processar dados
       setReportData({
-        totalEndpoints: parseInt(stats.total) || 0,
-        protectedEndpoints: parseInt(stats.protected) || 0,
-        atRiskEndpoints: parseInt(stats.at_risk) || 0,
-        offlineEndpoints: parseInt(stats.offline) || 0,
+        totalEndpoints: selectedClientId ? licenseUsageArray.length : (parseInt(stats.total) || 0),
+        protectedEndpoints: selectedClientId ? totalUsed : (parseInt(stats.protected) || 0),
+        atRiskEndpoints: selectedClientId ? overLimitCount : (parseInt(stats.at_risk) || 0),
+        offlineEndpoints: selectedClientId ? 0 : (parseInt(stats.offline) || 0),
         totalThreats: 455, // Dados de exemplo - substituir por dados reais da API
         blockedThreats: 423,
         quarantinedThreats: 32,
@@ -78,9 +106,9 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
           { name: 'Spyware', count: 67 }
         ],
         licenseUsage: {
-          used: licenseUsageArray.reduce((sum: number, item: any) => sum + (parseInt(item.used_slots) || 0), 0),
-          available: licenseUsageArray.reduce((sum: number, item: any) => sum + (parseInt(item.total_slots) || 0), 0),
-          overLimit: licenseUsageArray.filter((item: any) => (parseFloat(item.license_usage_percent) || 0) >= 100).length
+          used: totalUsed,
+          available: totalAvailable,
+          overLimit: overLimitCount
         }
       });
     } catch (error) {
@@ -246,34 +274,60 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center z-10">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Relatório Bitdefender</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
-            </p>
+        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 z-10">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Relatório Bitdefender</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handlePrint}
+                className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                title="Imprimir"
+              >
+                <Printer className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleDownload}
+                className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                title="Download PDF"
+              >
+                <Download className="w-5 h-5" />
+              </button>
+              <button
+                onClick={onClose}
+                className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handlePrint}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              title="Imprimir"
+
+          {/* Filtro de Cliente */}
+          <div className="flex items-center gap-3">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Filtrar por Cliente:
+            </label>
+            <select
+              value={selectedClientId || ''}
+              onChange={(e) => setSelectedClientId(e.target.value ? parseInt(e.target.value) : null)}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <Printer className="w-5 h-5" />
-            </button>
-            <button
-              onClick={handleDownload}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              title="Download PDF"
-            >
-              <Download className="w-5 h-5" />
-            </button>
-            <button
-              onClick={onClose}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
+              <option value="">Todos os Clientes</option>
+              {clients.map((client) => (
+                <option key={client.id} value={client.id}>
+                  {client.company}
+                </option>
+              ))}
+            </select>
+            {selectedClientId && (
+              <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                Exibindo dados de 1 cliente
+              </span>
+            )}
           </div>
         </div>
 
