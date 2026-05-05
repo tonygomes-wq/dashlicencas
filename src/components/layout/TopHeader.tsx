@@ -39,7 +39,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({
       <div className="h-full px-6 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
-          <img src={logo} alt="MAC-IP Tecnologia" className="h-10 w-auto" />
+          <img src={logo} alt="MAC-IP Tecnologia" className="h-14 w-auto" />
         </div>
 
         {/* Right Side Actions */}

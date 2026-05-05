@@ -1,5 +1,5 @@
-import React from 'react';
-import { ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { ChevronRight, ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react';
 import { GmailClient, GmailLicenseWithClient } from '../types';
 
 interface GmailClientTableProps {
@@ -8,7 +8,12 @@ interface GmailClientTableProps {
   onClientClick: (client: GmailClient) => void;
 }
 
+type SortField = 'clientName' | 'totalLicenses' | 'pendingCount';
+type SortDirection = 'asc' | 'desc' | null;
+
 const GmailClientTable: React.FC<GmailClientTableProps> = ({ clients, licenses, onClientClick }) => {
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   
   const pendingCountMap = React.useMemo(() => {
     const map = new Map<string, number>();
@@ -21,6 +26,59 @@ const GmailClientTable: React.FC<GmailClientTableProps> = ({ clients, licenses, 
     return map;
   }, [licenses]);
 
+  // Ordenar clientes
+  const sortedClients = [...clients].sort((a, b) => {
+    if (!sortField || !sortDirection) return 0;
+
+    let aValue: any;
+    let bValue: any;
+
+    switch (sortField) {
+      case 'clientName':
+        aValue = a.clientName?.toLowerCase() || '';
+        bValue = b.clientName?.toLowerCase() || '';
+        break;
+      case 'totalLicenses':
+        aValue = licenses.filter(l => l.clientId === a.id).length;
+        bValue = licenses.filter(l => l.clientId === b.id).length;
+        break;
+      case 'pendingCount':
+        aValue = pendingCountMap.get(a.id) || 0;
+        bValue = pendingCountMap.get(b.id) || 0;
+        break;
+      default:
+        return 0;
+    }
+
+    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else if (sortDirection === 'desc') {
+        setSortDirection(null);
+        setSortField(null);
+      }
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const SortIcon: React.FC<{ field: SortField }> = ({ field }) => {
+    if (sortField !== field) {
+      return <ChevronsUpDown className="w-4 h-4 text-gray-400" />;
+    }
+    if (sortDirection === 'asc') {
+      return <ChevronUp className="w-4 h-4 text-blue-600" />;
+    }
+    return <ChevronDown className="w-4 h-4 text-blue-600" />;
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
@@ -29,22 +87,40 @@ const GmailClientTable: React.FC<GmailClientTableProps> = ({ clients, licenses, 
             <tr className="bg-gray-100 dark:bg-gray-700">
               <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-600 w-10"></th>
               <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-600 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                Cliente
+                <button
+                  onClick={() => handleSort('clientName')}
+                  className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                >
+                  Cliente
+                  <SortIcon field="clientName" />
+                </button>
               </th>
               <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-600 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                 Email de Contato
               </th>
               <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-600 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                Total de Licenças
+                <button
+                  onClick={() => handleSort('totalLicenses')}
+                  className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mx-auto"
+                >
+                  Total de Licenças
+                  <SortIcon field="totalLicenses" />
+                </button>
               </th>
               <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-600 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                Pendentes
+                <button
+                  onClick={() => handleSort('pendingCount')}
+                  className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mx-auto"
+                >
+                  Pendentes
+                  <SortIcon field="pendingCount" />
+                </button>
               </th>
             </tr>
           </thead>
           <tbody>
-            {clients.length > 0 ? (
-              clients.map((client) => {
+            {sortedClients.length > 0 ? (
+              sortedClients.map((client) => {
                 const clientLicenses = licenses.filter(license => license.clientId === client.id);
                 const pendingCount = pendingCountMap.get(client.id) || 0;
                 return (
