@@ -70,20 +70,33 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
   const fetchReportData = async () => {
     setLoading(true);
     try {
-      // Buscar dados da API
-      let licenseUsageData = await apiClient.licenseUsage.list();
+      // Buscar dados do Bitdefender
+      const bitdefenderData = await apiClient.bitdefender.list();
       
-      // Garantir que licenseUsageData é um array
+      // Se cliente selecionado, filtrar dados do Bitdefender
+      let filteredBitdefender = bitdefenderData;
+      if (selectedClientId) {
+        filteredBitdefender = bitdefenderData.filter((item: any) => 
+          parseInt(item.id) === selectedClientId
+        );
+      }
+      
+      // Buscar dados de uso de licenças
+      let licenseUsageData = await apiClient.licenseUsage.list();
       let licenseUsageArray = Array.isArray(licenseUsageData) ? licenseUsageData : [];
       
-      // Filtrar por cliente se selecionado
+      // Filtrar uso de licenças por cliente se selecionado
       if (selectedClientId) {
         licenseUsageArray = licenseUsageArray.filter((item: any) => 
           parseInt(item.client_id) === selectedClientId
         );
       }
       
-      // Calcular totais baseados no filtro
+      // Calcular totais do Bitdefender
+      const totalLicenses = filteredBitdefender.reduce((sum: number, item: any) => 
+        sum + (parseInt(item.total_licenses) || 0), 0);
+      
+      // Calcular totais de uso de licenças
       const totalUsed = licenseUsageArray.reduce((sum: number, item: any) => 
         sum + (parseInt(item.used_slots) || 0), 0);
       const totalAvailable = licenseUsageArray.reduce((sum: number, item: any) => 
@@ -93,35 +106,36 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
       const highUsageCount = licenseUsageArray.filter((item: any) => 
         (parseFloat(item.license_usage_percent) || 0) >= 90).length;
       
-      // Se filtrado por cliente, usar dados específicos
-      // Se não, buscar estatísticas gerais
-      let totalEndpoints = 0;
-      let protectedEndpoints = 0;
-      let atRiskEndpoints = 0;
-      let offlineEndpoints = 0;
-      
-      if (selectedClientId) {
-        // Dados específicos do cliente
-        totalEndpoints = licenseUsageArray.length;
-        protectedEndpoints = totalUsed;
-        atRiskEndpoints = overLimitCount;
-        offlineEndpoints = highUsageCount;
-      } else {
-        // Dados gerais de todos os clientes
-        try {
+      // Buscar endpoints se disponível
+      let endpointsData = { total: 0, protected: 0, at_risk: 0, offline: 0 };
+      try {
+        if (selectedClientId) {
+          // Buscar endpoints do cliente específico
+          const endpoints = await apiClient.endpoints.list({ client_id: selectedClientId });
+          const endpointsArray = Array.isArray(endpoints) ? endpoints : [];
+          endpointsData.total = endpointsArray.length;
+          endpointsData.protected = endpointsArray.filter((e: any) => e.protection_status === 'protected').length;
+          endpointsData.at_risk = endpointsArray.filter((e: any) => e.protection_status === 'at_risk').length;
+          endpointsData.offline = endpointsArray.filter((e: any) => e.is_online === false).length;
+        } else {
+          // Buscar estatísticas gerais
           const stats = await apiClient.endpoints.stats();
-          totalEndpoints = parseInt(stats.total) || licenseUsageArray.length;
-          protectedEndpoints = parseInt(stats.protected) || totalUsed;
-          atRiskEndpoints = parseInt(stats.at_risk) || overLimitCount;
-          offlineEndpoints = parseInt(stats.offline) || highUsageCount;
-        } catch (error) {
-          // Se API de stats falhar, usar dados calculados
-          totalEndpoints = licenseUsageArray.length;
-          protectedEndpoints = totalUsed;
-          atRiskEndpoints = overLimitCount;
-          offlineEndpoints = highUsageCount;
+          endpointsData = {
+            total: parseInt(stats.total) || 0,
+            protected: parseInt(stats.protected) || 0,
+            at_risk: parseInt(stats.at_risk) || 0,
+            offline: parseInt(stats.offline) || 0
+          };
         }
+      } catch (error) {
+        console.warn('Endpoints não disponíveis, usando dados de licenças');
       }
+      
+      // Determinar valores finais
+      const totalEndpoints = endpointsData.total || licenseUsageArray.length || filteredBitdefender.length;
+      const protectedEndpoints = endpointsData.protected || totalUsed || totalLicenses;
+      const atRiskEndpoints = endpointsData.at_risk || overLimitCount;
+      const offlineEndpoints = endpointsData.offline || highUsageCount;
       
       // Processar dados
       setReportData({
@@ -140,11 +154,22 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
           { name: 'Spyware', count: 67 }
         ],
         licenseUsage: {
-          used: totalUsed,
-          available: totalAvailable,
+          used: totalUsed || totalLicenses,
+          available: totalAvailable || totalLicenses,
           overLimit: overLimitCount
         }
       });
+      
+      console.log('📊 Dados do relatório:', {
+        selectedClientId,
+        filteredBitdefender: filteredBitdefender.length,
+        licenseUsageArray: licenseUsageArray.length,
+        totalLicenses,
+        totalUsed,
+        totalEndpoints,
+        protectedEndpoints
+      });
+      
     } catch (error) {
       console.error('Erro ao buscar dados do relatório:', error);
       // Definir dados padrão em caso de erro
