@@ -338,46 +338,58 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
           * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            color-adjust: exact !important;
           }
           
-          /* Ocultar tudo primeiro */
-          body * {
-            visibility: hidden;
+          /* Resetar body e html */
+          html, body {
+            width: 100% !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+            background: white !important;
           }
           
-          /* Mostrar apenas o conteúdo do relatório */
-          .print-content,
-          .print-content * {
-            visibility: visible !important;
+          /* Ocultar elementos de UI - usar display none ao invés de visibility */
+          .no-print {
+            display: none !important;
           }
           
-          /* Ocultar elementos de UI */
-          .no-print,
-          .no-print *,
           button,
           select,
-          input,
-          .sticky,
-          .fixed,
-          .backdrop-blur-sm {
+          input[type="text"],
+          input[type="search"] {
             display: none !important;
-            visibility: hidden !important;
+          }
+          
+          /* Ocultar o backdrop e container do modal */
+          .fixed.inset-0 {
+            position: static !important;
+            background: white !important;
+            backdrop-filter: none !important;
+          }
+          
+          /* Ajustar container do modal */
+          .fixed.inset-0 > div {
+            max-width: 100% !important;
+            max-height: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            overflow: visible !important;
           }
           
           /* Mostrar cabeçalho de impressão */
           .print\\:block {
             display: block !important;
-            visibility: visible !important;
           }
           
           .print\\:flex {
             display: flex !important;
-            visibility: visible !important;
           }
           
           .print\\:grid {
             display: grid !important;
-            visibility: visible !important;
           }
           
           /* Ocultar barras de rolagem */
@@ -392,42 +404,18 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
             -ms-overflow-style: none !important;
           }
           
-          /* Ajustar layout para impressão */
-          html, body {
-            width: 100%;
-            height: auto;
-            overflow: visible !important;
-            margin: 0;
-            padding: 0;
-            background: white !important;
-          }
-          
+          /* Ajustar o conteúdo principal */
           .print-content {
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
+            display: block !important;
             width: 100% !important;
             max-width: 100% !important;
-            max-height: none !important;
-            overflow: visible !important;
-            padding: 30px 40px !important;
+            padding: 20px 30px !important;
             margin: 0 !important;
             background: white !important;
+            page-break-after: auto !important;
           }
           
-          /* Remover sombras e bordas arredondadas */
-          * {
-            box-shadow: none !important;
-            text-shadow: none !important;
-          }
-          
-          /* Manter bordas mas sem arredondamento excessivo */
-          .rounded-lg,
-          .rounded-xl {
-            border-radius: 4px !important;
-          }
-          
-          /* Ajustar cores para impressão */
+          /* Ajustar cores para impressão - manter backgrounds coloridos */
           .bg-gray-50,
           .dark\\:bg-gray-900\\/50 {
             background: #f9fafb !important;
@@ -544,7 +532,9 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
             page-break-before: always !important;
           }
           
-          /* Evitar quebras dentro de elementos */
+          /* Evitar quebras dentro de elementos importantes */
+          .kpi-card,
+          .print-section,
           .bg-blue-50,
           .bg-green-50,
           .bg-red-50,
@@ -563,9 +553,8 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
             margin-top: 1rem !important;
           }
           
-          /* Garantir que listas sejam visíveis */
-          ul, ol, li {
-            visibility: visible !important;
+          .space-y-3 > * + * {
+            margin-top: 0.75rem !important;
           }
           
           /* Estilo do cabeçalho executivo */
@@ -573,6 +562,7 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
             border-bottom: 3px solid #3b82f6 !important;
             padding-bottom: 20px !important;
             margin-bottom: 30px !important;
+            page-break-after: avoid !important;
           }
           
           /* Estilo das seções */
@@ -582,7 +572,7 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
           }
           
           .print-section-title {
-            font-size: 18px !important;
+            font-size: 16px !important;
             font-weight: 700 !important;
             color: #1f2937 !important;
             margin-bottom: 15px !important;
@@ -590,52 +580,74 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
             border-bottom: 2px solid #e5e7eb !important;
           }
           
-          /* KPIs em destaque */
-          .kpi-card {
-            padding: 15px !important;
-            border: 2px solid !important;
-            page-break-inside: avoid !important;
-          }
-          
           /* Ajustar tamanho de fonte para impressão */
           body {
-            font-size: 11pt !important;
+            font-size: 10pt !important;
+            line-height: 1.4 !important;
           }
           
           h1 {
-            font-size: 24pt !important;
+            font-size: 22pt !important;
+            line-height: 1.2 !important;
           }
           
           h2 {
-            font-size: 18pt !important;
+            font-size: 16pt !important;
+            line-height: 1.3 !important;
           }
           
           h3 {
-            font-size: 14pt !important;
+            font-size: 13pt !important;
+            line-height: 1.3 !important;
           }
           
           .text-3xl {
-            font-size: 28pt !important;
+            font-size: 24pt !important;
           }
           
           .text-2xl {
-            font-size: 20pt !important;
+            font-size: 18pt !important;
           }
           
           .text-xl {
-            font-size: 16pt !important;
+            font-size: 14pt !important;
           }
           
           .text-lg {
-            font-size: 13pt !important;
+            font-size: 12pt !important;
+          }
+          
+          .text-base {
+            font-size: 11pt !important;
           }
           
           .text-sm {
-            font-size: 10pt !important;
+            font-size: 9pt !important;
           }
           
           .text-xs {
-            font-size: 9pt !important;
+            font-size: 8pt !important;
+          }
+          
+          /* Garantir que ícones SVG sejam visíveis */
+          svg {
+            display: inline-block !important;
+          }
+          
+          /* Remover sombras */
+          * {
+            box-shadow: none !important;
+            text-shadow: none !important;
+          }
+          
+          /* Manter bordas arredondadas suaves */
+          .rounded-lg,
+          .rounded-xl {
+            border-radius: 4px !important;
+          }
+          
+          .rounded-full {
+            border-radius: 50% !important;
           }
         }
       `}</style>
