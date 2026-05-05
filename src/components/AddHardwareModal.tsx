@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import { HardwareDevice, StorageDevice, DeviceType, DeviceStatus, StorageType } from '../types';
+import { apiClient } from '../lib/apiClient';
+import toast from 'react-hot-toast';
 
 interface AddHardwareModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (device: Omit<HardwareDevice, 'id' | 'lastUpdate' | 'userId'>) => Promise<void>;
+  onSuccess: () => void;
 }
 
-const AddHardwareModal: React.FC<AddHardwareModalProps> = ({ isOpen, onClose, onAdd }) => {
+const AddHardwareModal: React.FC<AddHardwareModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     deviceName: '',
     deviceType: 'Desktop' as DeviceType,
@@ -62,7 +64,7 @@ const AddHardwareModal: React.FC<AddHardwareModalProps> = ({ isOpen, onClose, on
     setIsSubmitting(true);
 
     try {
-      await onAdd({
+      await apiClient.hardware.create({
         ...formData,
         cpuCores: formData.cpuCores ? parseInt(formData.cpuCores) : undefined,
         ramSize: parseInt(formData.ramSize),
@@ -73,10 +75,12 @@ const AddHardwareModal: React.FC<AddHardwareModalProps> = ({ isOpen, onClose, on
         purchaseDate: formData.purchaseDate || undefined,
         warrantyExpiration: formData.warrantyExpiration || undefined,
       });
-      onClose();
+      toast.success('Dispositivo adicionado com sucesso!');
+      onSuccess();
       resetForm();
     } catch (error) {
       console.error('Error adding hardware:', error);
+      toast.error('Erro ao adicionar dispositivo');
     } finally {
       setIsSubmitting(false);
     }
