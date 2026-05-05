@@ -58,6 +58,9 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
       const stats = await apiClient.endpoints.stats();
       const licenseUsageData = await apiClient.licenseUsage.list();
       
+      // Garantir que licenseUsageData é um array
+      const licenseUsageArray = Array.isArray(licenseUsageData) ? licenseUsageData : [];
+      
       // Processar dados
       setReportData({
         totalEndpoints: parseInt(stats.total) || 0,
@@ -75,13 +78,29 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
           { name: 'Spyware', count: 67 }
         ],
         licenseUsage: {
-          used: licenseUsageData.reduce((sum: number, item: any) => sum + (item.used_slots || 0), 0),
-          available: licenseUsageData.reduce((sum: number, item: any) => sum + (item.total_slots || 0), 0),
-          overLimit: licenseUsageData.filter((item: any) => item.license_usage_percent >= 100).length
+          used: licenseUsageArray.reduce((sum: number, item: any) => sum + (parseInt(item.used_slots) || 0), 0),
+          available: licenseUsageArray.reduce((sum: number, item: any) => sum + (parseInt(item.total_slots) || 0), 0),
+          overLimit: licenseUsageArray.filter((item: any) => (parseFloat(item.license_usage_percent) || 0) >= 100).length
         }
       });
     } catch (error) {
       console.error('Erro ao buscar dados do relatório:', error);
+      // Definir dados padrão em caso de erro
+      setReportData({
+        totalEndpoints: 0,
+        protectedEndpoints: 0,
+        atRiskEndpoints: 0,
+        offlineEndpoints: 0,
+        totalThreats: 0,
+        blockedThreats: 0,
+        quarantinedThreats: 0,
+        topThreats: [],
+        licenseUsage: {
+          used: 0,
+          available: 0,
+          overLimit: 0
+        }
+      });
     } finally {
       setLoading(false);
     }
