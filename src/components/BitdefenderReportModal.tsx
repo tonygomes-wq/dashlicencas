@@ -330,10 +330,214 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <>
+      {/* Estilos para Impressão */}
+      <style>{`
+        @media print {
+          /* Reset geral */
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          
+          /* Ocultar tudo primeiro */
+          body * {
+            visibility: hidden;
+          }
+          
+          /* Mostrar apenas o conteúdo do relatório */
+          .print-content,
+          .print-content * {
+            visibility: visible !important;
+          }
+          
+          /* Ocultar elementos de UI */
+          .no-print,
+          .no-print *,
+          button,
+          select,
+          input,
+          .sticky,
+          .fixed,
+          .backdrop-blur-sm {
+            display: none !important;
+            visibility: hidden !important;
+          }
+          
+          /* Mostrar cabeçalho de impressão */
+          .print\\:block {
+            display: block !important;
+            visibility: visible !important;
+          }
+          
+          /* Ocultar barras de rolagem */
+          ::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+          }
+          
+          * {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+          }
+          
+          /* Ajustar layout para impressão */
+          html, body {
+            width: 100%;
+            height: auto;
+            overflow: visible !important;
+            margin: 0;
+            padding: 0;
+            background: white !important;
+          }
+          
+          .print-content {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            max-height: none !important;
+            overflow: visible !important;
+            padding: 20px !important;
+            margin: 0 !important;
+            background: white !important;
+          }
+          
+          /* Remover sombras, bordas arredondadas e efeitos */
+          * {
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            text-shadow: none !important;
+          }
+          
+          /* Ajustar cores para impressão */
+          .bg-gray-50,
+          .dark\\:bg-gray-900\\/50,
+          .bg-white,
+          .dark\\:bg-gray-800 {
+            background: white !important;
+            border: 1px solid #e5e7eb !important;
+          }
+          
+          /* Garantir texto legível */
+          .text-gray-900,
+          .dark\\:text-white,
+          h1, h2, h3, h4, h5, h6 {
+            color: #000 !important;
+          }
+          
+          .text-gray-600,
+          .dark\\:text-gray-400,
+          .text-gray-500,
+          .dark\\:text-gray-300 {
+            color: #4b5563 !important;
+          }
+          
+          /* Manter cores dos cards de status */
+          .bg-blue-50,
+          .dark\\:bg-blue-900\\/20 {
+            background: #eff6ff !important;
+            border-color: #3b82f6 !important;
+          }
+          
+          .bg-green-50,
+          .dark\\:bg-green-900\\/20 {
+            background: #f0fdf4 !important;
+            border-color: #22c55e !important;
+          }
+          
+          .bg-red-50,
+          .dark\\:bg-red-900\\/20 {
+            background: #fef2f2 !important;
+            border-color: #ef4444 !important;
+          }
+          
+          .bg-purple-50,
+          .dark\\:bg-purple-900\\/20 {
+            background: #faf5ff !important;
+            border-color: #a855f7 !important;
+          }
+          
+          .bg-amber-50,
+          .dark\\:bg-amber-900\\/20 {
+            background: #fffbeb !important;
+            border-color: #f59e0b !important;
+          }
+          
+          /* Manter cores do texto dos cards */
+          .text-blue-600,
+          .dark\\:text-blue-400 {
+            color: #2563eb !important;
+          }
+          
+          .text-green-600,
+          .dark\\:text-green-400 {
+            color: #16a34a !important;
+          }
+          
+          .text-red-600,
+          .dark\\:text-red-400 {
+            color: #dc2626 !important;
+          }
+          
+          .text-purple-600,
+          .dark\\:text-purple-400 {
+            color: #9333ea !important;
+          }
+          
+          .text-amber-600,
+          .dark\\:text-amber-400,
+          .text-amber-900,
+          .dark\\:text-amber-100 {
+            color: #d97706 !important;
+          }
+          
+          /* Ajustar gráficos */
+          canvas {
+            max-width: 100% !important;
+            height: auto !important;
+            page-break-inside: avoid !important;
+          }
+          
+          /* Ajustar grid */
+          .grid {
+            display: grid !important;
+            page-break-inside: avoid !important;
+          }
+          
+          /* Quebras de página */
+          .page-break {
+            page-break-after: always !important;
+          }
+          
+          /* Evitar quebras dentro de elementos */
+          .bg-blue-50,
+          .bg-green-50,
+          .bg-red-50,
+          .bg-purple-50,
+          .bg-amber-50,
+          .bg-gray-50 {
+            page-break-inside: avoid !important;
+          }
+          
+          /* Ajustar espaçamento */
+          .space-y-6 > * + * {
+            margin-top: 1.5rem !important;
+          }
+          
+          /* Garantir que listas sejam visíveis */
+          ul, ol, li {
+            visibility: visible !important;
+          }
+        }
+      `}</style>
+
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 no-print">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 z-10">
+        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 z-10 no-print">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Relatório Bitdefender</h2>
@@ -341,7 +545,7 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
                 Gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 no-print">
               <button
                 onClick={handlePrint}
                 className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -366,7 +570,7 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
           </div>
 
           {/* Filtro de Cliente */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 no-print">
             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
               Filtrar por Cliente:
             </label>
@@ -390,8 +594,21 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
           </div>
         </div>
 
+        {/* Print Header - Only visible when printing */}
+        <div className="hidden print:block px-6 py-4 border-b border-gray-200">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Relatório Bitdefender</h1>
+          <p className="text-sm text-gray-600">
+            Gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
+          </p>
+          {selectedClientId && (
+            <p className="text-sm text-gray-600 mt-1">
+              Cliente: {clients.find(c => c.id === selectedClientId)?.company || 'N/A'}
+            </p>
+          )}
+        </div>
+
         {/* Content */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 print-content">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -512,6 +729,7 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
         </div>
       </div>
     </div>
+    </>
   );
 };
 
