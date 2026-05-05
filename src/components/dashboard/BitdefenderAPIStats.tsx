@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Shield, AlertTriangle, Download, CheckCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { apiClient } from '../../lib/apiClient';
+import BitdefenderReportModal from '../BitdefenderReportModal';
 
 interface APIStats {
   total: number;
@@ -46,6 +47,7 @@ const BitdefenderAPIStats: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [hasData, setHasData] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   // API funcionando! Reabilitada
   const API_DISABLED = false;
@@ -285,7 +287,10 @@ const BitdefenderAPIStats: React.FC = () => {
           >
             🔄 Sincronizar Todos
           </button>
-          <button className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
+          <button 
+            onClick={() => setIsReportModalOpen(true)}
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+          >
             📊 Gerar Relatório
           </button>
           <button className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
@@ -299,6 +304,12 @@ const BitdefenderAPIStats: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* Modal de Relatório */}
+      <BitdefenderReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+      />
     </div>
   );
 };
