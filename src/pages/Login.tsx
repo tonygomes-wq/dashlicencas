@@ -64,11 +64,11 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
             {show2fa ? 'Segurança 2FA' : 'Acesso ao Dashboard'}
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
-            {show2fa
-              ? 'Digite o código de 6 dígitos que aparece no seu aplicativo autenticador.'
-              : 'Digite suas credenciais (MySQL) para entrar.'}
-          </p>
+          {show2fa && (
+            <p className="text-gray-600 dark:text-gray-300">
+              Digite o código de 6 dígitos que aparece no seu aplicativo autenticador.
+            </p>
+          )}
         </div>
 
         {!show2fa ? (
