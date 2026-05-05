@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, Download, Printer } from 'lucide-react';
+import { X, Download, Printer, Shield, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
 import { apiClient } from '../lib/apiClient';
@@ -370,6 +370,16 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
             visibility: visible !important;
           }
           
+          .print\\:flex {
+            display: flex !important;
+            visibility: visible !important;
+          }
+          
+          .print\\:grid {
+            display: grid !important;
+            visibility: visible !important;
+          }
+          
           /* Ocultar barras de rolagem */
           ::-webkit-scrollbar {
             display: none !important;
@@ -400,70 +410,85 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
             max-width: 100% !important;
             max-height: none !important;
             overflow: visible !important;
-            padding: 20px !important;
+            padding: 30px 40px !important;
             margin: 0 !important;
             background: white !important;
           }
           
-          /* Remover sombras, bordas arredondadas e efeitos */
+          /* Remover sombras e bordas arredondadas */
           * {
             box-shadow: none !important;
-            border-radius: 0 !important;
             text-shadow: none !important;
+          }
+          
+          /* Manter bordas mas sem arredondamento excessivo */
+          .rounded-lg,
+          .rounded-xl {
+            border-radius: 4px !important;
           }
           
           /* Ajustar cores para impressão */
           .bg-gray-50,
-          .dark\\:bg-gray-900\\/50,
+          .dark\\:bg-gray-900\\/50 {
+            background: #f9fafb !important;
+            border: 1px solid #e5e7eb !important;
+          }
+          
           .bg-white,
           .dark\\:bg-gray-800 {
             background: white !important;
-            border: 1px solid #e5e7eb !important;
           }
           
           /* Garantir texto legível */
           .text-gray-900,
           .dark\\:text-white,
           h1, h2, h3, h4, h5, h6 {
-            color: #000 !important;
+            color: #111827 !important;
           }
           
           .text-gray-600,
-          .dark\\:text-gray-400,
+          .dark\\:text-gray-400 {
+            color: #4b5563 !important;
+          }
+          
           .text-gray-500,
           .dark\\:text-gray-300 {
-            color: #4b5563 !important;
+            color: #6b7280 !important;
+          }
+          
+          .text-gray-700 {
+            color: #374151 !important;
           }
           
           /* Manter cores dos cards de status */
           .bg-blue-50,
           .dark\\:bg-blue-900\\/20 {
             background: #eff6ff !important;
-            border-color: #3b82f6 !important;
+            border: 2px solid #3b82f6 !important;
           }
           
           .bg-green-50,
           .dark\\:bg-green-900\\/20 {
             background: #f0fdf4 !important;
-            border-color: #22c55e !important;
+            border: 2px solid #22c55e !important;
           }
           
           .bg-red-50,
           .dark\\:bg-red-900\\/20 {
             background: #fef2f2 !important;
-            border-color: #ef4444 !important;
+            border: 2px solid #ef4444 !important;
           }
           
           .bg-purple-50,
           .dark\\:bg-purple-900\\/20 {
             background: #faf5ff !important;
-            border-color: #a855f7 !important;
+            border: 2px solid #a855f7 !important;
           }
           
           .bg-amber-50,
           .dark\\:bg-amber-900\\/20 {
             background: #fffbeb !important;
-            border-color: #f59e0b !important;
+            border: 2px solid #f59e0b !important;
           }
           
           /* Manter cores do texto dos cards */
@@ -488,10 +513,13 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
           }
           
           .text-amber-600,
-          .dark\\:text-amber-400,
+          .dark\\:text-amber-400 {
+            color: #d97706 !important;
+          }
+          
           .text-amber-900,
           .dark\\:text-amber-100 {
-            color: #d97706 !important;
+            color: #78350f !important;
           }
           
           /* Ajustar gráficos */
@@ -512,6 +540,10 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
             page-break-after: always !important;
           }
           
+          .page-break-before {
+            page-break-before: always !important;
+          }
+          
           /* Evitar quebras dentro de elementos */
           .bg-blue-50,
           .bg-green-50,
@@ -527,9 +559,83 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
             margin-top: 1.5rem !important;
           }
           
+          .space-y-4 > * + * {
+            margin-top: 1rem !important;
+          }
+          
           /* Garantir que listas sejam visíveis */
           ul, ol, li {
             visibility: visible !important;
+          }
+          
+          /* Estilo do cabeçalho executivo */
+          .print-header {
+            border-bottom: 3px solid #3b82f6 !important;
+            padding-bottom: 20px !important;
+            margin-bottom: 30px !important;
+          }
+          
+          /* Estilo das seções */
+          .print-section {
+            margin-bottom: 25px !important;
+            page-break-inside: avoid !important;
+          }
+          
+          .print-section-title {
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            color: #1f2937 !important;
+            margin-bottom: 15px !important;
+            padding-bottom: 8px !important;
+            border-bottom: 2px solid #e5e7eb !important;
+          }
+          
+          /* KPIs em destaque */
+          .kpi-card {
+            padding: 15px !important;
+            border: 2px solid !important;
+            page-break-inside: avoid !important;
+          }
+          
+          /* Ajustar tamanho de fonte para impressão */
+          body {
+            font-size: 11pt !important;
+          }
+          
+          h1 {
+            font-size: 24pt !important;
+          }
+          
+          h2 {
+            font-size: 18pt !important;
+          }
+          
+          h3 {
+            font-size: 14pt !important;
+          }
+          
+          .text-3xl {
+            font-size: 28pt !important;
+          }
+          
+          .text-2xl {
+            font-size: 20pt !important;
+          }
+          
+          .text-xl {
+            font-size: 16pt !important;
+          }
+          
+          .text-lg {
+            font-size: 13pt !important;
+          }
+          
+          .text-sm {
+            font-size: 10pt !important;
+          }
+          
+          .text-xs {
+            font-size: 9pt !important;
           }
         }
       `}</style>
@@ -595,16 +701,45 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
         </div>
 
         {/* Print Header - Only visible when printing */}
-        <div className="hidden print:block px-6 py-4 border-b border-gray-200">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Relatório Bitdefender</h1>
-          <p className="text-sm text-gray-600">
-            Gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
-          </p>
-          {selectedClientId && (
-            <p className="text-sm text-gray-600 mt-1">
-              Cliente: {clients.find(c => c.id === selectedClientId)?.company || 'N/A'}
-            </p>
-          )}
+        <div className="hidden print:block print-header">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-4 mb-3">
+                <div className="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <Shield className="w-10 h-10 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                    Relatório Executivo Mensal de Segurança de Endpoint
+                  </h1>
+                  <p className="text-sm text-gray-600">
+                    Relatório executivo mensal de desempenho da iniciativa software contente sua antivírus software de Segurança de Endpoint
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span className="font-semibold text-gray-700">Data de Geração:</span>
+                  <p className="text-gray-600">{new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                </div>
+                <div>
+                  <span className="font-semibold text-gray-700">Período:</span>
+                  <p className="text-gray-600">{new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</p>
+                </div>
+                {selectedClientId && (
+                  <div>
+                    <span className="font-semibold text-gray-700">Cliente:</span>
+                    <p className="text-gray-600">{clients.find(c => c.id === selectedClientId)?.company || 'N/A'}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center border-4 border-green-600">
+              <CheckCircle className="w-12 h-12 text-green-600" />
+            </div>
+          </div>
         </div>
 
         {/* Content */}
@@ -615,114 +750,253 @@ const BitdefenderReportModal: React.FC<BitdefenderReportModalProps> = ({ isOpen,
             </div>
           ) : (
             <>
-              {/* Resumo Executivo */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total de Endpoints</p>
-                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{reportData.totalEndpoints}</p>
-                </div>
-                <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Protegidos</p>
-                  <p className="text-3xl font-bold text-green-600 dark:text-green-400">{reportData.protectedEndpoints}</p>
-                </div>
-                <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 border border-red-200 dark:border-red-800">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Ameaças Bloqueadas</p>
-                  <p className="text-3xl font-bold text-red-600 dark:text-red-400">{reportData.blockedThreats}</p>
-                </div>
-                <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Licenças em Uso</p>
-                  <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{reportData.licenseUsage.used}</p>
-                </div>
-              </div>
-
-              {/* Gráficos de Pizza */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Status dos Endpoints */}
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
-                    Status dos Endpoints
-                  </h3>
-                  <div className="h-64">
-                    <Pie data={endpointStatusData} options={chartOptions} />
-                  </div>
-                </div>
-
-                {/* Status das Ameaças */}
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
-                    Ameaças Detectadas
-                  </h3>
-                  <div className="h-64">
-                    <Pie data={threatStatusData} options={chartOptions} />
-                  </div>
-                </div>
-
-                {/* Uso de Licenças */}
-                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
-                    Uso de Licenças
-                  </h3>
-                  <div className="h-64">
-                    <Pie data={licenseUsageData} options={chartOptions} />
-                  </div>
+              {/* 1. RESUMO EXECUTIVO */}
+              <div className="print-section">
+                <h2 className="print-section-title text-xl font-bold text-gray-900 dark:text-white mb-4 pb-2 border-b-2 border-gray-300">
+                  1. Resumo Executivo
+                </h2>
+                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-5 border-l-4 border-blue-600">
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {reportData.atRiskEndpoints === 0 && reportData.offlineEndpoints === 0 ? (
+                      <>
+                        <strong>Postura de segurança excelente.</strong> Neste período, nossa infraestrutura de segurança de endpoint 
+                        permaneceu forte e estável. O antivírus Bitdefender bloqueou com sucesso <strong>{reportData.blockedThreats} ameaças</strong>, 
+                        mantendo <strong>{reportData.protectedEndpoints} endpoints protegidos</strong>. A conformidade de licenças atingiu{' '}
+                        <strong>{reportData.licenseUsage.overLimit === 0 ? '100%' : `${Math.round((1 - reportData.licenseUsage.overLimit / reportData.totalEndpoints) * 100)}%`}</strong>.
+                        {' '}Nenhuma violação de dados foi confirmada. Nosso foco principal no próximo período será manter a excelência 
+                        operacional e monitorar proativamente novas ameaças emergentes.
+                      </>
+                    ) : (
+                      <>
+                        <strong>Atenção necessária.</strong> Neste período, identificamos <strong>{reportData.atRiskEndpoints} endpoints em risco</strong>
+                        {reportData.offlineEndpoints > 0 && <> e <strong>{reportData.offlineEndpoints} com uso elevado de licenças</strong></>}.
+                        O antivírus Bitdefender bloqueou <strong>{reportData.blockedThreats} ameaças</strong>, protegendo{' '}
+                        <strong>{reportData.protectedEndpoints} endpoints</strong>. Recomendamos ação imediata para regularizar os endpoints 
+                        em situação crítica e revisar as políticas de segurança.
+                      </>
+                    )}
+                  </p>
                 </div>
               </div>
 
-              {/* Top Ameaças */}
-              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Top 5 Ameaças Detectadas
-                </h3>
-                <div className="h-80">
-                  <Bar data={topThreatsData} options={barChartOptions} />
+              {/* 2. PRINCIPAIS MÉTRICAS (KPIs) */}
+              <div className="print-section">
+                <h2 className="print-section-title text-xl font-bold text-gray-900 dark:text-white mb-4 pb-2 border-b-2 border-gray-300">
+                  2. Indicadores-Chave de Performance (KPIs)
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="kpi-card bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center justify-between mb-2">
+                      <Shield className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                      <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/40 px-2 py-1 rounded">
+                        TOTAL
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">Total de Endpoints</p>
+                    <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{reportData.totalEndpoints}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Dispositivos monitorados</p>
+                  </div>
+                  
+                  <div className="kpi-card bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border-2 border-green-200 dark:border-green-800">
+                    <div className="flex items-center justify-between mb-2">
+                      <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+                      <span className="text-xs font-semibold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-1 rounded">
+                        ✓ OK
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">Endpoints Protegidos</p>
+                    <p className="text-3xl font-bold text-green-600 dark:text-green-400">{reportData.protectedEndpoints}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {reportData.totalEndpoints > 0 ? Math.round((reportData.protectedEndpoints / reportData.totalEndpoints) * 100) : 0}% do total
+                    </p>
+                  </div>
+                  
+                  <div className="kpi-card bg-red-50 dark:bg-red-900/20 rounded-lg p-4 border-2 border-red-200 dark:border-red-800">
+                    <div className="flex items-center justify-between mb-2">
+                      <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                      <span className="text-xs font-semibold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/40 px-2 py-1 rounded">
+                        BLOQUEADAS
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">Ameaças Bloqueadas</p>
+                    <p className="text-3xl font-bold text-red-600 dark:text-red-400">{reportData.blockedThreats}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {reportData.totalThreats > 0 ? Math.round((reportData.blockedThreats / reportData.totalThreats) * 100) : 100}% de eficácia
+                    </p>
+                  </div>
+                  
+                  <div className="kpi-card bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border-2 border-purple-200 dark:border-purple-800">
+                    <div className="flex items-center justify-between mb-2">
+                      <Download className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                      <span className="text-xs font-semibold text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/40 px-2 py-1 rounded">
+                        USO
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">Licenças em Uso</p>
+                    <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{reportData.licenseUsage.used}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      de {reportData.licenseUsage.available} disponíveis
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Recomendações */}
-              <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-6 border border-amber-200 dark:border-amber-800">
-                <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-100 mb-4">
-                  📋 Recomendações
-                </h3>
-                <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                  {reportData.atRiskEndpoints > 0 && (
-                    <li className="flex items-start gap-2">
-                      <span className="text-red-600 dark:text-red-400">⚠️</span>
+              {/* 3. ANÁLISE VISUAL - GRÁFICOS */}
+              <div className="print-section page-break-before">
+                <h2 className="print-section-title text-xl font-bold text-gray-900 dark:text-white mb-4 pb-2 border-b-2 border-gray-300">
+                  3. Análise Visual de Segurança
+                </h2>
+                
+                {/* Gráficos de Pizza */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                  {/* Status dos Endpoints */}
+                  <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border border-gray-200">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3 text-center border-b pb-2">
+                      Status dos Endpoints
+                    </h3>
+                    <div className="h-64">
+                      <Pie data={endpointStatusData} options={chartOptions} />
+                    </div>
+                    <div className="mt-3 text-xs text-gray-600 dark:text-gray-400 text-center">
+                      <p><strong>Insight:</strong> {reportData.atRiskEndpoints === 0 ? 'Todos os endpoints estão em conformidade.' : `${reportData.atRiskEndpoints} endpoints requerem atenção imediata.`}</p>
+                    </div>
+                  </div>
+
+                  {/* Status das Ameaças */}
+                  <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border border-gray-200">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3 text-center border-b pb-2">
+                      Ameaças Detectadas
+                    </h3>
+                    <div className="h-64">
+                      <Pie data={threatStatusData} options={chartOptions} />
+                    </div>
+                    <div className="mt-3 text-xs text-gray-600 dark:text-gray-400 text-center">
+                      <p><strong>Insight:</strong> {reportData.blockedThreats} ameaças bloqueadas com sucesso, garantindo proteção contínua.</p>
+                    </div>
+                  </div>
+
+                  {/* Uso de Licenças */}
+                  <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border border-gray-200">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3 text-center border-b pb-2">
+                      Uso de Licenças
+                    </h3>
+                    <div className="h-64">
+                      <Pie data={licenseUsageData} options={chartOptions} />
+                    </div>
+                    <div className="mt-3 text-xs text-gray-600 dark:text-gray-400 text-center">
+                      <p><strong>Insight:</strong> {reportData.licenseUsage.overLimit > 0 ? `${reportData.licenseUsage.overLimit} licenças sobre o limite. Considerar expansão.` : 'Uso de licenças dentro do limite esperado.'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Top Ameaças */}
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border border-gray-200">
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3 border-b pb-2">
+                    Top 5 Ameaças Detectadas no Período
+                  </h3>
+                  <div className="h-80">
+                    <Bar data={topThreatsData} options={barChartOptions} />
+                  </div>
+                  <div className="mt-3 text-xs text-gray-600 dark:text-gray-400">
+                    <p><strong>Análise:</strong> O ransomware continua sendo a ameaça mais prevalente, destacando a necessidade de treinamento contínuo de conscientização de segurança para os usuários.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. RECOMENDAÇÕES E PRÓXIMOS PASSOS */}
+              <div className="print-section">
+                <h2 className="print-section-title text-xl font-bold text-gray-900 dark:text-white mb-4 pb-2 border-b-2 border-gray-300">
+                  4. Recomendações e Próximos Passos
+                </h2>
+                <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-5 border-l-4 border-amber-600">
+                  <div className="flex items-start gap-3 mb-4">
+                    <AlertTriangle className="w-6 h-6 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="text-base font-semibold text-amber-900 dark:text-amber-100 mb-2">
+                        Ações Prioritárias
+                      </h3>
+                    </div>
+                  </div>
+                  
+                  <ul className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                    {reportData.atRiskEndpoints > 0 && (
+                      <li className="flex items-start gap-3 bg-white dark:bg-gray-800 p-3 rounded border-l-2 border-red-500">
+                        <span className="text-red-600 dark:text-red-400 font-bold flex-shrink-0">⚠️ CRÍTICO</span>
+                        <span>
+                          <strong>{reportData.atRiskEndpoints} endpoints em risco identificados</strong> - Verificar proteção imediatamente e atualizar políticas de segurança. Prioridade máxima.
+                        </span>
+                      </li>
+                    )}
+                    {reportData.offlineEndpoints > 0 && (
+                      <li className="flex items-start gap-3 bg-white dark:bg-gray-800 p-3 rounded border-l-2 border-amber-500">
+                        <span className="text-amber-600 dark:text-amber-400 font-bold flex-shrink-0">⚠️ ATENÇÃO</span>
+                        <span>
+                          <strong>{reportData.offlineEndpoints} endpoints com uso elevado</strong> - Verificar conectividade e status dos dispositivos. Monitorar de perto.
+                        </span>
+                      </li>
+                    )}
+                    {reportData.licenseUsage.overLimit > 0 && (
+                      <li className="flex items-start gap-3 bg-white dark:bg-gray-800 p-3 rounded border-l-2 border-red-500">
+                        <span className="text-red-600 dark:text-red-400 font-bold flex-shrink-0">💰 FINANCEIRO</span>
+                        <span>
+                          <strong>{reportData.licenseUsage.overLimit} licenças sobre o limite</strong> - Considerar aquisição de licenças adicionais para evitar custos extras e garantir conformidade.
+                        </span>
+                      </li>
+                    )}
+                    {reportData.totalThreats > 100 && (
+                      <li className="flex items-start gap-3 bg-white dark:bg-gray-800 p-3 rounded border-l-2 border-blue-500">
+                        <span className="text-blue-600 dark:text-blue-400 font-bold flex-shrink-0">📚 TREINAMENTO</span>
+                        <span>
+                          <strong>Alto volume de ameaças detectadas ({reportData.totalThreats})</strong> - Revisar políticas de navegação e implementar treinamento de conscientização em segurança para usuários.
+                        </span>
+                      </li>
+                    )}
+                    <li className="flex items-start gap-3 bg-white dark:bg-gray-800 p-3 rounded border-l-2 border-green-500">
+                      <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0">✓ MANUTENÇÃO</span>
                       <span>
-                        <strong>{reportData.atRiskEndpoints} endpoints em risco</strong> - Verificar proteção e atualizar políticas de segurança
+                        <strong>Sincronização regular com API Bitdefender</strong> - Manter monitoramento em tempo real e atualização automática de políticas de segurança.
                       </span>
                     </li>
-                  )}
-                  {reportData.offlineEndpoints > 0 && (
-                    <li className="flex items-start gap-2">
-                      <span className="text-amber-600 dark:text-amber-400">⚠️</span>
+                    <li className="flex items-start gap-3 bg-white dark:bg-gray-800 p-3 rounded border-l-2 border-green-500">
+                      <span className="text-green-600 dark:text-green-400 font-bold flex-shrink-0">✓ PREVENÇÃO</span>
                       <span>
-                        <strong>{reportData.offlineEndpoints} endpoints offline</strong> - Verificar conectividade e status dos dispositivos
+                        <strong>Implementar autenticação multifator (MFA)</strong> - Reforçar segurança em todos os serviços externos e pontos de acesso críticos.
                       </span>
                     </li>
-                  )}
-                  {reportData.licenseUsage.overLimit > 0 && (
-                    <li className="flex items-start gap-2">
-                      <span className="text-red-600 dark:text-red-400">⚠️</span>
-                      <span>
-                        <strong>{reportData.licenseUsage.overLimit} licenças sobre o limite</strong> - Considerar aquisição de licenças adicionais
-                      </span>
-                    </li>
-                  )}
-                  {reportData.totalThreats > 100 && (
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-600 dark:text-blue-400">ℹ️</span>
-                      <span>
-                        <strong>Alto volume de ameaças detectadas</strong> - Revisar políticas de navegação e treinamento de usuários
-                      </span>
-                    </li>
-                  )}
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-600 dark:text-green-400">✓</span>
-                    <span>
-                      Manter sincronização regular com a API Bitdefender para monitoramento em tempo real
-                    </span>
-                  </li>
-                </ul>
+                  </ul>
+                </div>
+              </div>
+
+              {/* 5. CONCLUSÃO */}
+              <div className="print-section">
+                <h2 className="print-section-title text-xl font-bold text-gray-900 dark:text-white mb-4 pb-2 border-b-2 border-gray-300">
+                  5. Conclusão
+                </h2>
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-5 border border-gray-300">
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                    {reportData.atRiskEndpoints === 0 && reportData.licenseUsage.overLimit === 0 ? (
+                      <>
+                        O ambiente de TI permanece <strong className="text-green-600">seguro e em conformidade</strong>. 
+                        A infraestrutura de proteção Bitdefender demonstrou eficácia de <strong>{reportData.totalThreats > 0 ? Math.round((reportData.blockedThreats / reportData.totalThreats) * 100) : 100}%</strong> no 
+                        bloqueio de ameaças. Manteremos o foco em manter os sistemas atualizados, monitorar proativamente novas 
+                        tendências de ameaças e garantir a continuidade operacional.
+                      </>
+                    ) : (
+                      <>
+                        O ambiente de TI requer <strong className="text-amber-600">atenção imediata</strong> em pontos específicos identificados. 
+                        Apesar da eficácia de <strong>{reportData.totalThreats > 0 ? Math.round((reportData.blockedThreats / reportData.totalThreats) * 100) : 100}%</strong> no 
+                        bloqueio de ameaças, as ações corretivas listadas devem ser priorizadas para restaurar a conformidade total 
+                        e minimizar riscos operacionais.
+                      </>
+                    )}
+                  </p>
+                  <div className="border-t border-gray-300 pt-3 mt-3">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <strong>Nota:</strong> Este relatório foi gerado automaticamente pelo sistema de monitoramento Bitdefender. 
+                      Para informações detalhadas ou esclarecimentos, entre em contato com a equipe de Segurança da Informação.
+                    </p>
+                  </div>
+                </div>
               </div>
             </>
           )}
