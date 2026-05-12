@@ -197,6 +197,15 @@ export const apiClient = {
         bulkRemove: (ids: number[]) => request('/app_hardware.php', { method: 'DELETE', body: JSON.stringify({ ids }) }),
     },
 
+    // Hardware Clients Methods
+    hardwareClients: {
+        list: () => request('/app_hardware_clients.php'),
+        get: (id: number) => request(`/app_hardware_clients.php?id=${id}`),
+        create: (data: any) => request('/app_hardware_clients.php', { method: 'POST', body: JSON.stringify(data) }),
+        update: (id: number, data: any) => request(`/app_hardware_clients.php?id=${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+        remove: (id: number) => request(`/app_hardware_clients.php?id=${id}`, { method: 'DELETE' }),
+    },
+
     // Audit Log Methods
     audit: {
         list: (params?: { page?: number; limit?: number; user_id?: number; action?: string; table_name?: string; date_from?: string; date_to?: string }) => {

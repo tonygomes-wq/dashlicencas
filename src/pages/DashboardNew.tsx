@@ -12,6 +12,7 @@ import O365ClientTable from '../components/O365ClientTable';
 import GmailClientTable from '../components/GmailClientTable';
 import NetworkMapSubTab from '../components/NetworkMapSubTab';
 import HardwareInventoryTable from '../components/HardwareInventoryTable';
+import HardwareClientTable from '../components/HardwareClientTable';
 
 // Import modals and other components
 import AddBitdefenderModal from '../components/AddBitdefenderModal';
@@ -19,6 +20,7 @@ import AddFortigateModal from '../components/AddFortigateModal';
 import AddO365ClientModal from '../components/AddO365ClientModal';
 import AddGmailClientModal from '../components/AddGmailClientModal';
 import AddHardwareModal from '../components/AddHardwareModal';
+import AddHardwareClientModal from '../components/AddHardwareClientModal';
 import DetailSidebar from '../components/DetailSidebar';
 import O365DetailModal from '../components/O365DetailModal';
 import GmailDetailModal from '../components/GmailDetailModal';
@@ -92,6 +94,8 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
   const [isAddO365ClientOpen, setIsAddO365ClientOpen] = useState(false);
   const [isAddGmailClientOpen, setIsAddGmailClientOpen] = useState(false);
   const [isAddHardwareOpen, setIsAddHardwareOpen] = useState(false);
+  const [isAddHardwareClientOpen, setIsAddHardwareClientOpen] = useState(false);
+  const [selectedHardwareClient, setSelectedHardwareClient] = useState<string>('');
   const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
 
   const [detailItem, setDetailItem] = useState<ItemDetail | null>(null);
@@ -781,34 +785,39 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
                   Inventário de Hardware
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Gerencie o inventário de dispositivos
+                  Gerencie clientes e seus dispositivos
                 </p>
               </div>
               {isAdmin && (
                 <button
                   onClick={() => {
-                    console.log('🟣 Abrindo modal Hardware');
+                    console.log('🟣 Abrindo modal Cliente Hardware');
                     // Fechar todos os outros modais primeiro
                     setIsAddBitdefenderOpen(false);
                     setIsAddFortigateOpen(false);
                     setIsAddO365ClientOpen(false);
                     setIsAddGmailClientOpen(false);
+                    setIsAddHardwareOpen(false);
                     // Abrir apenas este modal
-                    setIsAddHardwareOpen(true);
+                    setIsAddHardwareClientOpen(true);
                   }}
                   className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 font-medium shadow-lg"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  Adicionar Novo Dispositivo
+                  Novo Cliente
                 </button>
               )}
             </div>
-            <HardwareInventoryTable
+            <HardwareClientTable
               devices={processedHardware}
               onRowClick={setHardwareDetailDevice}
               onDelete={isAdmin ? handleDeleteHardware : undefined}
+              onAddDevice={(clientName) => {
+                setSelectedHardwareClient(clientName);
+                setIsAddHardwareOpen(true);
+              }}
               canEdit={isAdmin}
               canDelete={isAdmin}
             />
@@ -907,10 +916,26 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       {isAddHardwareOpen && (
         <AddHardwareModal
           isOpen={isAddHardwareOpen}
-          onClose={() => setIsAddHardwareOpen(false)}
+          onClose={() => {
+            setIsAddHardwareOpen(false);
+            setSelectedHardwareClient('');
+          }}
           onSuccess={() => {
             fetchAllData();
             setIsAddHardwareOpen(false);
+            setSelectedHardwareClient('');
+          }}
+          defaultClientName={selectedHardwareClient}
+        />
+      )}
+
+      {isAddHardwareClientOpen && (
+        <AddHardwareClientModal
+          isOpen={isAddHardwareClientOpen}
+          onClose={() => setIsAddHardwareClientOpen(false)}
+          onSuccess={() => {
+            fetchAllData();
+            setIsAddHardwareClientOpen(false);
           }}
         />
       )}

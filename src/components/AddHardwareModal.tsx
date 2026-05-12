@@ -8,13 +8,14 @@ interface AddHardwareModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  defaultClientName?: string;
 }
 
-const AddHardwareModal: React.FC<AddHardwareModalProps> = ({ isOpen, onClose, onSuccess }) => {
+const AddHardwareModal: React.FC<AddHardwareModalProps> = ({ isOpen, onClose, onSuccess, defaultClientName = '' }) => {
   const [formData, setFormData] = useState({
     deviceName: '',
     deviceType: 'Desktop' as DeviceType,
-    clientName: '',
+    clientName: defaultClientName,
     location: '',
     cpuModel: '',
     cpuCores: '',
@@ -34,6 +35,13 @@ const AddHardwareModal: React.FC<AddHardwareModalProps> = ({ isOpen, onClose, on
     notes: '',
     status: 'Ativo' as DeviceStatus,
   });
+
+  // Atualizar clientName quando defaultClientName mudar
+  React.useEffect(() => {
+    if (defaultClientName) {
+      setFormData(prev => ({ ...prev, clientName: defaultClientName }));
+    }
+  }, [defaultClientName]);
 
   const [storageDevices, setStorageDevices] = useState<StorageDevice[]>([
     { type: 'SSD', capacity: 256, manufacturer: '', model: '', interface: 'SATA' }
@@ -161,9 +169,17 @@ const AddHardwareModal: React.FC<AddHardwareModalProps> = ({ isOpen, onClose, on
                   value={formData.clientName}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  readOnly={!!defaultClientName}
+                  className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 ${
+                    defaultClientName ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
+                  }`}
                   placeholder="Nome do cliente"
                 />
+                {defaultClientName && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Dispositivo será adicionado ao cliente selecionado
+                  </p>
+                )}
               </div>
 
               <div>
