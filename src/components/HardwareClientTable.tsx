@@ -4,13 +4,18 @@ import { ChevronDown, ChevronRight, Plus, Building2, Monitor, Trash2, Edit } fro
 import HardwareInventoryTable from './HardwareInventoryTable';
 
 interface HardwareClient {
+  id: number;
   clientName: string;
+  contactPerson?: string;
+  email?: string;
+  phone?: string;
   devices: HardwareWithWarrantyStatus[];
   totalDevices: number;
 }
 
 interface HardwareClientTableProps {
   devices: HardwareWithWarrantyStatus[];
+  clients: any[]; // Lista de clientes da API
   onRowClick: (device: HardwareWithWarrantyStatus) => void;
   onDelete?: (id: number) => void;
   onAddDevice: (clientName: string) => void;
@@ -20,6 +25,7 @@ interface HardwareClientTableProps {
 
 const HardwareClientTable: React.FC<HardwareClientTableProps> = ({
   devices,
+  clients,
   onRowClick,
   onDelete,
   onAddDevice,
@@ -28,21 +34,19 @@ const HardwareClientTable: React.FC<HardwareClientTableProps> = ({
 }) => {
   const [expandedClients, setExpandedClients] = useState<Set<string>>(new Set());
 
-  // Agrupar dispositivos por cliente
-  const clientsMap = devices.reduce((acc, device) => {
-    const clientName = device.clientName || 'Sem Cliente';
-    if (!acc[clientName]) {
-      acc[clientName] = [];
-    }
-    acc[clientName].push(device);
-    return acc;
-  }, {} as Record<string, HardwareWithWarrantyStatus[]>);
-
-  const clients: HardwareClient[] = Object.entries(clientsMap).map(([clientName, devices]) => ({
-    clientName,
-    devices,
-    totalDevices: devices.length
-  }));
+  // Criar mapa de clientes com seus dispositivos
+  const clientsWithDevices: HardwareClient[] = clients.map(client => {
+    const clientDevices = devices.filter(device => device.clientName === client.clientName);
+    return {
+      id: client.id,
+      clientName: client.clientName,
+      contactPerson: client.contactPerson,
+      email: client.email,
+      phone: client.phone,
+      devices: clientDevices,
+      totalDevices: clientDevices.length
+    };
+  });
 
   const toggleClient = (clientName: string) => {
     const newExpanded = new Set(expandedClients);
@@ -62,7 +66,7 @@ const HardwareClientTable: React.FC<HardwareClientTableProps> = ({
     return { active, maintenance, warrantyExpired };
   };
 
-  if (clients.length === 0) {
+  if (clientsWithDevices.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 text-center">
         <Building2 className="w-16 h-16 mx-auto mb-4 text-gray-400" />
@@ -78,7 +82,7 @@ const HardwareClientTable: React.FC<HardwareClientTableProps> = ({
 
   return (
     <div className="space-y-4">
-      {clients.map((client) => {
+      {clientsWithDevices.map((client) => {
         const isExpanded = expandedClients.has(client.clientName);
         const stats = getClientStats(client.devices);
 
@@ -159,13 +163,21 @@ const HardwareClientTable: React.FC<HardwareClientTableProps> = ({
             {/* Lista de Dispositivos (Expandível) */}
             {isExpanded && (
               <div className="p-4">
-                <HardwareInventoryTable
-                  devices={client.devices}
-                  onRowClick={onRowClick}
-                  onDelete={onDelete}
-                  canEdit={canEdit}
-                  canDelete={canDelete}
-                />
+                {client.devices.length > 0 ? (
+                  <HardwareInventoryTable
+                    devices={client.devices}
+                    onRowClick={onRowClick}
+                    onDelete={onDelete}
+                    canEdit={canEdit}
+                    canDelete={canDelete}
+                  />
+                ) : (
+                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                    <Monitor className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>Nenhum dispositivo cadastrado para este cliente</p>
+                    <p className="text-sm mt-2">Clique em "Adicionar Dispositivo" para começar</p>
+                  </div>
+                )}
               </div>
             )}
           </div>

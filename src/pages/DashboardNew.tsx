@@ -79,6 +79,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
   const [rawGmailClients, setRawGmailClients] = useState<GmailClient[]>([]);
   const [rawGmailLicenses, setRawGmailLicenses] = useState<GmailLicense[]>([]);
   const [rawHardware, setRawHardware] = useState<HardwareDevice[]>([]);
+  const [rawHardwareClients, setRawHardwareClients] = useState<any[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -349,14 +350,15 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
   const fetchAllData = async () => {
     setIsLoading(true);
     try {
-      const [bitdefenderData, fortigateData, o365ClientsData, o365LicensesData, gmailClientsData, gmailLicensesData, hardwareData] = await Promise.all([
+      const [bitdefenderData, fortigateData, o365ClientsData, o365LicensesData, gmailClientsData, gmailLicensesData, hardwareData, hardwareClientsData] = await Promise.all([
         apiClient.bitdefender.list(),
         apiClient.fortigate.list(),
         apiClient.o365.clients.list(),
         apiClient.o365.licenses.list(),
         apiClient.gmail.clients.list(),
         apiClient.gmail.licenses.list(),
-        apiClient.hardware.list()
+        apiClient.hardware.list(),
+        apiClient.hardwareClients.list()
       ]);
 
       console.log('📊 Dados carregados:', {
@@ -366,7 +368,8 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
         o365Licenses: o365LicensesData?.length || 0,
         gmailClients: gmailClientsData?.length || 0,
         gmailLicenses: gmailLicensesData?.length || 0,
-        hardware: hardwareData?.length || 0
+        hardware: hardwareData?.length || 0,
+        hardwareClients: hardwareClientsData?.length || 0
       });
 
       setRawBitdefender(transformKeys(bitdefenderData, toCamelCase));
@@ -376,6 +379,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       setRawGmailClients(transformKeys(gmailClientsData, toCamelCase));
       setRawGmailLicenses(transformKeys(gmailLicensesData, toCamelCase));
       setRawHardware(transformKeys(hardwareData, toCamelCase));
+      setRawHardwareClients(transformKeys(hardwareClientsData, toCamelCase));
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       toast.error('Erro ao carregar dados do dashboard');
@@ -812,6 +816,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
             </div>
             <HardwareClientTable
               devices={processedHardware}
+              clients={rawHardwareClients}
               onRowClick={setHardwareDetailDevice}
               onDelete={isAdmin ? handleDeleteHardware : undefined}
               onAddDevice={(clientName) => {
