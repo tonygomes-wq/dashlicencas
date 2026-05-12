@@ -19,6 +19,8 @@ interface HardwareClientTableProps {
   onRowClick: (device: HardwareWithWarrantyStatus) => void;
   onDelete?: (id: number) => void;
   onAddDevice: (clientName: string) => void;
+  onEditClient?: (client: any) => void;
+  onDeleteClient?: (clientId: number, clientName: string, deviceCount: number) => void;
   canEdit: boolean;
   canDelete: boolean;
 }
@@ -29,6 +31,8 @@ const HardwareClientTable: React.FC<HardwareClientTableProps> = ({
   onRowClick,
   onDelete,
   onAddDevice,
+  onEditClient,
+  onDeleteClient,
   canEdit,
   canDelete
 }) => {
@@ -148,15 +152,44 @@ const HardwareClientTable: React.FC<HardwareClientTableProps> = ({
                 </div>
 
                 {/* Botão Adicionar Dispositivo */}
-                {canEdit && (
-                  <button
-                    onClick={() => onAddDevice(client.clientName)}
-                    className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Adicionar Dispositivo</span>
-                  </button>
-                )}
+                <div className="flex items-center space-x-2">
+                  {canEdit && onEditClient && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEditClient(client);
+                      }}
+                      className="p-2 text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
+                      title="Editar cliente"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  )}
+                  {canDelete && onDeleteClient && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteClient(client.id, client.clientName, client.totalDevices);
+                      }}
+                      className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      title="Excluir cliente"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                  {canEdit && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onAddDevice(client.clientName);
+                      }}
+                      className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Adicionar Dispositivo</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 

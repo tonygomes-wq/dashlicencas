@@ -21,6 +21,7 @@ import AddO365ClientModal from '../components/AddO365ClientModal';
 import AddGmailClientModal from '../components/AddGmailClientModal';
 import AddHardwareModal from '../components/AddHardwareModal';
 import AddHardwareClientModal from '../components/AddHardwareClientModal';
+import EditHardwareClientModal from '../components/EditHardwareClientModal';
 import DetailSidebar from '../components/DetailSidebar';
 import O365DetailModal from '../components/O365DetailModal';
 import GmailDetailModal from '../components/GmailDetailModal';
@@ -96,6 +97,8 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
   const [isAddGmailClientOpen, setIsAddGmailClientOpen] = useState(false);
   const [isAddHardwareOpen, setIsAddHardwareOpen] = useState(false);
   const [isAddHardwareClientOpen, setIsAddHardwareClientOpen] = useState(false);
+  const [isEditHardwareClientOpen, setIsEditHardwareClientOpen] = useState(false);
+  const [editingHardwareClient, setEditingHardwareClient] = useState<any>(null);
   const [selectedHardwareClient, setSelectedHardwareClient] = useState<string>('');
   const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
 
@@ -233,6 +236,30 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
     } catch (error) {
       console.error('Erro ao deletar hardware:', error);
       toast.error('Erro ao deletar hardware');
+    }
+  };
+
+  const handleDeleteHardwareClient = async (clientId: number, clientName: string, deviceCount: number) => {
+    if (deviceCount > 0) {
+      toast.error(`Não é possível excluir o cliente "${clientName}" pois possui ${deviceCount} dispositivo(s) cadastrado(s)`);
+      return;
+    }
+
+    if (!confirm(`Tem certeza que deseja excluir o cliente "${clientName}"?`)) {
+      return;
+    }
+
+    try {
+      await apiClient.hardwareClients.remove(clientId);
+      await fetchAllData();
+      toast.success('Cliente excluído com sucesso!');
+    } catch (error: any) {
+      console.error('Erro ao excluir cliente:', error);
+      if (error.message && error.message.includes('dispositivos cadastrados')) {
+        toast.error(error.message);
+      } else {
+        toast.error('Erro ao excluir cliente');
+      }
     }
   };
 
@@ -823,6 +850,11 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
                 setSelectedHardwareClient(clientName);
                 setIsAddHardwareOpen(true);
               }}
+              onEditClient={isAdmin ? (client) => {
+                setEditingHardwareClient(client);
+                setIsEditHardwareClientOpen(true);
+              } : undefined}
+              onDeleteClient={isAdmin ? handleDeleteHardwareClient : undefined}
               canEdit={isAdmin}
               canDelete={isAdmin}
             />
@@ -942,6 +974,22 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
             fetchAllData();
             setIsAddHardwareClientOpen(false);
           }}
+        />
+      )}
+
+      {isEditHardwareClientOpen && editingHardwareClient && (
+        <EditHardwareClientModal
+          isOpen={isEditHardwareClientOpen}
+          onClose={() => {
+            setIsEditHardwareClientOpen(false);
+            setEditingHardwareClient(null);
+          }}
+          onSuccess={() => {
+            fetchAllData();
+            setIsEditHardwareClientOpen(false);
+            setEditingHardwareClient(null);
+          }}
+          client={editingHardwareClient}
         />
       )}
 
