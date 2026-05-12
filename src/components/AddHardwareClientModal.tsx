@@ -30,7 +30,17 @@ const AddHardwareClientModal: React.FC<AddHardwareClientModalProps> = ({ isOpen,
     setIsSubmitting(true);
 
     try {
-      await apiClient.hardwareClients.create(formData);
+      // Converter camelCase para snake_case para o backend
+      const payload = {
+        client_name: formData.clientName,
+        contact_person: formData.contactPerson,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        notes: formData.notes,
+      };
+      
+      await apiClient.hardwareClients.create(payload);
       toast.success('Cliente adicionado com sucesso!');
       onSuccess();
       resetForm();
