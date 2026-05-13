@@ -1,5 +1,6 @@
 <?php
-require_once 'app_config.php';
+session_start();
+require_once 'srv/config.php';
 
 header('Content-Type: application/json');
 
