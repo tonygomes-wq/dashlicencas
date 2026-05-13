@@ -72,17 +72,39 @@ const AddHardwareModal: React.FC<AddHardwareModalProps> = ({ isOpen, onClose, on
     setIsSubmitting(true);
 
     try {
-      await apiClient.hardware.create({
-        ...formData,
-        cpuCores: formData.cpuCores ? parseInt(formData.cpuCores) : undefined,
-        ramSize: parseInt(formData.ramSize),
-        storageDevices: storageDevices.map(s => ({
-          ...s,
-          capacity: typeof s.capacity === 'string' ? parseInt(s.capacity) : s.capacity
+      // Mapear explicitamente camelCase para snake_case
+      const payload = {
+        device_name: formData.deviceName,
+        device_type: formData.deviceType,
+        client_name: formData.clientName,
+        location: formData.location || undefined,
+        cpu_model: formData.cpuModel,
+        cpu_cores: formData.cpuCores ? parseInt(formData.cpuCores) : undefined,
+        cpu_frequency: formData.cpuFrequency || undefined,
+        ram_size: parseInt(formData.ramSize),
+        ram_type: formData.ramType || undefined,
+        ram_speed: formData.ramSpeed || undefined,
+        os_name: formData.osName || undefined,
+        os_version: formData.osVersion || undefined,
+        mac_address: formData.macAddress || undefined,
+        ip_address: formData.ipAddress || undefined,
+        serial_number: formData.serialNumber || undefined,
+        manufacturer: formData.manufacturer || undefined,
+        model: formData.model || undefined,
+        purchase_date: formData.purchaseDate || undefined,
+        warranty_expiration: formData.warrantyExpiration || undefined,
+        notes: formData.notes || undefined,
+        status: formData.status,
+        storage_devices: storageDevices.map(s => ({
+          type: s.type,
+          capacity: typeof s.capacity === 'string' ? parseInt(s.capacity) : s.capacity,
+          manufacturer: s.manufacturer || undefined,
+          model: s.model || undefined,
+          interface: s.interface || undefined,
         })),
-        purchaseDate: formData.purchaseDate || undefined,
-        warrantyExpiration: formData.warrantyExpiration || undefined,
-      });
+      };
+      
+      await apiClient.hardware.create(payload);
       toast.success('Dispositivo adicionado com sucesso!');
       onSuccess();
       resetForm();
