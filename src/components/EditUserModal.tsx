@@ -97,19 +97,39 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
                 apiClient.fortigate.list(),
                 apiClient.o365.clients.list(),
                 apiClient.gmail.clients.list(),
-                apiClient.hardwareClients.list()
+                apiClient.hardwareClients.list().catch(err => {
+                    console.error('Error fetching hardware clients:', err);
+                    return [];
+                })
             ]);
+
+            console.log('Hardware clients fetched:', hwClients);
 
             // Extract unique names for Bitdefender and Fortigate
             const bdCompanies = Array.from(new Set(bd.map((item: any) => item.company))).filter(Boolean) as string[];
             const fgClients = Array.from(new Set(fg.map((item: any) => item.client))).filter(Boolean) as string[];
+
+            // Process hardware clients with safety checks
+            const processedHwClients = (Array.isArray(hwClients) ? hwClients : [])
+                .filter((item: any) => item && item.client_name)
+                .map((item: any) => ({
+                    id: item.id,
+                    client_name: item.client_name
+                }))
+                .sort((a: any, b: any) => {
+                    const nameA = String(a.client_name || '');
+                    const nameB = String(b.client_name || '');
+                    return nameA.localeCompare(nameB);
+                });
+
+            console.log('Processed hardware clients:', processedHwClients);
 
             setAvailableItems({
                 bitdefender: bdCompanies.sort(),
                 fortigate: fgClients.sort(),
                 o365: o365.sort((a: O365Client, b: O365Client) => a.clientName.localeCompare(b.clientName)),
                 gmail: gmail.sort((a: GmailClient, b: GmailClient) => a.clientName.localeCompare(b.clientName)),
-                hardware: hwClients.sort((a: any, b: any) => a.client_name.localeCompare(b.client_name))
+                hardware: processedHwClients
             });
         } catch (error) {
             console.error('Error fetching items for permissions:', error);
