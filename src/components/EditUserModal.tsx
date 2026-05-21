@@ -17,7 +17,8 @@ const defaultPermissions: UserPermissions = {
         fortigate: true,
         o365: true,
         gmail: true,
-        network: true
+        network: true,
+        hardware: true
     },
     actions: {
         edit: true,
@@ -28,13 +29,15 @@ const defaultPermissions: UserPermissions = {
         fortigate: true,
         o365: true,
         gmail: true,
-        network: true
+        network: true,
+        hardware: true
     },
     client_access: {
         bitdefender: [],
         fortigate: [],
         o365: [],
-        gmail: []
+        gmail: [],
+        hardware: []
     }
 };
 
@@ -50,11 +53,13 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
         fortigate: string[];
         o365: O365Client[];
         gmail: GmailClient[];
+        hardware: Array<{ id: number; client_name: string }>;
     }>({
         bitdefender: [],
         fortigate: [],
         o365: [],
-        gmail: []
+        gmail: [],
+        hardware: []
     });
     const [isLoadingItems, setIsLoadingItems] = useState(false);
 
@@ -73,7 +78,8 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
                     fortigate: globalVal,
                     o365: globalVal,
                     gmail: globalVal,
-                    network: globalVal
+                    network: globalVal,
+                    hardware: globalVal
                 };
             }
 
@@ -86,11 +92,12 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
     const fetchAvailableItems = async () => {
         setIsLoadingItems(true);
         try {
-            const [bd, fg, o365, gmail] = await Promise.all([
+            const [bd, fg, o365, gmail, hwClients] = await Promise.all([
                 apiClient.bitdefender.list(),
                 apiClient.fortigate.list(),
                 apiClient.o365.clients.list(),
-                apiClient.gmail.clients.list()
+                apiClient.gmail.clients.list(),
+                apiClient.hardwareClients.list()
             ]);
 
             // Extract unique names for Bitdefender and Fortigate
@@ -101,7 +108,8 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
                 bitdefender: bdCompanies.sort(),
                 fortigate: fgClients.sort(),
                 o365: o365.sort((a: O365Client, b: O365Client) => a.clientName.localeCompare(b.clientName)),
-                gmail: gmail.sort((a: GmailClient, b: GmailClient) => a.clientName.localeCompare(b.clientName))
+                gmail: gmail.sort((a: GmailClient, b: GmailClient) => a.clientName.localeCompare(b.clientName)),
+                hardware: hwClients.sort((a: any, b: any) => a.client_name.localeCompare(b.client_name))
             });
         } catch (error) {
             console.error('Error fetching items for permissions:', error);
@@ -166,7 +174,7 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
         });
     };
 
-    const toggleItemAccess = (dashboard: 'bitdefender' | 'fortigate' | 'o365' | 'gmail', itemId: string) => {
+    const toggleItemAccess = (dashboard: 'bitdefender' | 'fortigate' | 'o365' | 'gmail' | 'hardware', itemId: string) => {
         setPermissions((prev: UserPermissions) => {
             const current = (prev.client_access?.[dashboard] || []) as string[];
             const updated = current.includes(itemId)
@@ -260,6 +268,7 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
                                 { id: 'fortigate', label: 'Fortigate', icon: Monitor, isItemDashboard: true },
                                 { id: 'o365', label: 'Office 365', icon: Cloud, isItemDashboard: true },
                                 { id: 'gmail', label: 'Gmail', icon: Mail, isItemDashboard: true },
+                                { id: 'hardware', label: 'Inventário de Hardware', icon: Monitor, isItemDashboard: true },
                                 { id: 'network', label: 'Mapa de Rede', icon: Network, isItemDashboard: false }
                             ].map((db) => {
                                 const isEnabled = permissions.dashboards[db.id as keyof UserPermissions['dashboards']];
@@ -318,9 +327,9 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
                                                     </div>
                                                     <div className="max-h-40 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-1 pr-2 custom-scrollbar">
                                                         {(availableItems[db.id as keyof typeof availableItems] as any[]).map((item) => {
-                                                            const id = typeof item === 'string' ? item : item.id;
-                                                            const name = typeof item === 'string' ? item : item.clientName;
-                                                            const isChecked = permissions.client_access?.[db.id as keyof UserPermissions['client_access']]?.includes(id);
+                                                            const id = typeof item === 'string' ? item : (item.id || item.clientName);
+                                                            const name = typeof item === 'string' ? item : (item.client_name || item.clientName);
+                                                            const isChecked = permissions.client_access?.[db.id as keyof UserPermissions['client_access']]?.includes(String(id));
 
                                                             return (
                                                                 <label key={id} className={`flex items-center p-2 rounded-xl cursor-pointer transition-colors border ${isChecked
@@ -329,7 +338,7 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
                                                                     <input
                                                                         type="checkbox"
                                                                         checked={isChecked}
-                                                                        onChange={() => toggleItemAccess(db.id as any, id)}
+                                                                        onChange={() => toggleItemAccess(db.id as any, String(id))}
                                                                         className="hidden"
                                                                     />
                                                                     {isChecked ? (

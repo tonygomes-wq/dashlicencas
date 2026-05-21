@@ -109,6 +109,7 @@ export interface UserPermissions {
     o365: boolean;
     gmail: boolean;
     network: boolean;
+    hardware: boolean;
   };
   actions: {
     edit: boolean;
@@ -120,6 +121,7 @@ export interface UserPermissions {
     fortigate?: string[];
     o365?: string[];
     gmail?: string[];
+    hardware?: string[];
   };
 }
 
