@@ -117,19 +117,19 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
 
             // Process O365 clients with safety
             const processedO365 = (Array.isArray(o365) ? o365 : [])
-                .filter((item: any) => item && item.clientName)
+                .filter((item: any) => item && (item.clientName || item.client_name))
                 .sort((a: any, b: any) => {
-                    const nameA = String(a.clientName || '');
-                    const nameB = String(b.clientName || '');
+                    const nameA = String(a.clientName || a.client_name || '');
+                    const nameB = String(b.clientName || b.client_name || '');
                     return nameA.localeCompare(nameB);
                 });
 
             // Process Gmail clients with safety
             const processedGmail = (Array.isArray(gmail) ? gmail : [])
-                .filter((item: any) => item && item.clientName)
+                .filter((item: any) => item && (item.clientName || item.client_name))
                 .sort((a: any, b: any) => {
-                    const nameA = String(a.clientName || '');
-                    const nameB = String(b.clientName || '');
+                    const nameA = String(a.clientName || a.client_name || '');
+                    const nameB = String(b.clientName || b.client_name || '');
                     return nameA.localeCompare(nameB);
                 });
 
@@ -383,7 +383,7 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
                                                             }
                                                             
                                                             return items.map((item: any) => {
-                                                                const id = typeof item === 'string' ? item : (item.id || item.clientName);
+                                                                const id = typeof item === 'string' ? item : (item.id || item.clientName || item.client_name);
                                                                 const name = typeof item === 'string' ? item : (item.client_name || item.clientName);
                                                                 const isChecked = permissions.client_access?.[db.id as keyof UserPermissions['client_access']]?.includes(String(id));
 
