@@ -93,11 +93,26 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
         setIsLoadingItems(true);
         try {
             const [bd, fg, o365, gmail, hwClients] = await Promise.all([
-                apiClient.bitdefender.list().catch(() => []),
-                apiClient.fortigate.list().catch(() => []),
-                apiClient.o365.clients.list().catch(() => []),
-                apiClient.gmail.clients.list().catch(() => []),
-                apiClient.hardwareClients.list().catch(() => [])
+                apiClient.bitdefender.list().catch(err => {
+                    console.log('Bitdefender not accessible:', err.message);
+                    return [];
+                }),
+                apiClient.fortigate.list().catch(err => {
+                    console.log('Fortigate not accessible:', err.message);
+                    return [];
+                }),
+                apiClient.o365.clients.list().catch(err => {
+                    console.log('O365 not accessible:', err.message);
+                    return [];
+                }),
+                apiClient.gmail.clients.list().catch(err => {
+                    console.log('Gmail not accessible:', err.message);
+                    return [];
+                }),
+                apiClient.hardwareClients.list().catch(err => {
+                    console.log('Hardware not accessible:', err.message);
+                    return [];
+                })
             ]);
 
             console.log('Hardware clients fetched:', hwClients);
@@ -157,7 +172,7 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
             });
         } catch (error) {
             console.error('Error fetching items for permissions:', error);
-            toast.error('Erro ao carregar lista de clientes para permissões');
+            // Don't show error toast - some dashboards may not be accessible
         } finally {
             setIsLoadingItems(false);
         }
