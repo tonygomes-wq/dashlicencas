@@ -370,34 +370,43 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
                                                         <Users className="w-3 h-3 text-orange-500" />
                                                     </div>
                                                     <div className="max-h-40 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-1 pr-2 custom-scrollbar">
-                                                        {(availableItems[db.id as keyof typeof availableItems] as any[]).map((item) => {
-                                                            const id = typeof item === 'string' ? item : (item.id || item.clientName);
-                                                            const name = typeof item === 'string' ? item : (item.client_name || item.clientName);
-                                                            const isChecked = permissions.client_access?.[db.id as keyof UserPermissions['client_access']]?.includes(String(id));
+                                                        {(() => {
+                                                            const items = availableItems[db.id as keyof typeof availableItems] || [];
+                                                            console.log(`Items for ${db.id}:`, items);
+                                                            
+                                                            if (!Array.isArray(items) || items.length === 0) {
+                                                                return (
+                                                                    <p className="text-[10px] text-gray-400 italic py-2 col-span-2">
+                                                                        {isLoadingItems ? 'Carregando...' : 'Nenhum cliente encontrado'}
+                                                                    </p>
+                                                                );
+                                                            }
+                                                            
+                                                            return items.map((item: any) => {
+                                                                const id = typeof item === 'string' ? item : (item.id || item.clientName);
+                                                                const name = typeof item === 'string' ? item : (item.client_name || item.clientName);
+                                                                const isChecked = permissions.client_access?.[db.id as keyof UserPermissions['client_access']]?.includes(String(id));
 
-                                                            return (
-                                                                <label key={id} className={`flex items-center p-2 rounded-xl cursor-pointer transition-colors border ${isChecked
-                                                                    ? 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30'
-                                                                    : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 border-transparent'}`}>
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={isChecked}
-                                                                        onChange={() => toggleItemAccess(db.id as any, String(id))}
-                                                                        className="hidden"
-                                                                    />
-                                                                    {isChecked ? (
-                                                                        <CheckSquare className="w-3.5 h-3.5 mr-2 text-blue-600" />
-                                                                    ) : (
-                                                                        <Square className="w-3.5 h-3.5 mr-2 text-gray-300" />
-                                                                    )}
-                                                                    <span className="text-xs text-gray-600 dark:text-gray-400 truncate font-medium">{name}</span>
-                                                                </label>
-                                                            );
-                                                        })}
-                                                        {isLoadingItems && <p className="text-[10px] text-gray-500 italic py-2">Carregando...</p>}
-                                                        {(availableItems[db.id as keyof typeof availableItems] as any[]).length === 0 && !isLoadingItems && (
-                                                            <p className="text-[10px] text-gray-400 italic py-2">Nenhum item encontrado</p>
-                                                        )}
+                                                                return (
+                                                                    <label key={id} className={`flex items-center p-2 rounded-xl cursor-pointer transition-colors border ${isChecked
+                                                                        ? 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30'
+                                                                        : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 border-transparent'}`}>
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={isChecked}
+                                                                            onChange={() => toggleItemAccess(db.id as any, String(id))}
+                                                                            className="hidden"
+                                                                        />
+                                                                        {isChecked ? (
+                                                                            <CheckSquare className="w-3.5 h-3.5 mr-2 text-blue-600" />
+                                                                        ) : (
+                                                                            <Square className="w-3.5 h-3.5 mr-2 text-gray-300" />
+                                                                        )}
+                                                                        <span className="text-xs text-gray-600 dark:text-gray-400 truncate font-medium">{name}</span>
+                                                                    </label>
+                                                                );
+                                                            });
+                                                        })()}
                                                     </div>
                                                 </div>
                                             </div>
