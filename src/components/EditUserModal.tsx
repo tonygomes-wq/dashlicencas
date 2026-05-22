@@ -93,23 +93,47 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
         setIsLoadingItems(true);
         try {
             const [bd, fg, o365, gmail, hwClients] = await Promise.all([
-                apiClient.bitdefender.list(),
-                apiClient.fortigate.list(),
-                apiClient.o365.clients.list(),
-                apiClient.gmail.clients.list(),
-                apiClient.hardwareClients.list().catch(err => {
-                    console.error('Error fetching hardware clients:', err);
-                    return [];
-                })
+                apiClient.bitdefender.list().catch(() => []),
+                apiClient.fortigate.list().catch(() => []),
+                apiClient.o365.clients.list().catch(() => []),
+                apiClient.gmail.clients.list().catch(() => []),
+                apiClient.hardwareClients.list().catch(() => [])
             ]);
 
             console.log('Hardware clients fetched:', hwClients);
 
-            // Extract unique names for Bitdefender and Fortigate
-            const bdCompanies = Array.from(new Set(bd.map((item: any) => item.company))).filter(Boolean) as string[];
-            const fgClients = Array.from(new Set(fg.map((item: any) => item.client))).filter(Boolean) as string[];
+            // Extract unique names for Bitdefender and Fortigate with safety
+            const bdCompanies = Array.from(new Set(
+                (Array.isArray(bd) ? bd : [])
+                    .map((item: any) => item?.company)
+                    .filter(Boolean)
+            )) as string[];
+            
+            const fgClients = Array.from(new Set(
+                (Array.isArray(fg) ? fg : [])
+                    .map((item: any) => item?.client)
+                    .filter(Boolean)
+            )) as string[];
 
-            // Process hardware clients with safety checks
+            // Process O365 clients with safety
+            const processedO365 = (Array.isArray(o365) ? o365 : [])
+                .filter((item: any) => item && item.clientName)
+                .sort((a: any, b: any) => {
+                    const nameA = String(a.clientName || '');
+                    const nameB = String(b.clientName || '');
+                    return nameA.localeCompare(nameB);
+                });
+
+            // Process Gmail clients with safety
+            const processedGmail = (Array.isArray(gmail) ? gmail : [])
+                .filter((item: any) => item && item.clientName)
+                .sort((a: any, b: any) => {
+                    const nameA = String(a.clientName || '');
+                    const nameB = String(b.clientName || '');
+                    return nameA.localeCompare(nameB);
+                });
+
+            // Process hardware clients with safety
             const processedHwClients = (Array.isArray(hwClients) ? hwClients : [])
                 .filter((item: any) => item && item.client_name)
                 .map((item: any) => ({
@@ -127,8 +151,8 @@ const EditUserModal = ({ isOpen, onClose, user, onSave }: EditUserModalProps) =>
             setAvailableItems({
                 bitdefender: bdCompanies.sort(),
                 fortigate: fgClients.sort(),
-                o365: o365.sort((a: O365Client, b: O365Client) => a.clientName.localeCompare(b.clientName)),
-                gmail: gmail.sort((a: GmailClient, b: GmailClient) => a.clientName.localeCompare(b.clientName)),
+                o365: processedO365,
+                gmail: processedGmail,
                 hardware: processedHwClients
             });
         } catch (error) {
