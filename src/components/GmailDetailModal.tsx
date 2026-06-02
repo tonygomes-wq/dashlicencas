@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, Mail, User, Key, Lock, Save, XCircle, LoaderCircle, PlusCircle, Trash2, FileUp, Eye, EyeOff } from 'lucide-react';
+import { X, Mail, User, Key, Lock, Save, XCircle, LoaderCircle, PlusCircle, Trash2, FileUp, FileDown, Eye, EyeOff } from 'lucide-react';
 import { GmailClient, GmailLicense, GmailLicenseWithClient, RenewalStatus } from '../types';
 import toast from 'react-hot-toast';
 import ImportGmailLicensesModal from './ImportGmailLicensesModal';
+import * as XLSX from 'xlsx';
 
 interface GmailDetailModalProps {
     isOpen: boolean;
@@ -86,6 +87,48 @@ const GmailDetailModal: React.FC<GmailDetailModalProps> = ({ isOpen, onClose, cl
             setStatusFilter('all'); // Limpa filtro
         }
     }, [isOpen]);
+
+    // Função para exportar para Excel
+    const handleExportToExcel = () => {
+        if (!client || filteredLicenses.length === 0) {
+            toast.error('Nenhuma licença para exportar');
+            return;
+        }
+
+        // Preparar dados para exportação
+        const exportData = filteredLicenses.map(license => ({
+            'Usuário': license.username,
+            'Email': license.email,
+            'Tipo de Licença': license.licenseType,
+            'Senha': license.password || 'N/A',
+            'Status de Renovação': license.renewalStatus
+        }));
+
+        // Criar workbook e worksheet
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(exportData);
+
+        // Ajustar largura das colunas
+        const colWidths = [
+            { wch: 30 }, // Usuário
+            { wch: 35 }, // Email
+            { wch: 50 }, // Tipo de Licença
+            { wch: 15 }, // Senha
+            { wch: 20 }  // Status de Renovação
+        ];
+        ws['!cols'] = colWidths;
+
+        // Adicionar worksheet ao workbook
+        XLSX.utils.book_append_sheet(wb, ws, 'Licenças');
+
+        // Gerar nome do arquivo
+        const fileName = `Gmail_${client.clientName}_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+        // Baixar arquivo
+        XLSX.writeFile(wb, fileName);
+        
+        toast.success(`${filteredLicenses.length} licença(s) exportada(s) com sucesso!`);
+    };
 
     if (!isOpen || !client) return null;
 
@@ -238,6 +281,15 @@ const GmailDetailModal: React.FC<GmailDetailModalProps> = ({ isOpen, onClose, cl
                             <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Usuários e Status de Renovação</h3>
                             {isAdmin && (
                                 <div className="flex space-x-3">
+                                    <button
+                                        type="button"
+                                        onClick={handleExportToExcel}
+                                        className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center disabled:opacity-50"
+                                        disabled={filteredLicenses.length === 0}
+                                        title="Exportar licenças para Excel"
+                                    >
+                                        <FileDown className="w-4 h-4 mr-1" /> Exportar Planilha
+                                    </button>
                                     <button
                                         type="button"
                                         onClick={() => {
