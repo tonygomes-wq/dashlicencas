@@ -317,4 +317,75 @@ export const apiClient = {
         deleteConfig: (deviceId: number) => request(`/app_fortigate_api.php?action=delete_config&device_id=${deviceId}`, { method: 'DELETE' }),
         getStats: () => request('/app_fortigate_api.php?action=get_stats'),
     },
+
+    // ========================================================================
+    // HR MODULE - Gestão de Recursos Humanos
+    // ========================================================================
+    hr: {
+        // Employees (Funcionários)
+        employees: {
+            list: () => request('/app_hr.php?type=employees'),
+            get: (id: number) => request(`/app_hr.php?type=employees&id=${id}`),
+            create: (data: any) => request('/app_hr.php?type=employees', { method: 'POST', body: JSON.stringify(data) }),
+            update: (id: number, data: any) => request(`/app_hr.php?type=employees&id=${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+            remove: (id: number) => request(`/app_hr.php?type=employees&id=${id}`, { method: 'DELETE' }),
+        },
+        
+        // Vacations (Férias)
+        vacations: {
+            list: (employeeId?: number) => {
+                const url = employeeId 
+                    ? `/app_hr.php?type=vacations&employee_id=${employeeId}`
+                    : '/app_hr.php?type=vacations';
+                return request(url);
+            },
+            create: (data: any) => request('/app_hr.php?type=vacations', { method: 'POST', body: JSON.stringify(data) }),
+            update: (id: number, data: any) => request(`/app_hr.php?type=vacations&id=${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+            approve: (id: number) => request(`/app_hr.php?type=vacations&id=${id}`, { 
+                method: 'PUT', 
+                body: JSON.stringify({ status: 'Aprovada', approved_at: new Date().toISOString() }) 
+            }),
+            reject: (id: number, reason: string) => request(`/app_hr.php?type=vacations&id=${id}`, { 
+                method: 'PUT', 
+                body: JSON.stringify({ status: 'Rejeitada', rejection_reason: reason, approved_at: new Date().toISOString() }) 
+            }),
+            remove: (id: number) => request(`/app_hr.php?type=vacations&id=${id}`, { method: 'DELETE' }),
+        },
+        
+        // Leaves (Afastamentos)
+        leaves: {
+            list: (employeeId?: number) => {
+                const url = employeeId 
+                    ? `/app_hr.php?type=leaves&employee_id=${employeeId}`
+                    : '/app_hr.php?type=leaves';
+                return request(url);
+            },
+            create: (data: any) => request('/app_hr.php?type=leaves', { method: 'POST', body: JSON.stringify(data) }),
+            update: (id: number, data: any) => request(`/app_hr.php?type=leaves&id=${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+            remove: (id: number) => request(`/app_hr.php?type=leaves&id=${id}`, { method: 'DELETE' }),
+        },
+        
+        // Benefits (Benefícios)
+        benefits: {
+            list: (employeeId?: number) => {
+                const url = employeeId 
+                    ? `/app_hr.php?type=benefits&employee_id=${employeeId}`
+                    : '/app_hr.php?type=benefits';
+                return request(url);
+            },
+            create: (data: any) => request('/app_hr.php?type=benefits', { method: 'POST', body: JSON.stringify(data) }),
+            update: (id: number, data: any) => request(`/app_hr.php?type=benefits&id=${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+            remove: (id: number) => request(`/app_hr.php?type=benefits&id=${id}`, { method: 'DELETE' }),
+        },
+        
+        // Documents (Documentos)
+        documents: {
+            list: (employeeId: number) => request(`/app_hr.php?type=documents&employee_id=${employeeId}`),
+            // Upload será implementado posteriormente com FormData
+            remove: (id: number) => request(`/app_hr.php?type=documents&id=${id}`, { method: 'DELETE' }),
+        },
+        
+        // Statistics (Estatísticas)
+        stats: () => request('/app_hr.php?type=stats'),
+    },
 };

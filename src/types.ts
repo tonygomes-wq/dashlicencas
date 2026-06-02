@@ -110,6 +110,7 @@ export interface UserPermissions {
     gmail: boolean;
     network: boolean;
     hardware: boolean;
+    hr: boolean; // 🆕 Módulo RH
   };
   actions: {
     edit: boolean;
@@ -122,6 +123,7 @@ export interface UserPermissions {
     o365?: string[];
     gmail?: string[];
     hardware?: string[];
+    hr?: string[]; // 🆕 Módulo RH (reservado para futuro filtro por departamento)
   };
 }
 
@@ -200,4 +202,195 @@ export interface HardwareDevice {
 export interface HardwareWithWarrantyStatus extends HardwareDevice {
   warrantyDaysRemaining: number;
   warrantyStatus: WarrantyStatus;
+}
+
+// ========================================================================
+// HR MODULE TYPES - Gestão de Recursos Humanos
+// ========================================================================
+
+// --- Enums para RH ---
+export type Gender = 'M' | 'F' | 'Outro' | 'Não informar';
+export type MaritalStatus = 'Solteiro' | 'Casado' | 'Divorciado' | 'Viúvo' | 'União Estável';
+export type ContractType = 'CLT' | 'PJ' | 'Estagiário' | 'Temporário' | 'Aprendiz';
+export type EmployeeStatus = 'Ativo' | 'Afastado' | 'Férias' | 'Demitido';
+export type VacationStatus = 'Solicitada' | 'Aprovada' | 'Rejeitada' | 'Concluída' | 'Cancelada';
+export type LeaveStatus = 'Ativo' | 'Concluído' | 'Cancelado';
+export type BenefitStatus = 'Ativo' | 'Inativo' | 'Cancelado';
+export type LeaveType = 'Licença Médica' | 'Licença Maternidade' | 'Licença Paternidade' | 'Licença Sem Vencimento' | 'Afastamento INSS' | 'Outro';
+
+// --- Employee (Funcionário) ---
+export interface Employee {
+  id: number;
+  user_id: number;
+  
+  // Dados Pessoais
+  full_name: string;
+  cpf: string;
+  rg?: string | null;
+  rg_issuer?: string | null;
+  rg_issue_date?: string | null; // YYYY-MM-DD
+  birth_date?: string | null; // YYYY-MM-DD
+  gender?: Gender | null;
+  marital_status?: MaritalStatus | null;
+  nationality?: string | null;
+  
+  // Contato
+  personal_email?: string | null;
+  corporate_email?: string | null;
+  phone?: string | null;
+  mobile_phone?: string | null;
+  
+  // Endereço
+  zip_code?: string | null;
+  street?: string | null;
+  number?: string | null;
+  complement?: string | null;
+  neighborhood?: string | null;
+  city?: string | null;
+  state?: string | null;
+  
+  // Dados Profissionais
+  position: string;
+  department?: string | null;
+  hire_date: string; // YYYY-MM-DD
+  termination_date?: string | null; // YYYY-MM-DD
+  contract_type: ContractType;
+  status: EmployeeStatus;
+  salary?: number | null;
+  work_hours?: string | null;
+  
+  // Observações e Anexos
+  notes?: string | null;
+  photo_url?: string | null;
+  
+  // Auditoria
+  created_at: string;
+  updated_at: string;
+}
+
+// --- Vacation (Férias) ---
+export interface Vacation {
+  id: number;
+  employee_id: number;
+  employee_name?: string; // Join com hr_employees
+  
+  // Período Aquisitivo
+  acquisition_start?: string | null; // YYYY-MM-DD
+  acquisition_end?: string | null; // YYYY-MM-DD
+  
+  // Férias Solicitadas
+  vacation_start: string; // YYYY-MM-DD
+  vacation_end: string; // YYYY-MM-DD
+  days_requested: number;
+  cash_bonus_days: number;
+  
+  // Status e Aprovação
+  status: VacationStatus;
+  requested_at: string;
+  approved_by?: number | null;
+  approved_at?: string | null;
+  rejection_reason?: string | null;
+  
+  // Observações
+  notes?: string | null;
+  
+  // Auditoria
+  created_at: string;
+  updated_at: string;
+}
+
+// --- Leave (Afastamento) ---
+export interface Leave {
+  id: number;
+  employee_id: number;
+  employee_name?: string; // Join com hr_employees
+  
+  // Dados do Afastamento
+  leave_type: LeaveType;
+  start_date: string; // YYYY-MM-DD
+  expected_return_date?: string | null; // YYYY-MM-DD
+  actual_return_date?: string | null; // YYYY-MM-DD
+  
+  // Detalhes
+  reason?: string | null;
+  notes?: string | null;
+  document_url?: string | null;
+  
+  // Status
+  status: LeaveStatus;
+  
+  // Auditoria
+  created_at: string;
+  updated_at: string;
+}
+
+// --- Benefit (Benefício) ---
+export interface Benefit {
+  id: number;
+  employee_id: number;
+  employee_name?: string; // Join com hr_employees
+  
+  // Tipo de Benefício
+  benefit_type: string;
+  description?: string | null;
+  
+  // Valores
+  monthly_value?: number | null;
+  
+  // Vigência
+  start_date: string; // YYYY-MM-DD
+  end_date?: string | null; // YYYY-MM-DD
+  status: BenefitStatus;
+  
+  // Observações
+  notes?: string | null;
+  
+  // Auditoria
+  created_at: string;
+  updated_at: string;
+}
+
+// --- Document (Documento) ---
+export interface HRDocument {
+  id: number;
+  employee_id: number;
+  
+  // Dados do Documento
+  document_type: string;
+  document_name: string;
+  file_url: string;
+  file_size?: number | null;
+  mime_type?: string | null;
+  
+  // Observações
+  description?: string | null;
+  
+  // Auditoria
+  uploaded_by: number;
+  uploaded_by_name?: string; // Join com users
+  created_at: string;
+}
+
+// --- HR Statistics (Estatísticas) ---
+export interface HRStats {
+  total_employees: number;
+  by_status: Array<{
+    status: EmployeeStatus;
+    count: number;
+  }>;
+  by_department: Array<{
+    department: string | null;
+    count: number;
+  }>;
+  by_contract: Array<{
+    contract_type: ContractType;
+    count: number;
+  }>;
+  birthdays_this_month: Array<{
+    id: number;
+    full_name: string;
+    birth_date: string;
+  }>;
+  upcoming_vacations: Vacation[];
+  active_leaves: Leave[];
 }
