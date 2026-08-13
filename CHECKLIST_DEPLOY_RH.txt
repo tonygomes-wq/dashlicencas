@@ -1,0 +1,254 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║        ✅ CHECKLIST DE DEPLOY - MÓDULO RH                   ║
+║                                                              ║
+║        Sistema: Dashboard de Licenças                        ║
+║        Módulo: Recursos Humanos (RH)                         ║
+║        Data: 02/06/2026                                      ║
+║        Status: PRONTO PARA DEPLOY                            ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────┐
+│  📦 FASE 1: BUILD (JÁ EXECUTADO)                             │
+└──────────────────────────────────────────────────────────────┘
+
+  [✓] npm run build executado com sucesso
+  [✓] 1738 módulos transformados
+  [✓] Build time: 12.63s
+  [✓] Zero erros de compilação
+  [✓] Arquivos em dist/ prontos para deploy
+
+┌──────────────────────────────────────────────────────────────┐
+│  🌐 FASE 2: DEPLOY DO FRONTEND                               │
+└──────────────────────────────────────────────────────────────┘
+
+  [ ] Conectar ao servidor (FTP/SSH)
+  [ ] Navegar até a pasta pública do site
+  [ ] Fazer backup dos arquivos atuais (opcional mas recomendado)
+  [ ] Upload de todos os arquivos da pasta dist/
+      [ ] dist/index.html
+      [ ] dist/assets/* (todos os arquivos)
+  [ ] Verificar se os arquivos foram enviados corretamente
+  [ ] Anotar horário do deploy: ___:___
+
+┌──────────────────────────────────────────────────────────────┐
+│  🔧 FASE 3: DEPLOY DO BACKEND                                │
+└──────────────────────────────────────────────────────────────┘
+
+  [ ] Localizar o arquivo app_hr.php no projeto
+  [ ] Fazer upload para o servidor
+      Pasta destino: mesma dos outros arquivos app_*.php
+  [ ] Verificar permissões do arquivo (644 ou 755)
+  [ ] Testar endpoint: curl https://seusite.com/app_hr.php
+      Resposta esperada: {"error": "Authentication required"}
+
+┌──────────────────────────────────────────────────────────────┐
+│  💾 FASE 4: BANCO DE DADOS                                   │
+└──────────────────────────────────────────────────────────────┘
+
+  ANTES DE COMEÇAR:
+  [ ] Fazer backup do banco de dados
+      Comando: mysqldump -u root -p nome_banco > backup.sql
+
+  SCRIPT 1: db_hr_schema.sql
+  [ ] Conectar ao MySQL
+  [ ] Selecionar o banco de dados correto
+  [ ] Executar o script db_hr_schema.sql
+  [ ] Verificar se 5 tabelas foram criadas:
+      [ ] hr_employees
+      [ ] hr_vacations
+      [ ] hr_leaves
+      [ ] hr_benefits
+      [ ] hr_documents
+
+  SCRIPT 2: add_hr_permissions_corrigido.sql
+  [ ] Executar o script add_hr_permissions_corrigido.sql
+  [ ] Verificar se permissões foram adicionadas
+
+  VERIFICAÇÕES:
+  [ ] Executar: SHOW TABLES LIKE 'hr_%';
+  [ ] Executar: SELECT email, role, 
+                JSON_EXTRACT(permissions, '$.dashboards.hr') 
+                FROM users WHERE role = 'admin';
+  [ ] Confirmar que admins têm hr = true
+
+┌──────────────────────────────────────────────────────────────┐
+│  🧪 FASE 5: TESTES FUNCIONAIS                                │
+└──────────────────────────────────────────────────────────────┘
+
+  ACESSO AO SISTEMA:
+  [ ] Limpar cache do navegador (Ctrl+Shift+Del)
+  [ ] Abrir o site em aba anônima
+  [ ] Fazer login com usuário admin
+  [ ] Verificar se aparece a aba "Recursos Humanos"
+
+  DASHBOARD RH:
+  [ ] Clicar na aba "Recursos Humanos"
+  [ ] Dashboard RH carrega corretamente?
+  [ ] 4 cards de estatísticas aparecem?
+      [ ] Total de Funcionários
+      [ ] Em Férias
+      [ ] Afastados
+      [ ] Aniversariantes do Mês
+  [ ] Abas de navegação funcionam?
+      [ ] Funcionários
+      [ ] Férias
+      [ ] Afastamentos
+      [ ] Benefícios
+
+  CRUD DE FUNCIONÁRIOS:
+  [ ] Clicar em "Novo Funcionário"
+  [ ] Modal abre corretamente?
+  [ ] Preencher dados de teste:
+      Nome: ________________________
+      CPF: ________________________
+      Cargo: ________________________
+      Data Admissão: ________________
+      Tipo Contrato: ________________
+  [ ] Salvar funcionário
+  [ ] Funcionário aparece na tabela?
+  [ ] Clicar no ícone de "olho" (ver detalhes)
+  [ ] Modal de detalhes abre?
+  [ ] Todas as 4 abas funcionam?
+  [ ] Clicar em "Editar"
+  [ ] Modal de edição abre?
+  [ ] Fazer uma alteração
+  [ ] Salvar alteração
+  [ ] Alteração foi salva?
+  [ ] Excluir funcionário de teste
+  [ ] Confirmação de exclusão aparece?
+  [ ] Funcionário foi removido da tabela?
+
+  TABELA DE FÉRIAS:
+  [ ] Navegar para aba "Férias"
+  [ ] Tabela carrega?
+  [ ] Campo de busca funciona?
+  [ ] Filtro por status funciona?
+
+  TABELA DE AFASTAMENTOS:
+  [ ] Navegar para aba "Afastamentos"
+  [ ] Tabela carrega?
+  [ ] Campo de busca funciona?
+  [ ] Filtro por tipo funciona?
+
+  TABELA DE BENEFÍCIOS:
+  [ ] Navegar para aba "Benefícios"
+  [ ] Tabela carrega?
+  [ ] Campo de busca funciona?
+  [ ] Filtro por tipo funciona?
+  [ ] Valores aparecem formatados em R$?
+
+  DARK MODE:
+  [ ] Alternar para dark mode
+  [ ] Todos os componentes RH adaptam corretamente?
+  [ ] Textos estão legíveis?
+
+  RESPONSIVIDADE:
+  [ ] Redimensionar janela do navegador
+  [ ] Layout se adapta corretamente?
+  [ ] Testar em dispositivo móvel (opcional)
+
+┌──────────────────────────────────────────────────────────────┐
+│  ✅ FASE 6: VALIDAÇÃO FINAL                                  │
+└──────────────────────────────────────────────────────────────┘
+
+  [ ] Sistema está acessível
+  [ ] Login funciona
+  [ ] Módulo RH está visível
+  [ ] Todas as tabelas carregam
+  [ ] CRUD de funcionários funcional
+  [ ] Sem erros no console (F12)
+  [ ] Performance aceitável
+  [ ] Dark mode funciona
+
+┌──────────────────────────────────────────────────────────────┐
+│  📝 FASE 7: DOCUMENTAÇÃO                                     │
+└──────────────────────────────────────────────────────────────┘
+
+  [ ] Anotar data e hora do deploy
+  [ ] Documentar problemas encontrados (se houver)
+  [ ] Informar usuários sobre novo módulo
+  [ ] Criar manual de uso (opcional)
+
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║  🎉 PARABÉNS! DEPLOY DO MÓDULO RH CONCLUÍDO!                ║
+║                                                              ║
+║  Data do deploy: ___/___/______                             ║
+║  Horário: ___:___                                           ║
+║  Responsável: _____________________                         ║
+║                                                              ║
+║  ✅ Módulo RH ativo e funcional em produção!                ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────┐
+│  ❓ TROUBLESHOOTING - PROBLEMAS COMUNS                       │
+└──────────────────────────────────────────────────────────────┘
+
+  Problema: Tab "Recursos Humanos" não aparece
+  Solução: Verificar permissões do usuário no banco de dados
+           Executar: UPDATE users SET permissions = 
+           JSON_SET(permissions, '$.dashboards.hr', true) 
+           WHERE role = 'admin';
+
+  Problema: Erro 404 ao acessar módulo
+  Solução: Verificar se app_hr.php foi enviado corretamente
+           Verificar permissões do arquivo no servidor
+
+  Problema: Tabelas não carregam
+  Solução: Verificar se scripts SQL foram executados
+           Executar: SHOW TABLES LIKE 'hr_%';
+
+  Problema: Erro ao salvar funcionário
+  Solução: Abrir console (F12) e verificar erros
+           Verificar se app_hr.php está funcionando
+           Verificar logs do PHP no servidor
+
+  Problema: Layout quebrado
+  Solução: Limpar cache do navegador (Ctrl+Shift+Del)
+           Forçar refresh (Ctrl+F5)
+           Verificar se todos os arquivos foram enviados
+
+┌──────────────────────────────────────────────────────────────┐
+│  📞 COMANDOS ÚTEIS                                           │
+└──────────────────────────────────────────────────────────────┘
+
+  # Backup do banco
+  mysqldump -u root -p nome_banco > backup.sql
+
+  # Restaurar backup
+  mysql -u root -p nome_banco < backup.sql
+
+  # Verificar tabelas RH
+  mysql -u root -p -e "SHOW TABLES LIKE 'hr_%'" nome_banco
+
+  # Ver logs do PHP (Linux)
+  tail -f /var/log/apache2/error.log
+
+  # Testar endpoint
+  curl https://seusite.com/app_hr.php
+
+  # Ver permissões de usuários
+  mysql -u root -p -e "SELECT email, role, permissions FROM users" nome_banco
+
+┌──────────────────────────────────────────────────────────────┐
+│  📚 DOCUMENTAÇÃO DE REFERÊNCIA                               │
+└──────────────────────────────────────────────────────────────┘
+
+  - MODULO_RH_COMPLETO.md ......... Visão geral completa
+  - DEPLOY_MODULO_RH.md ........... Guia detalhado de deploy
+  - STATUS_COMPONENTES_RH.md ...... Status dos componentes
+  - RESUMO_SESSAO_FINAL_RH.md ..... Resumo da implementação
+  - SPEC_MODULO_RH.md ............. Especificação técnica
+  - INSTRUCOES_INTEGRACAO_RH.md ... Instruções de integração
+
+╔══════════════════════════════════════════════════════════════╗
+║  TEMPO ESTIMADO DE DEPLOY: 15-20 minutos                    ║
+║  DIFICULDADE: ⭐⭐ (Fácil)                                  ║
+║  SUPORTE: Consultar documentação ou logs do sistema         ║
+╚══════════════════════════════════════════════════════════════╝
+
+Última atualização: 02/06/2026
+Versão: 1.0

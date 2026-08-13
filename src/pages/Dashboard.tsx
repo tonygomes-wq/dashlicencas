@@ -8,6 +8,7 @@ import NetworkMapSubTab from '../components/NetworkMapSubTab'; // Novo Import
 import HardwareInventoryTable from '../components/HardwareInventoryTable'; // Hardware Import
 import AddHardwareModal from '../components/AddHardwareModal'; // Hardware Import
 import HardwareDetailModal from '../components/HardwareDetailModal'; // Hardware Import
+import HRDashboard from '../components/hr/HRDashboard'; // HR Module Import
 import AlertModal from '../components/AlertModal';
 import AddBitdefenderModal from '../components/AddBitdefenderModal';
 import AddFortigateModal from '../components/AddFortigateModal';
@@ -21,7 +22,7 @@ import GmailDetailModal from '../components/GmailDetailModal'; // Novo Import
 import { BitdefenderLicense, FortigateDevice, LicenseStatus, BitdefenderLicenseWithStatus, FortigateDeviceWithStatus, RenewalStatus, O365Client, O365License, O365LicenseWithClient, GmailClient, GmailLicense, GmailLicenseWithClient, HardwareDevice, HardwareWithWarrantyStatus, WarrantyStatus } from '../types'; // Tipos GMAIL e Hardware adicionados
 import MfaEnrollment from '../components/MfaEnrollment';
 import UserManagementModal from '../components/UserManagementModal';
-import { Shield, Router, LoaderCircle, Briefcase, Mail, Network, HardDrive } from 'lucide-react'; // Mail icon for GMAIL tab, Network for Map, HardDrive for Hardware
+import { Shield, Router, LoaderCircle, Briefcase, Mail, Network, HardDrive, Users } from 'lucide-react'; // Mail icon for GMAIL tab, Network for Map, HardDrive for Hardware, Users for HR
 import { apiClient } from '../lib/apiClient';
 import { User } from '../types';
 import toast from 'react-hot-toast';
@@ -77,13 +78,15 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
     setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
   };
 
-  const [activeView, setActiveView] = useState<'bitdefender' | 'fortigate' | 'o365' | 'gmail' | 'network' | 'hardware'>(() => {
+  const [activeView, setActiveView] = useState<'bitdefender' | 'fortigate' | 'o365' | 'gmail' | 'network' | 'hardware' | 'hr'>(() => {
     if (user.role === 'admin') return 'bitdefender';
     if (user.permissions?.dashboards.bitdefender) return 'bitdefender';
     if (user.permissions?.dashboards.fortigate) return 'fortigate';
     if (user.permissions?.dashboards.o365) return 'o365';
     if (user.permissions?.dashboards.gmail) return 'gmail';
     if (user.permissions?.dashboards.network) return 'network';
+    if (user.permissions?.dashboards.hr) return 'hr';
+    if (user.permissions?.dashboards.hardware) return 'hardware';
     return 'bitdefender';
   });
 
@@ -801,7 +804,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   };
 
 
-  const TabButton: React.FC<{ view: 'bitdefender' | 'fortigate' | 'o365' | 'gmail' | 'network' | 'hardware', label: string, icon: React.ElementType }> = ({ view, label, icon: Icon }) => {
+  const TabButton: React.FC<{ view: 'bitdefender' | 'fortigate' | 'o365' | 'gmail' | 'network' | 'hardware' | 'hr', label: string, icon: React.ElementType }> = ({ view, label, icon: Icon }) => {
     const hasPermission = isAdmin || user.permissions?.dashboards[view];
     if (!hasPermission) return null;
 
@@ -957,6 +960,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               <TabButton view="gmail" label="GMAIL" icon={Mail} />
               <TabButton view="network" label="Mapa de Rede" icon={Network} />
               <TabButton view="hardware" label="Inventário" icon={HardDrive} />
+              {(user.role === 'admin' || user.permissions?.dashboards.hr) && (
+                <TabButton view="hr" label="Recursos Humanos" icon={Users} />
+              )}
             </div>
             {/* Scroller removido conforme pedido */}
           </div>
@@ -1031,6 +1037,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               canEdit={canEdit}
               canDelete={canDelete}
             />
+          ) : activeView === 'hr' ? (
+            <HRDashboard />
           ) : ( // activeView === 'gmail'
             <GmailClientTable
               clients={filteredGmailClients}

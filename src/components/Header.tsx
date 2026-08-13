@@ -29,7 +29,7 @@ interface HeaderProps {
   isAdmin: boolean;
   selectedItems: Set<string>;
   allItems: Item[];
-  activeView: 'bitdefender' | 'fortigate' | 'o365' | 'gmail';
+  activeView: 'bitdefender' | 'fortigate' | 'o365' | 'gmail' | 'network' | 'hardware' | 'hr';
 }
 
 const Header: React.FC<HeaderProps> = ({
