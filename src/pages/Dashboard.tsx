@@ -634,8 +634,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       setRawO365Clients(prev => [...prev, newClientCamel]);
       setRawO365Licenses(prev => [...prev, ...newLicensesCamel]);
       toast.success('Cliente e licenças O365 adicionados com sucesso!', { id: toastId });
+      return Promise.resolve();
     } catch (error: any) {
       toast.error(error.message || 'Erro ao adicionar cliente O365.', { id: toastId, duration: 6000 });
+      return Promise.reject(error);
     }
   };
 
@@ -660,8 +662,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       setRawGmailClients(prev => [...prev, newClientCamel]);
       setRawGmailLicenses(prev => [...prev, ...newLicensesCamel]);
       toast.success('Cliente e licenças GMAIL adicionados com sucesso!', { id: toastId });
+      return Promise.resolve();
     } catch (error: any) {
       toast.error(error.message || 'Erro ao adicionar cliente GMAIL.', { id: toastId, duration: 6000 });
+      return Promise.reject(error);
     }
   };
 
