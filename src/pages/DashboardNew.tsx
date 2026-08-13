@@ -51,6 +51,10 @@ import {
 // Funções auxiliares para mapear entre snake_case (DB) e camelCase (JS)
 const toCamelCase = (s: string) => s.replace(/([-_][a-z])/ig, ($1) => $1.toUpperCase().replace('-', '').replace('_', ''));
 
+const toSnakeCase = (s: string) => s.replace(/[A-Z]/g, (letter, index) => {
+  return index === 0 ? letter.toLowerCase() : `_${letter.toLowerCase()}`;
+});
+
 const transformKeys = (obj: any, transformer: (key: string) => string): any => {
   if (Array.isArray(obj)) {
     return obj.map(v => transformKeys(v, transformer));
@@ -273,6 +277,56 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
     console.log('📋 Abrindo modal Gmail para cliente:', client);
     setGmailDetailClient(client);
     setIsGmailDetailModalOpen(true);
+  };
+
+  const handleAddO365Client = async (
+    clientData: Omit<O365Client, 'id'>,
+    licenses: Omit<O365License, 'id' | 'clientId' | 'renewalStatus'>[]
+  ) => {
+    const toastId = toast.loading('Adicionando cliente e licenças O365...');
+    try {
+      const clientToInsert = { ...transformKeys(clientData, toSnakeCase), user_id: user.id };
+      const licensesToInsert = licenses.map(l => ({
+        ...transformKeys(l, toSnakeCase),
+        user_id: user.id,
+        renewal_status: 'Pendente',
+      }));
+
+      const response = await apiClient.o365.clients.createWithLicenses(clientToInsert, licensesToInsert);
+      const newClientCamel = transformKeys(response.client, toCamelCase);
+      const newLicensesCamel = transformKeys(response.licenses, toCamelCase);
+
+      setRawO365Clients(prev => [...prev, newClientCamel]);
+      setRawO365Licenses(prev => [...prev, ...newLicensesCamel]);
+      toast.success('Cliente e licenças O365 adicionados com sucesso!', { id: toastId });
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao adicionar cliente O365.', { id: toastId, duration: 6000 });
+    }
+  };
+
+  const handleAddGmailClient = async (
+    clientData: Omit<GmailClient, 'id'>,
+    licenses: Omit<GmailLicense, 'id' | 'clientId' | 'renewalStatus'>[]
+  ) => {
+    const toastId = toast.loading('Adicionando cliente e licenças GMAIL...');
+    try {
+      const clientToInsert = { ...transformKeys(clientData, toSnakeCase), user_id: user.id };
+      const licensesToInsert = licenses.map(l => ({
+        ...transformKeys(l, toSnakeCase),
+        user_id: user.id,
+        renewal_status: 'Pendente',
+      }));
+
+      const response = await apiClient.gmail.clients.createWithLicenses(clientToInsert, licensesToInsert);
+      const newClientCamel = transformKeys(response.client, toCamelCase);
+      const newLicensesCamel = transformKeys(response.licenses, toCamelCase);
+
+      setRawGmailClients(prev => [...prev, newClientCamel]);
+      setRawGmailLicenses(prev => [...prev, ...newLicensesCamel]);
+      toast.success('Cliente e licenças GMAIL adicionados com sucesso!', { id: toastId });
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao adicionar cliente GMAIL.', { id: toastId, duration: 6000 });
+    }
   };
 
   const handleRemoveO365License = async (id: number) => {
@@ -932,10 +986,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
         <AddO365ClientModal
           isOpen={isAddO365ClientOpen}
           onClose={() => setIsAddO365ClientOpen(false)}
-          onSuccess={() => {
-            fetchAllData();
-            setIsAddO365ClientOpen(false);
-          }}
+          onSave={handleAddO365Client}
         />
       )}
 
@@ -943,10 +994,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
         <AddGmailClientModal
           isOpen={isAddGmailClientOpen}
           onClose={() => setIsAddGmailClientOpen(false)}
-          onSuccess={() => {
-            fetchAllData();
-            setIsAddGmailClientOpen(false);
-          }}
+          onSave={handleAddGmailClient}
         />
       )}
 
