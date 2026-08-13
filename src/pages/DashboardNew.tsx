@@ -279,6 +279,17 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
     setIsGmailDetailModalOpen(true);
   };
 
+  const handleAddFortigate = async (data: Omit<FortigateDevice, 'id'>) => {
+    const toastId = toast.loading('Adicionando novo dispositivo...');
+    try {
+      const newRecord = await apiClient.fortigate.create(transformKeys(data, toSnakeCase));
+      setRawFortigate(prev => [...prev, transformKeys(newRecord, toCamelCase)]);
+      toast.success('Dispositivo adicionado com sucesso!', { id: toastId });
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao adicionar.', { id: toastId, duration: 6000 });
+    }
+  };
+
   const handleAddO365Client = async (
     clientData: Omit<O365Client, 'id'>,
     licenses: Omit<O365License, 'id' | 'clientId' | 'renewalStatus'>[]
@@ -952,14 +963,6 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
       {renderPageContent()}
 
       {/* Modals */}
-      {console.log('🎯 Estados dos modais:', { 
-        isAddBitdefenderOpen, 
-        isAddFortigateOpen,
-        isAddO365ClientOpen,
-        isAddGmailClientOpen,
-        isAddHardwareOpen
-      })}
-      
       {isAddBitdefenderOpen && (
         <AddBitdefenderModal
           isOpen={isAddBitdefenderOpen}
@@ -975,10 +978,7 @@ const DashboardNew: React.FC<DashboardNewProps> = ({ user }) => {
         <AddFortigateModal
           isOpen={isAddFortigateOpen}
           onClose={() => setIsAddFortigateOpen(false)}
-          onSuccess={() => {
-            fetchAllData();
-            setIsAddFortigateOpen(false);
-          }}
+          onSave={handleAddFortigate}
         />
       )}
 
