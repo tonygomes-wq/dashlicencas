@@ -564,9 +564,25 @@ const NetworkMapSubTab: React.FC = () => {
                 {/* Node Properties Panel */}
                 {selectedNode && (
                     <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 animate-in fade-in slide-in-from-left-2 duration-200">
-                        <div className="flex items-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">
-                            <Edit3 className="w-3 h-3 mr-2" />
-                            Propriedades do Bloco
+                        <div className="flex items-center justify-between text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">
+                            <div className="flex items-center">
+                                <Edit3 className="w-3 h-3 mr-2" />
+                                Propriedades do Bloco
+                            </div>
+                            <button
+                                onClick={() => {
+                                    if (window.confirm(`Excluir "${selectedNode.data.label}"?`)) {
+                                        setNodes((nds) => nds.filter((n) => n.id !== selectedNode.id));
+                                        setEdges((eds) => eds.filter((e) => e.source !== selectedNode.id && e.target !== selectedNode.id));
+                                        setSelectedNodeId(null);
+                                        toast.success('Dispositivo removido');
+                                    }
+                                }}
+                                className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md text-red-600 transition-colors"
+                                title="Excluir Dispositivo"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </button>
                         </div>
                         <label htmlFor="node-label" className="block text-[10px] text-gray-400 uppercase mb-1 font-bold">Nome do Dispositivo</label>
                         <input
@@ -583,9 +599,24 @@ const NetworkMapSubTab: React.FC = () => {
                 {/* Edge Properties Panel */}
                 {selectedEdge && !selectedNode && (
                     <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 animate-in fade-in slide-in-from-left-2 duration-200">
-                        <div className="flex items-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">
-                            <LinkIcon className="w-3 h-3 mr-2" />
-                            Propriedades do Link
+                        <div className="flex items-center justify-between text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">
+                            <div className="flex items-center">
+                                <LinkIcon className="w-3 h-3 mr-2" />
+                                Propriedades do Link
+                            </div>
+                            <button
+                                onClick={() => {
+                                    if (window.confirm('Excluir esta conexão?')) {
+                                        setEdges((eds) => eds.filter((e) => e.id !== selectedEdge.id));
+                                        setSelectedEdgeId(null);
+                                        toast.success('Conexão removida');
+                                    }
+                                }}
+                                className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md text-red-600 transition-colors"
+                                title="Excluir Conexão"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </button>
                         </div>
                         <label htmlFor="edge-label" className="block text-[10px] text-gray-400 uppercase mb-1 font-bold">Etiqueta do Cabo (ex: IP/VLAN)</label>
                         <input
