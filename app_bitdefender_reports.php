@@ -32,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once __DIR__ . '/srv/config.php';
 require_once __DIR__ . '/app_auth.php';
+require_once __DIR__ . '/php_compat_helpers.php';
 
 // Verificar autenticação
 $auth = check_auth();
