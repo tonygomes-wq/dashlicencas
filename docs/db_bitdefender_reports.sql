@@ -135,7 +135,6 @@ CREATE TABLE IF NOT EXISTS bitdefender_report_schedules (
     
     -- Chaves estrangeiras
     FOREIGN KEY (client_id) REFERENCES bitdefender_licenses(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (last_report_id) REFERENCES bitdefender_reports(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Agendamentos automáticos de relatórios periódicos';
@@ -164,8 +163,7 @@ CREATE TABLE IF NOT EXISTS bitdefender_report_downloads (
     INDEX idx_report_user (report_id, user_id),
     
     -- Chaves estrangeiras
-    FOREIGN KEY (report_id) REFERENCES bitdefender_reports(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (report_id) REFERENCES bitdefender_reports(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Histórico de downloads de relatórios para auditoria';
 
@@ -191,7 +189,7 @@ SELECT
     br.threats_detected,
     br.scans_performed,
     TIMESTAMPDIFF(SECOND, br.generation_started_at, br.generation_completed_at) AS duration_seconds,
-    u.username AS created_by,
+    br.user_id AS created_by,
     CASE 
         WHEN br.pdf_path IS NOT NULL AND br.pdf_path != '' THEN TRUE 
         ELSE FALSE 
@@ -213,8 +211,7 @@ SELECT
         ELSE 'secondary'
     END AS status_color
 FROM bitdefender_reports br
-LEFT JOIN bitdefender_licenses bl ON br.client_id = bl.id
-LEFT JOIN users u ON br.user_id = u.id;
+LEFT JOIN bitdefender_licenses bl ON br.client_id = bl.id;
 
 -- ============================================================
 
@@ -233,7 +230,7 @@ SELECT
     brs.last_execution_status,
     brs.next_execution_at,
     brs.execution_count,
-    u.username AS created_by,
+    brs.user_id AS created_by,
     -- Próxima execução formatada
     CASE 
         WHEN brs.next_execution_at IS NULL THEN 'Não agendado'
@@ -242,7 +239,6 @@ SELECT
     END AS next_execution_label
 FROM bitdefender_report_schedules brs
 LEFT JOIN bitdefender_licenses bl ON brs.client_id = bl.id
-LEFT JOIN users u ON brs.user_id = u.id
 WHERE brs.is_active = TRUE
 ORDER BY brs.next_execution_at ASC;
 
@@ -399,48 +395,15 @@ DELIMITER ;
 
 -- ============================================================
 
--- Índices adicionais compostos para queries complexas
+-- Comentários nas tabelas
 ALTER TABLE bitdefender_reports 
-    ADD INDEX idx_client_status_created (client_id, status, created_at),
-    ADD INDEX idx_type_status_created (report_type, status, created_at);
+    COMMENT = 'Armazena relatórios gerados via API Bitdefender GravityZone';
 
--- ============================================================
+ALTER TABLE bitdefender_report_schedules 
+    COMMENT = 'Agendamentos automáticos de relatórios periódicos';
 
--- Função auxiliar: Obter label de intervalo de relatório
-DELIMITER //
-
-DROP FUNCTION IF EXISTS fn_get_reporting_interval_label//
-
-CREATE FUNCTION fn_get_reporting_interval_label(interval_value VARCHAR(50))
-RETURNS VARCHAR(100)
-DETERMINISTIC
-BEGIN
-    RETURN CASE interval_value
-        WHEN 'today' THEN 'Hoje'
-        WHEN 'yesterday' THEN 'Ontem'
-        WHEN 'thisWeek' THEN 'Esta Semana'
-        WHEN 'lastWeek' THEN 'Semana Passada'
-        WHEN 'thisMonth' THEN 'Este Mês'
-        WHEN 'lastMonth' THEN 'Mês Passado'
-        WHEN 'last2Months' THEN 'Últimos 2 Meses'
-        WHEN 'last3Months' THEN 'Últimos 3 Meses'
-        WHEN 'thisYear' THEN 'Este Ano'
-        WHEN 'lastYear' THEN 'Ano Passado'
-        ELSE interval_value
-    END;
-END//
-
-DELIMITER ;
-
--- ============================================================
-
--- Criar diretório virtual para armazenar relatórios (apenas registro lógico)
-INSERT INTO system_settings (setting_key, setting_value, created_at, updated_at)
-VALUES 
-    ('bitdefender_reports_storage_path', 'storage/reports/bitdefender', NOW(), NOW()),
-    ('bitdefender_reports_retention_days', '90', NOW(), NOW()),
-    ('bitdefender_reports_auto_download', '1', NOW(), NOW())
-ON DUPLICATE KEY UPDATE updated_at = NOW();
+ALTER TABLE bitdefender_report_downloads 
+    COMMENT = 'Histórico de downloads de relatórios para auditoria';
 
 -- ============================================================
 
@@ -450,6 +413,13 @@ SELECT 'Tabelas criadas: bitdefender_reports, bitdefender_report_schedules, bitd
 SELECT 'Views criadas: v_bitdefender_reports_summary, v_bitdefender_schedules_active' AS info;
 SELECT 'Stored Procedures criadas: sp_calculate_next_execution, sp_mark_schedule_execution' AS info;
 SELECT 'Triggers criados: tr_schedule_after_insert, tr_schedule_after_update' AS info;
+
+-- ============================================================
+
+-- IMPORTANTE: Criar manualmente a pasta de storage dos relatórios
+-- mkdir -p storage/reports/bitdefender
+-- chmod 755 storage/reports/bitdefender
+-- chown www-data:www-data storage/reports/bitdefender (ou nginx:nginx)
 
 -- ============================================================
 -- FIM DO SCHEMA

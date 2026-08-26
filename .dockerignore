@@ -1,24 +1,60 @@
-# Node modules
+# Node modules (será reinstalado no build)
 node_modules/
-npm-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts (será gerado no build)
+dist/
+build/
 
 # Git
 .git/
 .gitignore
+.gitattributes
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# Documentação
-*.md
-*.txt
-!README.md
-
-# Arquivos temporários
-*.log
-*.tmp
+# OS
 .DS_Store
+Thumbs.db
 
-# NOTA: NÃO excluir src/, package.json, etc.
-# Esses arquivos são necessários para o build do frontend no Dockerfile
+# Logs
+*.log
+logs/
+
+# Temporários
+tmp/
+temp/
+*.tmp
+
+# Testes
+coverage/
+.nyc_output/
+
+# Backup files
+*.backup
+*.old
+*.bak
+
+# Docker
+Dockerfile.old
+Dockerfile.backend
+docker-compose.override.yml
+
+# Documentação de desenvolvimento (manter apenas docs essenciais)
+README.md
+
+# Storage local (não copiar arquivos de desenvolvimento)
+storage/reports/*
+storage/logs/*
+
+# Environment files (serão configurados via variáveis de ambiente)
+.env
+.env.local
+.env.*.local
