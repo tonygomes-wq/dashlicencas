@@ -1,6 +1,9 @@
 <?php
 // Set JSON header immediately to avoid HTML defaults
-header('Content-Type: application/json; charset=UTF-8');
+// Só aplica headers se for chamada direta, não via include
+if (basename($_SERVER['PHP_SELF']) === 'app_auth.php') {
+    header('Content-Type: application/json; charset=UTF-8');
+}
 
 // Suppress errors and warnings that might corrupt JSON output
 ini_set('display_errors', 0);
@@ -9,11 +12,14 @@ error_reporting(E_ALL);
 require_once 'srv/config.php';
 
 @session_start();
-error_log("auth.php called with action: " . ($action = $_GET['do'] ?? 'none'));
 
-$action = $_GET['do'] ?? '';
+// Se for chamado diretamente (não via include), processar actions
+if (basename($_SERVER['PHP_SELF']) === 'app_auth.php') {
+    error_log("auth.php called with action: " . ($action = $_GET['do'] ?? 'none'));
 
-if ($action === 'login') {
+    $action = $_GET['do'] ?? '';
+
+    if ($action === 'login') {
     // Handle both JSON and form-encoded data
     $email = '';
     $password = '';
@@ -115,4 +121,62 @@ if ($action === 'login') {
 } else {
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed']);
+}
+} // Fim do if (basename($_SERVER['PHP_SELF']) === 'app_auth.php')
+
+/**
+ * Função auxiliar para verificar autenticação em outros endpoints
+ * Retorna array com 'authenticated' e 'user' se autenticado
+ */
+function check_auth() {
+    @session_start();
+    
+    if (!isset($_SESSION['user_id'])) {
+        return [
+            'authenticated' => false,
+            'user' => null
+        ];
+    }
+    
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare('SELECT id, email, role, is_active, permissions FROM users WHERE id = ?');
+        $stmt->execute([$_SESSION['user_id']]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$user) {
+            session_destroy();
+            return [
+                'authenticated' => false,
+                'user' => null
+            ];
+        }
+        
+        // Verificar se usuário está ativo
+        if (isset($user['is_active']) && !$user['is_active']) {
+            session_destroy();
+            return [
+                'authenticated' => false,
+                'user' => null
+            ];
+        }
+        
+        // Decodificar permissões se existirem
+        if (isset($user['permissions']) && $user['permissions']) {
+            $user['permissions'] = json_decode($user['permissions'], true);
+        }
+        
+        return [
+            'authenticated' => true,
+            'user' => $user
+        ];
+        
+    } catch (Exception $e) {
+        error_log("Erro em check_auth(): " . $e->getMessage());
+        return [
+            'authenticated' => false,
+            'user' => null
+        ];
+    }
 }

@@ -17,7 +17,10 @@
  * @date 2026-08-26
  */
 
-header('Content-Type: application/json; charset=UTF-8');
+// Configurar headers apenas se não for download de arquivo
+if (!isset($_GET['action']) || $_GET['action'] !== 'download') {
+    header('Content-Type: application/json; charset=UTF-8');
+}
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
