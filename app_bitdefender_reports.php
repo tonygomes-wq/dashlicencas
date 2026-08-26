@@ -134,11 +134,22 @@ function listReports($pdo, $user) {
         $params[] = $reportType;
     }
 
-    // Usar a view para obter dados formatados
+    // Listar relatórios com JOIN manual
     $stmt = $pdo->prepare("
-        SELECT * FROM v_bitdefender_reports_summary
+        SELECT br.*,
+               bl.company AS client_name,
+               CASE 
+                   WHEN br.pdf_path IS NOT NULL AND br.pdf_path != '' THEN TRUE 
+                   ELSE FALSE 
+               END AS has_pdf,
+               CASE 
+                   WHEN br.csv_path IS NOT NULL AND br.csv_path != '' THEN TRUE 
+                   ELSE FALSE 
+               END AS has_csv
+        FROM bitdefender_reports br
+        LEFT JOIN bitdefender_licenses bl ON br.client_id = bl.id
         WHERE $whereClause
-        ORDER BY created_at DESC
+        ORDER BY br.created_at DESC
         LIMIT ? OFFSET ?
     ");
     
@@ -183,11 +194,9 @@ function getReport($pdo, $user) {
 
     $stmt = $pdo->prepare("
         SELECT br.*, 
-               bl.company as client_name,
-               u.username as created_by_name
+               bl.company as client_name
         FROM bitdefender_reports br
         LEFT JOIN bitdefender_licenses bl ON br.client_id = bl.id
-        LEFT JOIN users u ON br.user_id = u.id
         WHERE br.id = ?
     ");
     $stmt->execute([$reportId]);
@@ -369,7 +378,12 @@ function createReport($pdo, $user, $data) {
         }
 
         // Buscar relatório atualizado
-        $stmt = $pdo->prepare("SELECT * FROM v_bitdefender_reports_summary WHERE id = ?");
+        $stmt = $pdo->prepare("
+            SELECT br.*, bl.company AS client_name
+            FROM bitdefender_reports br
+            LEFT JOIN bitdefender_licenses bl ON br.client_id = bl.id
+            WHERE br.id = ?
+        ");
         $stmt->execute([$reportId]);
         $reportData = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -620,7 +634,12 @@ function createSchedule($pdo, $user, $data) {
     $scheduleId = $pdo->lastInsertId();
 
     // Buscar agendamento criado (trigger já calculou next_execution)
-    $stmt = $pdo->prepare("SELECT * FROM v_bitdefender_schedules_active WHERE id = ?");
+    $stmt = $pdo->prepare("
+        SELECT brs.*, bl.company AS client_name
+        FROM bitdefender_report_schedules brs
+        LEFT JOIN bitdefender_licenses bl ON brs.client_id = bl.id
+        WHERE brs.id = ?
+    ");
     $stmt->execute([$scheduleId]);
     $schedule = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -652,9 +671,11 @@ function listSchedules($pdo, $user) {
     }
 
     $stmt = $pdo->prepare("
-        SELECT * FROM v_bitdefender_schedules_active
+        SELECT brs.*, bl.company AS client_name
+        FROM bitdefender_report_schedules brs
+        LEFT JOIN bitdefender_licenses bl ON brs.client_id = bl.id
         WHERE $whereClause
-        ORDER BY next_execution_at ASC
+        ORDER BY brs.next_execution_at ASC
     ");
     $stmt->execute($params);
     $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
