@@ -322,14 +322,15 @@ function createReport($pdo, $user, $data) {
         // Atualizar status para 'generating'
         updateReportStatus($pdo, $reportId, 'generating');
 
-        // Chamar API Bitdefender
+        // Chamar API Bitdefender - CORRIGIDO: módulo 'reports' não 'reporting'
         $result = callBitdefenderAPI(
             $client['client_access_url'],
             $client['client_api_key'],
-            'reporting',
+            'reports', // Corrigido!
             'createReport',
             [
                 'type' => $reportType,
+                'name' => $reportName,
                 'options' => $reportParams
             ]
         );
@@ -356,7 +357,7 @@ function createReport($pdo, $user, $data) {
             $downloadResult = callBitdefenderAPI(
                 $client['client_access_url'],
                 $client['client_api_key'],
-                'reporting',
+                'reports', // Corrigido!
                 'getDownloadLinks',
                 ['reportId' => $bitdefenderReportId]
             );
