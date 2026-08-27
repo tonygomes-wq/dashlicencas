@@ -126,16 +126,24 @@ try {
     $apiPayload = [
         'params' => [
             'type' => $reportType,
-            // NÃO enviar 'name' - deixa o Bitdefender gerar automaticamente
-            // 'name' => $reportName, // REMOVIDO!
-            'options' => $reportParams
+            'reportingInterval' => $reportParams['reportingInterval']
         ],
         'jsonrpc' => '2.0',
         'method' => 'createReport',
         'id' => uniqid('report_', true)
     ];
     
-    error_log("API Payload: " . json_encode($apiPayload));
+    // Adicionar filterType se for Malware Status
+    if (isset($reportParams['filterType'])) {
+        $apiPayload['params']['filterType'] = (int)$reportParams['filterType'];
+    }
+    
+    // Adicionar detailedExport se solicitado
+    if (isset($reportParams['detailedExport'])) {
+        $apiPayload['params']['detailedExport'] = $reportParams['detailedExport'];
+    }
+    
+    error_log("API Payload FINAL: " . json_encode($apiPayload));
     
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

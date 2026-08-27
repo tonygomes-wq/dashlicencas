@@ -322,17 +322,28 @@ function createReport($pdo, $user, $data) {
         // Atualizar status para 'generating'
         updateReportStatus($pdo, $reportId, 'generating');
 
-        // Chamar API Bitdefender - CORRIGIDO: módulo 'reports' não 'reporting'
+        // Chamar API Bitdefender - Parâmetros diretos conforme doc oficial
+        $apiParams = [
+            'type' => $reportType,
+            'reportingInterval' => $reportParams['reportingInterval'] ?? 'thisMonth'
+        ];
+        
+        // Adicionar filterType se for Malware Status
+        if (isset($reportParams['filterType'])) {
+            $apiParams['filterType'] = (int)$reportParams['filterType'];
+        }
+        
+        // Adicionar detailedExport se solicitado
+        if (isset($reportParams['detailedExport'])) {
+            $apiParams['detailedExport'] = $reportParams['detailedExport'];
+        }
+        
         $result = callBitdefenderAPI(
             $client['client_access_url'],
             $client['client_api_key'],
-            'reports', // Corrigido!
+            'reports',
             'createReport',
-            [
-                'type' => $reportType,
-                // NÃO incluir 'name' - API não aceita nome customizado
-                'options' => $reportParams
-            ]
+            $apiParams
         );
 
         if (!isset($result['result'])) {
