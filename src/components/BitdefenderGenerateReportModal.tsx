@@ -21,6 +21,7 @@ interface BitdefenderGenerateReportModalProps {
   onClose: () => void;
   clientId: number;
   clientName: string;
+  initialReportType?: number | null;
   onReportGenerated?: () => void;
 }
 
@@ -29,6 +30,7 @@ const BitdefenderGenerateReportModal: React.FC<BitdefenderGenerateReportModalPro
   onClose,
   clientId,
   clientName,
+  initialReportType,
   onReportGenerated
 }) => {
   const [step, setStep] = useState<'select' | 'options' | 'generating' | 'success'>('select');
@@ -47,16 +49,24 @@ const BitdefenderGenerateReportModal: React.FC<BitdefenderGenerateReportModalPro
     if (isOpen) {
       fetchReportTypes();
       fetchIntervals();
-      // Reset state
-      setStep('select');
-      setSelectedType(null);
+      
+      // Se initialReportType foi fornecido, pular para opções
+      if (initialReportType) {
+        setSelectedType(initialReportType);
+        setStep('options');
+      } else {
+        // Reset state
+        setStep('select');
+        setSelectedType(null);
+      }
+      
       setReportName('');
       setReportingInterval('thisMonth');
       setFilterType(0);
       setDetailedExport(true);
       setGeneratedReport(null);
     }
-  }, [isOpen]);
+  }, [isOpen, initialReportType]);
 
   const fetchReportTypes = async () => {
     try {
