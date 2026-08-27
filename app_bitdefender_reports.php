@@ -322,21 +322,61 @@ function createReport($pdo, $user, $data) {
         // Atualizar status para 'generating'
         updateReportStatus($pdo, $reportId, 'generating');
 
-        // Chamar API Bitdefender - Parâmetros diretos conforme doc oficial
-        $apiParams = [
-            'type' => $reportType,
-            'name' => $reportName, // OBRIGATÓRIO!
-            'reportingInterval' => $reportParams['reportingInterval'] ?? 'thisMonth'
-        ];
+        // Chamar API Bitdefender - Formato CORRETO descoberto!
+        // targetIds é obrigatório + options.reportingInterval
         
-        // Adicionar filterType se for Malware Status
-        if (isset($reportParams['filterType'])) {
-            $apiParams['filterType'] = (int)$reportParams['filterType'];
+        // Primeiro, buscar todos os endpoints do cliente
+        $networkResult = callBitdefenderAPI(
+            $client['client_access_url'],
+            $client['client_api_key'],
+            'network',
+            'getNetworkInventoryItems',
+            ['perPage' => 100, 'page' => 1]
+        );
+        
+        $targetIds = [];
+        if (isset($networkResult['result']['items'])) {
+            foreach ($networkResult['result']['items'] as $item) {
+                $targetIds[] = $item['id'];
+            }
         }
         
-        // Adicionar detailedExport se solicitado
+        if (empty($targetIds)) {
+            throw new Exception('Nenhum endpoint encontrado para incluir no relatório');
+        }
+        
+        // Converter reportingInterval para código numérico
+        $intervalMap = [
+            'today' => 1,
+            'yesterday' => 2,
+            'thisWeek' => 3,
+            'lastWeek' => 4,
+            'thisMonth' => 5,
+            'lastMonth' => 6,
+            'last2Months' => 7,
+            'last3Months' => 8,
+            'thisYear' => 9,
+            'lastYear' => 10
+        ];
+        
+        $intervalCode = $intervalMap[$reportParams['reportingInterval'] ?? 'thisMonth'] ?? 5;
+        
+        $apiParams = [
+            'type' => $reportType,
+            'name' => $reportName,
+            'targetIds' => $targetIds,
+            'options' => [
+                'reportingInterval' => $intervalCode
+            ]
+        ];
+        
+        // Adicionar outros campos em options se necessário
+        if (isset($reportParams['filterType'])) {
+            $apiParams['options']['filterType'] = (int)$reportParams['filterType'];
+        }
+        
         if (isset($reportParams['detailedExport'])) {
-            $apiParams['detailedExport'] = $reportParams['detailedExport'];
+            $apiParams['options']['detailedExport'] = $reportParams['detailedExport'];
         }
         
         $result = callBitdefenderAPI(
