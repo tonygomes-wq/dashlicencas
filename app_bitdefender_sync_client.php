@@ -37,7 +37,14 @@ try {
         throw new Exception('Este cliente não possui API Key configurada');
     }
     
-    $accessUrl = $client['client_access_url'] ?: 'https://cloud.gravityzone.bitdefender.com/api';
+    // Normalizar URL: remover /api se existir, será adicionado pela função
+    $accessUrl = $client['client_access_url'] ?: 'https://cloud.gravityzone.bitdefender.com';
+    $accessUrl = rtrim($accessUrl, '/');
+    
+    // Remover /api do final se existir (será adicionado pela função makeBitdefenderRequest)
+    if (substr($accessUrl, -4) === '/api') {
+        $accessUrl = substr($accessUrl, 0, -4);
+    }
     
     $result = syncSingleClient($pdo, $client, $accessUrl);
     
@@ -195,7 +202,15 @@ function checkExtraColumns($pdo) {
 }
 
 function makeBitdefenderRequest($apiKey, $accessUrl, $api, $method, $params = []) {
-    $url = rtrim($accessUrl, '/') . '/v1.0/jsonrpc/' . $api;
+    // Normalizar URL
+    $accessUrl = rtrim($accessUrl, '/');
+    
+    // Garantir que tem /api no caminho
+    if (strpos($accessUrl, '/api') === false) {
+        $accessUrl .= '/api';
+    }
+    
+    $url = $accessUrl . '/v1.0/jsonrpc/' . $api;
     
     $payload = [
         'id' => uniqid(),
