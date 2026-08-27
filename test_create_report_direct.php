@@ -126,6 +126,7 @@ try {
     $apiPayload = [
         'params' => [
             'type' => $reportType,
+            'name' => $reportName, // OBRIGATÓRIO!
             'reportingInterval' => $reportParams['reportingInterval']
         ],
         'jsonrpc' => '2.0',

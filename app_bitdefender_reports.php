@@ -325,6 +325,7 @@ function createReport($pdo, $user, $data) {
         // Chamar API Bitdefender - Parâmetros diretos conforme doc oficial
         $apiParams = [
             'type' => $reportType,
+            'name' => $reportName, // OBRIGATÓRIO!
             'reportingInterval' => $reportParams['reportingInterval'] ?? 'thisMonth'
         ];
         
