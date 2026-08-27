@@ -126,7 +126,8 @@ try {
     $apiPayload = [
         'params' => [
             'type' => $reportType,
-            'name' => $reportName,
+            // NÃO enviar 'name' - deixa o Bitdefender gerar automaticamente
+            // 'name' => $reportName, // REMOVIDO!
             'options' => $reportParams
         ],
         'jsonrpc' => '2.0',

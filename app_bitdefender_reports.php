@@ -330,7 +330,7 @@ function createReport($pdo, $user, $data) {
             'createReport',
             [
                 'type' => $reportType,
-                'name' => $reportName,
+                // NÃO incluir 'name' - API não aceita nome customizado
                 'options' => $reportParams
             ]
         );
