@@ -391,7 +391,12 @@ function createReport($pdo, $user, $data) {
             throw new Exception('Resposta inválida da API Bitdefender: ' . json_encode($result));
         }
 
-        $bitdefenderReportId = $result['result']['reportId'] ?? null;
+        // A API retorna o ID diretamente no result, não em result.reportId
+        $bitdefenderReportId = is_string($result['result']) ? $result['result'] : ($result['result']['reportId'] ?? null);
+        
+        if (!$bitdefenderReportId) {
+            throw new Exception('Report ID não retornado pela API: ' . json_encode($result));
+        }
 
         // Atualizar registro com ID do Bitdefender
         $stmt = $pdo->prepare("
