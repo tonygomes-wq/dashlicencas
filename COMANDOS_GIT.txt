@@ -1,0 +1,42 @@
+═══════════════════════════════════════════════════════════════
+  🚀 COMANDOS PARA FAZER DEPLOY DA CORREÇÃO
+═══════════════════════════════════════════════════════════════
+
+COPIE E COLE ESTES COMANDOS NO TERMINAL/CMD:
+
+# 1. Navegar até o projeto
+cd C:\Users\suporte04\Documents\GitHub\dashlicencas
+
+# 2. Ver o que mudou
+git status
+
+# 3. Adicionar as alterações
+git add src/pages/Dashboard.tsx
+
+# 4. Fazer commit
+git commit -m "fix: corrigir erro ao salvar clientes O365 e Gmail"
+
+# 5. Enviar para GitHub
+git push origin main
+
+═══════════════════════════════════════════════════════════════
+
+DEPOIS DOS COMANDOS:
+
+1. Acesse o Easypanel
+2. Vá no seu app "dashlicencas" 
+3. Clique em "Rebuild" ou "Redeploy"
+4. Aguarde 2-3 minutos
+5. Limpe cache do navegador (Ctrl+Shift+Del)
+6. Teste adicionar cliente Office 365
+
+═══════════════════════════════════════════════════════════════
+
+SE O GIT PUSH DER ERRO:
+
+Pode ser que a branch seja "master" ao invés de "main".
+Nesse caso, use:
+
+git push origin master
+
+═══════════════════════════════════════════════════════════════

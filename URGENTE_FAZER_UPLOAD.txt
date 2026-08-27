@@ -1,0 +1,173 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║  🚨 URGENTE: FAZER UPLOAD DOS ARQUIVOS CORRIGIDOS 🚨        ║
+║                                                              ║
+║  O erro persiste porque o servidor ainda tem os arquivos    ║
+║  ANTIGOS. Você precisa fazer upload dos NOVOS arquivos!     ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────┐
+│  📁 ARQUIVOS QUE PRECISAM SER ENVIADOS                       │
+└──────────────────────────────────────────────────────────────┘
+
+PASTA LOCAL:
+  C:\Users\suporte04\Documents\GitHub\dashlicencas\dist\
+
+ARQUIVOS:
+  ✅ dist/index.html
+  ✅ dist/assets/index-4e60f9da.js  ← NOVO (corrigido)
+  ✅ dist/assets/index-3c0e466e.css
+  ✅ dist/assets/logo-e02fd245.png
+
+ARQUIVO ANTIGO NO SERVIDOR (REMOVER OU SUBSTITUIR):
+  ❌ index-945738e9.js  ← ANTIGO (com bug)
+
+┌──────────────────────────────────────────────────────────────┐
+│  🔄 PASSO A PASSO PARA CORRIGIR                              │
+└──────────────────────────────────────────────────────────────┘
+
+OPÇÃO 1: VIA FTP (FileZilla, WinSCP, etc)
+  1. Abrir cliente FTP
+  2. Conectar ao servidor
+  3. Navegar até a pasta pública do site
+  4. APAGAR os arquivos antigos da pasta assets/:
+     - index-945738e9.js (antigo)
+  5. Fazer upload de TODOS os arquivos da pasta dist/:
+     - index.html
+     - assets/index-4e60f9da.js (novo)
+     - assets/index-3c0e466e.css
+     - assets/logo-e02fd245.png
+  6. Confirmar que os arquivos foram enviados
+
+OPÇÃO 2: VIA PAINEL DE CONTROLE
+  1. Acessar painel de controle do servidor
+  2. Ir em "Gerenciador de Arquivos"
+  3. Navegar até a pasta pública do site
+  4. APAGAR arquivos antigos
+  5. Fazer upload dos novos arquivos
+
+OPÇÃO 3: VIA COMMAND LINE (se tiver acesso SSH)
+  1. Abrir terminal/PowerShell
+  2. Executar:
+     scp -r dist/* usuario@servidor:/caminho/do/site/
+  3. Confirmar upload
+
+┌──────────────────────────────────────────────────────────────┐
+│  ⚠️  IMPORTANTE APÓS O UPLOAD                                │
+└──────────────────────────────────────────────────────────────┘
+
+1. LIMPAR CACHE DO NAVEGADOR
+   - Pressione: Ctrl + Shift + Delete
+   - Ou: Ctrl + F5 (reload forçado)
+   - Ou: Abra em aba anônima
+
+2. VERIFICAR SE OS NOVOS ARQUIVOS ESTÃO SENDO USADOS
+   - Abra DevTools (F12)
+   - Vá em "Network"
+   - Recarregue a página
+   - Verifique se está carregando:
+     ✅ index-4e60f9da.js (NOVO)
+     ❌ NÃO index-945738e9.js (ANTIGO)
+
+3. TESTAR A FUNCIONALIDADE
+   - Acessar Office 365
+   - Clicar em "Adicionar Novo Cliente"
+   - Preencher dados
+   - Clicar em "Salvar"
+   - ✅ Deve funcionar SEM ERROS
+
+┌──────────────────────────────────────────────────────────────┐
+│  🎯 CHECKLIST RÁPIDO                                         │
+└──────────────────────────────────────────────────────────────┘
+
+  [ ] Conectar ao servidor (FTP/SSH/Painel)
+  [ ] Localizar pasta pública do site
+  [ ] APAGAR arquivo antigo: index-945738e9.js
+  [ ] Fazer upload de dist/index.html
+  [ ] Fazer upload de dist/assets/* (todos os arquivos)
+  [ ] Verificar que arquivos foram enviados
+  [ ] Limpar cache do navegador (Ctrl+Shift+Del)
+  [ ] Recarregar página (Ctrl+F5)
+  [ ] Testar adicionar cliente Office 365
+  [ ] Verificar se erro sumiu
+  [ ] Testar adicionar cliente Gmail também
+
+┌──────────────────────────────────────────────────────────────┐
+│  🔍 COMO VERIFICAR SE DEU CERTO                              │
+└──────────────────────────────────────────────────────────────┘
+
+Abra o DevTools (F12) e verifique:
+
+1. Na aba "Network":
+   - Procure por "index-4e60f9da.js"
+   - Se aparecer: ✅ Arquivo novo está sendo usado
+   - Se aparecer "index-945738e9.js": ❌ Ainda está usando o antigo
+
+2. Na aba "Console":
+   - Tente adicionar um cliente
+   - Se NÃO aparecer erro: ✅ Correção funcionou!
+   - Se aparecer "r is not a function": ❌ Cache ou arquivo antigo
+
+┌──────────────────────────────────────────────────────────────┐
+│  ❓ SE AINDA NÃO FUNCIONAR APÓS O UPLOAD                     │
+└──────────────────────────────────────────────────────────────┘
+
+1. CACHE DO NAVEGADOR
+   - Tente em aba anônima
+   - Tente em outro navegador
+   - Limpe TODOS os dados do site (configurações do navegador)
+
+2. CACHE DO SERVIDOR
+   - Alguns servidores tem cache
+   - Aguarde 5-10 minutos
+   - Ou limpe cache do servidor (se disponível)
+
+3. VERIFICAR CAMINHO DOS ARQUIVOS
+   - Certifique-se que está enviando para a pasta correta
+   - Verifique se o index.html aponta para os arquivos certos
+
+┌──────────────────────────────────────────────────────────────┐
+│  📊 RESUMO DO PROBLEMA                                       │
+└──────────────────────────────────────────────────────────────┘
+
+SITUAÇÃO ATUAL:
+  ❌ Servidor tem: index-945738e9.js (COM BUG)
+  ✅ Local tem: index-4e60f9da.js (CORRIGIDO)
+
+ERRO:
+  TypeError: r is not a function
+  (funções não retornam Promise corretamente)
+
+CORREÇÃO APLICADA:
+  ✅ Código corrigido no Dashboard.tsx
+  ✅ Build executado (13.03s)
+  ✅ Novo arquivo gerado: index-4e60f9da.js
+  ⏳ FALTA: Upload para o servidor
+
+AÇÃO NECESSÁRIA:
+  🚀 FAZER UPLOAD DOS ARQUIVOS AGORA!
+
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║  O BUG JÁ ESTÁ CORRIGIDO NO CÓDIGO!                         ║
+║  VOCÊ SÓ PRECISA FAZER UPLOAD DOS NOVOS ARQUIVOS!           ║
+║                                                              ║
+║  Tempo estimado: 5 minutos                                   ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+COMANDO RÁPIDO (se tiver acesso ao servidor):
+  
+  # Via SCP
+  scp -r dist/* usuario@servidor:/var/www/html/
+
+  # Via rsync
+  rsync -avz dist/ usuario@servidor:/var/www/html/
+
+NÃO ESQUEÇA:
+  - Limpar cache do navegador após upload
+  - Testar em aba anônima
+  - Verificar DevTools > Network para confirmar arquivo novo
+
+Última atualização: 02/06/2026 - 17:30h
