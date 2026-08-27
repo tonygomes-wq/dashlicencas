@@ -52,8 +52,10 @@ try {
     echo "<pre>" . json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "</pre>";
     echo "</div>";
     
-    if (isset($result['result']['url'])) {
-        $downloadUrl = $result['result']['url'];
+    // API pode retornar 'url' ou 'lastInstanceUrl'
+    $downloadUrl = $result['result']['url'] ?? $result['result']['lastInstanceUrl'] ?? null;
+    
+    if ($downloadUrl) {
         
         echo "<h3>📥 URL de Download Obtida:</h3>";
         echo "<p><code>" . htmlspecialchars($downloadUrl) . "</code></p>";

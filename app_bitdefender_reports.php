@@ -419,8 +419,10 @@ function createReport($pdo, $user, $data) {
                 ['reportId' => $bitdefenderReportId]
             );
 
-            if (isset($downloadResult['result']['url'])) {
-                $downloadUrl = $downloadResult['result']['url'];
+            // API pode retornar 'url' ou 'lastInstanceUrl'
+            $downloadUrl = $downloadResult['result']['url'] ?? $downloadResult['result']['lastInstanceUrl'] ?? null;
+            
+            if ($downloadUrl) {
                 
                 // Atualizar com URL de download
                 $stmt = $pdo->prepare("
